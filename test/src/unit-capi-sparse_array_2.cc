@@ -3549,3 +3549,56 @@ TEST_CASE_METHOD(
 
   remove_array(array_name);
 }
+
+TEST_CASE_METHOD(
+    SparseArrayFx2,
+    "C API: Test sparse array 2, open array with subarray, error",
+    "[capi], [sparse-2], [sparse-2-open-with-subarray-error]") {
+  std::string array_name =
+      FILE_URI_PREFIX + FILE_TEMP_DIR + "sparse_open_with_subarray_error";
+  remove_array(array_name);
+  create_sparse_array(array_name, TILEDB_COL_MAJOR);
+  write_sparse_array(array_name);
+
+  // Create TileDB context
+  tiledb_ctx_t* ctx = nullptr;
+  REQUIRE(tiledb_ctx_alloc(nullptr, &ctx) == TILEDB_OK);
+
+  // Open array
+  tiledb_array_t* array;
+  int rc = tiledb_array_alloc(ctx, array_name.c_str(), &array);
+  CHECK(rc == TILEDB_OK);
+  rc = tiledb_array_open(ctx, array, TILEDB_READ);
+  CHECK(rc == TILEDB_OK);
+
+  // Create some subarray
+  uint64_t s00[] = {1, 1};
+  uint64_t s01[] = {3, 4};
+  uint64_t s10[] = {2, 2};
+  uint64_t s11[] = {3, 4};
+  tiledb_subarray_t* subarray;
+  rc = tiledb_subarray_alloc(ctx_, array, TILEDB_UNORDERED, &subarray);
+  REQUIRE(rc == TILEDB_OK);
+  rc = tiledb_subarray_add_range(ctx_, subarray, 0, s00);
+  REQUIRE(rc == TILEDB_OK);
+  rc = tiledb_subarray_add_range(ctx_, subarray, 0, s01);
+  REQUIRE(rc == TILEDB_OK);
+  rc = tiledb_subarray_add_range(ctx_, subarray, 1, s10);
+  REQUIRE(rc == TILEDB_OK);
+  rc = tiledb_subarray_add_range(ctx_, subarray, 1, s11);
+  REQUIRE(rc == TILEDB_OK);
+
+  // Set subarray should error
+  rc = tiledb_array_set_subarray(ctx, array, subarray);
+  CHECK(rc == TILEDB_ERR);
+
+  // Close array
+  CHECK(tiledb_array_close(ctx, array) == TILEDB_OK);
+
+  // Clean up
+  tiledb_array_free(&array);
+  tiledb_subarray_free(&subarray);
+  tiledb_ctx_free(&ctx);
+
+  remove_array(array_name);
+}

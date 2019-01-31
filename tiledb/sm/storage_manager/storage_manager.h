@@ -141,6 +141,7 @@ class StorageManager {
       const URI& array_uri,
       uint64_t timestamp,
       const EncryptionKey& encryption_key,
+      const Subarray& subarray,
       ArraySchema** array_schema,
       std::vector<FragmentMetadata*>* fragment_metadata);
 
@@ -187,6 +188,9 @@ class StorageManager {
    *     In TileDB, timestamps are in ms elapsed since
    *     1970-01-01 00:00:00 +0000 (UTC).
    * @param encryption_key The encryption key to use.
+   * @param subarray If it is non-empty, then only the array fragments
+   *     whose non-empty domain overlaps with the subarray will be
+   *     loaded.
    * @param array_schema The array schema to be retrieved after the
    *     array is opened.
    * @param fragment_metadata The fragment metadata to be retrieved
@@ -197,6 +201,7 @@ class StorageManager {
       const URI& array_uri,
       uint64_t timestamp,
       const EncryptionKey& encryption_key,
+      const Subarray& subarray,
       ArraySchema** array_schema,
       std::vector<FragmentMetadata*>* fragment_metadata);
 
@@ -900,10 +905,14 @@ class StorageManager {
    * of UUID. Only the fragments with timestamp smaller than or equal to
    * `timestamp` are considered. The sorted fragment URIs are stored in
    * the second input, including the fragment timestamps.
+   *
+   * Moreover, if ``subarray`` is non-empty, the function will retrieve
+   * only the fragments whose non-empty domain overlaps with the subarray.
    */
   void get_sorted_fragment_uris(
       const std::vector<URI>& fragment_uris,
       uint64_t timestamp,
+      const Subarray& subarray,
       std::vector<std::pair<uint64_t, URI>>* sorted_fragment_uris) const;
 
   /** Block until there are zero in-progress queries. */

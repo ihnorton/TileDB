@@ -2428,6 +2428,23 @@ int32_t tiledb_array_alloc(
   return TILEDB_OK;
 }
 
+int32_t tiledb_array_set_subarray(
+    tiledb_ctx_t* ctx,
+    tiledb_array_t* array,
+    const tiledb_subarray_t* subarray) {
+  if (sanity_check(ctx) == TILEDB_ERR ||
+      sanity_check(ctx, array) == TILEDB_ERR ||
+      sanity_check(ctx, subarray) == TILEDB_ERR)
+    return TILEDB_ERR;
+
+  // Set subarray
+  if (SAVE_ERROR_CATCH(
+          ctx, array->array_->set_subarray(*(subarray->subarray_))))
+    return TILEDB_ERR;
+
+  return TILEDB_OK;
+}
+
 int32_t tiledb_array_open(
     tiledb_ctx_t* ctx, tiledb_array_t* array, tiledb_query_type_t query_type) {
   if (sanity_check(ctx) == TILEDB_ERR || sanity_check(ctx, array) == TILEDB_ERR)

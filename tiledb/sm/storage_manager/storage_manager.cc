@@ -181,6 +181,7 @@ Status StorageManager::array_open_for_reads(
     const URI& array_uri,
     uint64_t timestamp,
     const EncryptionKey& encryption_key,
+    const Subarray& subarray,
     ArraySchema** array_schema,
     std::vector<FragmentMetadata*>* fragment_metadata) {
   STATS_FUNC_IN(sm_array_open_for_reads);
@@ -198,7 +199,8 @@ Status StorageManager::array_open_for_reads(
   std::vector<std::pair<uint64_t, URI>> fragments_to_load;  // (timestamp, URI)
   std::vector<URI> fragment_uris;
   RETURN_NOT_OK(get_fragment_uris(array_uri, &fragment_uris));
-  get_sorted_fragment_uris(fragment_uris, timestamp, &fragments_to_load);
+  get_sorted_fragment_uris(
+      fragment_uris, timestamp, subarray, &fragments_to_load);
 
   // Get fragment metadata in the case of reads, if not fetched already
   bool in_cache;
@@ -350,6 +352,7 @@ Status StorageManager::array_reopen(
     const URI& array_uri,
     uint64_t timestamp,
     const EncryptionKey& encryption_key,
+    const Subarray& subarray,
     ArraySchema** array_schema,
     std::vector<FragmentMetadata*>* fragment_metadata) {
   STATS_FUNC_IN(sm_array_reopen);
@@ -388,7 +391,8 @@ Status StorageManager::array_reopen(
   std::vector<std::pair<uint64_t, URI>> fragments_to_load;  // (timestamp, URI)
   std::vector<URI> fragment_uris;
   RETURN_NOT_OK(get_fragment_uris(array_uri, &fragment_uris));
-  get_sorted_fragment_uris(fragment_uris, timestamp, &fragments_to_load);
+  get_sorted_fragment_uris(
+      fragment_uris, timestamp, subarray, &fragments_to_load);
 
   // Get fragment metadata in the case of reads, if not fetched already
   bool in_cache;
@@ -851,7 +855,9 @@ Status StorageManager::get_fragment_info(
 
   // Sort the URIs by timestamp
   std::vector<std::pair<uint64_t, URI>> sorted_fragment_uris;
-  get_sorted_fragment_uris(fragment_uris, timestamp, &sorted_fragment_uris);
+  Subarray subarray;  // Empty subarray
+  get_sorted_fragment_uris(
+      fragment_uris, timestamp, subarray, &sorted_fragment_uris);
 
   uint64_t domain_size = 2 * array_schema->coords_size();
   uint64_t size;
@@ -1775,6 +1781,9 @@ Status StorageManager::load_fragment_metadata(
           load_fragment_metadata(metadata, encryption_key, &metadata_in_cache),
           delete metadata);
       *in_cache |= metadata_in_cache;
+
+      // TODO: insert here only if the non-empty domain overlaps with subarray
+
       open_array->insert_fragment_metadata(metadata);
     }
     fragment_metadata->push_back(metadata);
@@ -1786,6 +1795,7 @@ Status StorageManager::load_fragment_metadata(
 void StorageManager::get_sorted_fragment_uris(
     const std::vector<URI>& fragment_uris,
     uint64_t timestamp,
+    const Subarray& subarray,
     std::vector<std::pair<uint64_t, URI>>* sorted_fragment_uris) const {
   // Do nothing if there are not enough fragments
   if (fragment_uris.empty())
@@ -1794,6 +1804,9 @@ void StorageManager::get_sorted_fragment_uris(
   // Initializations
   std::string t_str;
   uint64_t t;
+
+  // TODO
+  (void)subarray;
 
   // Get the timestamp for each fragment
   for (auto& uri : fragment_uris) {
