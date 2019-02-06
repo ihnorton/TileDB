@@ -132,6 +132,7 @@ set(TILEDB_EP_INSTALL_PREFIX "${TILEDB_EP_BASE}/install")
 
 # Set compiler flags
 if (WIN32)
+  message(WARNING "Hi From WIN32")
   # We disable some warnings that are not present in gcc/clang -Wall:
   #   C4101: unreferenced local variable
   #   C4146: unary minus operator applied to unsigned type
