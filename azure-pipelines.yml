@@ -5,12 +5,13 @@ strategy:
   matrix:
     linux_hdfs:
       imageName: 'ubuntu-16.04'
-      variables:
-        TILEDB_HDFS=ON
-    linux_s3:
-      imageName: 'ubuntu-16.04'
-      variables:
-        TILEDB_S3=ON
+      TILEDB_S3: ON
+      CXX: g++
+#    linux_s3:
+#      imageName: 'ubuntu-16.04'
+#      variables:
+  #      TILEDB_HDFS: ON
+#        CXX=g++
 
     #mac:
     #  imageName: 'macOS-10.13'
@@ -26,6 +27,7 @@ steps:
   displayName: 'Clone Unit-Test-Arrays'
 
 - script: |
+    echo "CXX: $CXX"
     # Install clangformat (v5.0)
     sudo scripts/install-clangformat.sh;
     # Install doxygen
@@ -77,6 +79,8 @@ steps:
   condition: eq(variables['Agent.OS'], 'Linux')
 
 - script: |
+    # TODO regularize or full out-of-source
+    cd $BUILD_REPOSITORY_LOCALPATH/build
     if [[ "$AGENT_OS" == "linux" ]]; then
       make check-format;
     fi
@@ -90,7 +94,7 @@ steps:
     ./ExampleExe_static
     popd
     # Build and run the PNG ingestion example.
-    if [[ "$AGENT_OS" == "linux" ]]; then
+    if [[ "$AGENT_OS" == "Linux" ]]; then
       pushd $BUILD_REPOSITORY_LOCALPATH/examples/png_ingestion;
       mkdir build && cd build;
       cmake -DCMAKE_PREFIX_PATH=$BUILD_REPOSITORY_LOCALPATH/dist .. && make;
@@ -121,11 +125,11 @@ steps:
       return 0;
     }
     EOF
-    if [[ "$AGENT_OS" == "linux" ]]; then
+    if [[ "$AGENT_OS" == "Linux" ]]; then
       export LD_LIBRARY_PATH=$BUILD_REPOSITORY_LOCALPATH/dist/lib:/usr/local/lib:$LD_LIBRARY_PATH
     else
       export DYLD_LIBRARY_PATH=$BUILD_REPOSITORY_LOCALPATH/dist/lib:/usr/local/lib:$DYLD_LIBRARY_PATH
     fi
-    ${CXX} -std=c++11 -g -O0 -Wall -Werror -I$BUILD_REPOSITORY_LOCALPATH/dist/include -L$BUILD_REPOSITORY_LOCALPATH/dist/lib $testfile -o $testfile.exe -ltiledb && \
+    $CXX -std=c++11 -g -O0 -Wall -Werror -I$BUILD_REPOSITORY_LOCALPATH/dist/include -L$BUILD_REPOSITORY_LOCALPATH/dist/lib $testfile -o $testfile.exe -ltiledb && \
     $testfile.exe && \
     rm -f $testfile $testfile.exe
