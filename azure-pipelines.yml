@@ -1,19 +1,131 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- master
+- azure-pipelines
+
+strategy:
+  matrix:
+    linux_hdfs:
+      imageName: 'ubuntu-16.04'
+      variables:
+        TILEDB_HDFS=ON
+    linux_s3:
+      imageName: 'ubuntu-16.04'
+      variables:
+        TILEDB_S3=ON
+
+    #mac:
+    #  imageName: 'macOS-10.13'
+    #windows:
+    #  imageName: 'vs2017-win2016'
+  maxParallel: 4
 
 pool:
-  vmImage: 'Ubuntu-16.04'
+  vmImage: $(imageName)
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- script: git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
+  displayName: 'Clone Unit-Test-Arrays'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    # Install clangformat (v5.0)
+    sudo scripts/install-clangformat.sh;
+    # Install doxygen
+    sudo apt-get -y install doxygen;
+    # Install libpng for the PNG ingestion example.
+    sudo apt-get install libpng-dev;
+  displayName: 'Install Linux-only test dependencies'
+  condition: eq(variables['Agent.OS'], 'Linux')
+
+- script: |
+    # Set up arguments for bootstrap.sh
+    bootstrap_args="--enable=verbose,static-tiledb";
+    if [[ "$TILEDB_HDFS" == "ON" ]]; then
+      bootstrap_args="${bootstrap_args} --enable-hdfs";
+    fi;
+    if [[ "$TILEDB_S3" == "ON" ]]; then
+      bootstrap_args="${bootstrap_args} --enable-s3";
+    fi;
+    if [[ "$TILEDB_TBB" == "OFF" ]]; then
+      bootstrap_args="${bootstrap_args} --disable-tbb";
+    fi
+
+    # Start HDFS server if enabled
+    if [[ "$TILEDB_HDFS" == "ON" ]]; then
+      source scripts/install-hadoop.sh;
+      source scripts/run-hadoop.sh;
+    fi
+
+    # Start minio server if S3 is enabled
+    if [[ "$TILEDB_S3" == "ON" ]]; then
+      source scripts/install-minio.sh;
+      source scripts/run-minio.sh;
+    fi
+
+    mkdir -p $BUILD_REPOSITORY_LOCALPATH/build && cd $BUILD_REPOSITORY_LOCALPATH/build
+
+    # Configure and build TileDB
+    ../bootstrap $bootstrap_args
+
+    make -j4
+    make examples -j4
+    make -C tiledb install
+
+    # Build the documentation (this does not deploy to RTD).
+    pushd $BUILD_REPOSITORY_LOCALPATH/doc;
+    ./local-build.sh;
+    popd;
+  displayName: 'Install and start HDFS and Minio (if enabled)'
+  condition: eq(variables['Agent.OS'], 'Linux')
+
+- script: |
+    if [[ "$AGENT_OS" == "linux" ]]; then
+      make check-format;
+    fi
+    
+    make check
+    
+    pushd $BUILD_REPOSITORY_LOCALPATH/examples/cmake_project
+    mkdir build && cd build
+    cmake -DCMAKE_PREFIX_PATH=$BUILD_REPOSITORY_LOCALPATH/dist .. && make
+    ./ExampleExe
+    ./ExampleExe_static
+    popd
+    # Build and run the PNG ingestion example.
+    if [[ "$AGENT_OS" == "linux" ]]; then
+      pushd $BUILD_REPOSITORY_LOCALPATH/examples/png_ingestion;
+      mkdir build && cd build;
+      cmake -DCMAKE_PREFIX_PATH=$BUILD_REPOSITORY_LOCALPATH/dist .. && make;
+      ./tiledb_png $BUILD_REPOSITORY_LOCALPATH/doc/source/figures/Scarlet-Macaw-small.png /tmp/pngarray output.png;
+      popd;
+    fi
+    
+    # Build the benchmarks (but do not run them).
+    pushd $BUILD_REPOSITORY_LOCALPATH/test/benchmarking && \
+      mkdir build && cd build && \
+      cmake -DCMAKE_PREFIX_PATH=$BUILD_REPOSITORY_LOCALPATH/dist ../src && make && \
+    popd
+    
+    testfile=$(mktemp)
+    mv $testfile $testfile.cc
+    testfile=$testfile.cc
+    cat <<EOF > $testfile
+    #include <assert.h>
+    #include <tiledb/tiledb.h>
+    #include <tiledb/version.h>
+    int main(int argc, char **argv) {
+      int major = 0;
+      int minor = 0;
+      int patch = 0;
+      tiledb_version(&major,&minor,&patch);
+      auto version = tiledb::version();
+      assert(major == std::get<0>(version));
+      return 0;
+    }
+    EOF
+    if [[ "$AGENT_OS" == "linux" ]]; then
+      export LD_LIBRARY_PATH=$BUILD_REPOSITORY_LOCALPATH/dist/lib:/usr/local/lib:$LD_LIBRARY_PATH
+    else
+      export DYLD_LIBRARY_PATH=$BUILD_REPOSITORY_LOCALPATH/dist/lib:/usr/local/lib:$DYLD_LIBRARY_PATH
+    fi
+    ${CXX} -std=c++11 -g -O0 -Wall -Werror -I$BUILD_REPOSITORY_LOCALPATH/dist/include -L$BUILD_REPOSITORY_LOCALPATH/dist/lib $testfile -o $testfile.exe -ltiledb && \
+    $testfile.exe && \
+    rm -f $testfile $testfile.exe
