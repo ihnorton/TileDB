@@ -360,6 +360,22 @@ TILEDB_EXPORT void tiledb_config_free(tiledb_config_t** config);
 /**
  * Sets a config parameter.
  *
+ * **Example:**
+ *
+ * @code{.c}
+ * tiledb_error_t* error = NULL;
+ * tiledb_config_set(config, "sm.tile_cache_size", "1000000", &error);
+ * @endcode
+ *
+ * @param config The config object.
+ * @param param The parameter to be set.
+ * @param value The value of the parameter to be set.
+ * @param error Error object returned upon error (`NULL` if there is
+ *     no error).
+ * @return `TILEDB_OK` for success and `TILEDB_ERR` for error.
+ *
+ * @details
+ *
  * **Parameters**
  *
  * - `sm.dedup_coords` <br>
@@ -525,20 +541,6 @@ TILEDB_EXPORT void tiledb_config_free(tiledb_config_t** config);
  * - `vfs.hdfs.kerb_ticket_cache_path` <br>
  *    HDFS kerb ticket cache path. <br>
  *    **Default**: ""
- *
- * **Example:**
- *
- * @code{.c}
- * tiledb_error_t* error = NULL;
- * tiledb_config_set(config, "sm.tile_cache_size", "1000000", &error);
- * @endcode
- *
- * @param config The config object.
- * @param param The parameter to be set.
- * @param value The value of the parameter to be set.
- * @param error Error object returned upon error (`NULL` if there is
- *     no error).
- * @return `TILEDB_OK` for success and `TILEDB_ERR` for error.
  */
 TILEDB_EXPORT int32_t tiledb_config_set(
     tiledb_config_t* config,
