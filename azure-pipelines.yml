@@ -12,6 +12,14 @@ strategy:
       variables:
       TILEDB_HDFS: ON
       CXX: g++
+    linux_asan:
+      imageName: 'ubuntu-16.04'
+      TILEDB_CI_ASAN: ON
+      CXX: g++-7
+    linux_tsan:
+      imageName: 'ubuntu-16.04'
+      TILEDB_CI_TSAN: ON
+      CXX: g++-7
     mac:
       imageName: 'macOS-10.13'
       TILEDB_S3: ON
@@ -24,6 +32,12 @@ pool:
   vmImage: $(imageName)
 
 steps:
+# we need this for virtualenv, used for the docs build
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.7'
+    architecture: 'x64'
+
 - script: |
     git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
   displayName: 'Clone Unit-Test-Arrays'

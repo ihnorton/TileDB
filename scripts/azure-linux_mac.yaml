@@ -25,6 +25,15 @@ if [[ "$TILEDB_TBB" == "OFF" ]]; then
   bootstrap_args="${bootstrap_args} --disable-tbb";
 fi
 
+# Add address sanitizer flag if necessary
+if [[ "$TILEDB_CI_ASAN" == "ON" ]]; then
+  bootstrap_args="${bootstrap_args} --enable-sanitizer=address --enable-debug";
+fi
+# Add thread sanitizer flag if necessary
+if [[ "$TILEDB_CI_TSAN" == "ON" ]]; then
+  bootstrap_args="${bootstrap_args} --enable-sanitizer=thread --enable-debug";
+fi
+
 # Start HDFS server if enabled
 if [[ "$TILEDB_HDFS" == "ON" ]]; then
   source scripts/install-hadoop.sh;
