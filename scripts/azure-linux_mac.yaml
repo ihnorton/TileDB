@@ -11,6 +11,9 @@ if [[ "$AGENT_OS" == "Linux" ]]; then
   sudo apt-get -y install doxygen;
   # Install libpng for the PNG ingestion example.
   sudo apt-get install libpng-dev;
+  # Install pip and virtualenv for doc build
+  sudo apt-get install python-pip;
+  pip install --upgrade pip virtualenv
 fi
 
 # Set up arguments for bootstrap.sh
