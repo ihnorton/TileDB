@@ -15,10 +15,12 @@ strategy:
     linux_asan:
       imageName: 'ubuntu-16.04'
       TILEDB_CI_ASAN: ON
+      TILEDB_TBB: OFF
       CXX: g++-7
     linux_tsan:
       imageName: 'ubuntu-16.04'
       TILEDB_CI_TSAN: ON
+      TILEDB_TBB: OFF
       CXX: g++-7
     mac:
       imageName: 'macOS-10.13'
