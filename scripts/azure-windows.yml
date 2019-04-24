@@ -20,10 +20,10 @@ steps:
     }
 
     if ($env:TILEDB_S3 -eq "true") {
-      ..\bootstrap.ps1 -EnableS3 -EnableVerbose -EnableStaticTileDB
-      ..\scripts\install-minio.ps1
+      $env:BUILD_SOURCESDIRECTORY\bootstrap.ps1 -EnableS3 -EnableVerbose -EnableStaticTileDB
+      $env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1
     } else {
-      ..\bootstrap.ps1 -EnableVerbose -EnableStaticTileDB
+      $env:BUILD_SOURCESDIRECTORY\bootstrap.ps1 -EnableVerbose -EnableStaticTileDB
     }
 
     if ($LastExitCode -ne 0) {
@@ -40,7 +40,7 @@ steps:
   displayName: "Build"
 
 - powershell:
-    cd $env:AGENT_BUILDDIRECTORY\build\tiledb
+    cd $env:BUILD_SOURCESDIRECTORY\build\tiledb
 
     cmake --build . --target check --config Release -- /verbosity:minimal
 
@@ -63,7 +63,7 @@ steps:
        $host.SetShouldExit($LastExitCode)
     }
 
-    $env:Path += ";$env:AGEND_BUILDDIRECTORY\dist\bin;..\externals\install\bin"
+    $env:Path += ";$env:AGENT_BUILDDIRECTORY\dist\bin;..\externals\install\bin"
 
     try {
       .\examples\c_api\Release\quickstart_dense_c.exe
@@ -91,10 +91,9 @@ steps:
        $host.SetShouldExit($LastExitCode)
     }
 
-    cd $env:AGENT_BUILDDIRECTORY\s\examples\cmake_project
-
+    # Build examples
+    cd $env:BUILD_SOURCESDIRECTORY\examples\cmake_project
     mkdir build
-
     cd build
 
     cmake -A X64 -DCMAKE_PREFIX_PATH="$env:AGENT_BUILDDIRECTORY\dist" ..
@@ -105,20 +104,14 @@ steps:
 
     .\Release\ExampleExe_static.exe
 
-    cd $env:APPVEYOR_BUILD_FOLDER\build
+    cd $env:AGENT_BUILDDIRECTORY\build
 
-    mkdir dist
-
-    mv ..\dist dist\tiledb-windows-x64
-
-    cd dist
-
-    7z a tiledb-windows-x64.zip tiledb-windows-x64
+    7z a tiledb-windows-x64.zip $env:AGENT_BUILDDIRECTORY\dist
 
   displayName: "Test"
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$env:AGENT_BUILDDIRECTORY\build\dist\tiledb-windows-x64.zip'
+    pathtoPublish: '$env:AGENT_BUILDDIRECTORY\tiledb-windows-x64.zip'
     artifactName: tiledb-windows-x64.zip
   condition: succeeded()
