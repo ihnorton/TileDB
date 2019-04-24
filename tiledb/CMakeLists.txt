@@ -178,7 +178,7 @@ set(TILEDB_EXTERNALS_SOURCES
 # Build core objects as a reusable object library
 ############################################################
 
-add_library(TILEDB_CORE_OBJECTS OBJECT 
+add_library(TILEDB_CORE_OBJECTS OBJECT
     ${TILEDB_CORE_SOURCES}
     ${TILEDB_EXTERNALS_SOURCES}
 )
@@ -269,7 +269,7 @@ endif()
 if (TILEDB_S3)
   message(STATUS "The TileDB library is compiled with S3 support.")
   find_package(Curl_EP REQUIRED)
-  find_package(AWSSDK_EP REQUIRED)
+  find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
   target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
     INTERFACE
       AWSSDK::aws-cpp-sdk-s3
@@ -277,6 +277,11 @@ if (TILEDB_S3)
       AWSSDK::aws-c-event-stream
       AWSSDK::aws-checksums
       AWSSDK::aws-c-common
+  )
+
+  target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
+     INTERFACE
+     ${AWS_EXTRA_LIBRARIES}
   )
   if (NOT WIN32)
     # No Curl required on Windows.

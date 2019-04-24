@@ -126,4 +126,10 @@ if (AWSSDK_FOUND)
     endif()
 
   endforeach ()
+
+  # the SDK does not include links to some transitive dependencies
+  if (TILEDB_AWSSDK_EP_BUILT AND WIN32)
+    list(APPEND AWS_EXTRA_LIBRARIES userenv ws2_32 Wininet
+                                winhttp bcrypt version)
+  endif()
 endif ()
