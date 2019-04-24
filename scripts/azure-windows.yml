@@ -7,9 +7,8 @@
 
 steps:
 - powershell: |
-    mkdir build
-
-    cd build
+    mkdir $env:AGENT_BUILDDIRECTORY\build
+    cd $env:AGENT_BUILDDIRECTORY\build
 
     if ($env:imageName -eq "vs2015-win2012r2") {
       $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin"
@@ -41,7 +40,7 @@ steps:
   displayName: "Build"
 
 - powershell:
-    cd "$env:AGENT_BUILDDIRECTORY\build\tiledb"
+    cd $env:AGENT_BUILDDIRECTORY\build\tiledb
 
     cmake --build . --target check --config Release -- /verbosity:minimal
 
@@ -92,7 +91,7 @@ steps:
        $host.SetShouldExit($LastExitCode)
     }
 
-    cd "$env:AGENT_BUILDDIRECTORY\examples\cmake_project"
+    cd $env:AGENT_BUILDDIRECTORY\s\examples\cmake_project
 
     mkdir build
 
