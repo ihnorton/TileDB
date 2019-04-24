@@ -25,6 +25,7 @@
 #
 
 # Installs and configures HDFS.
+set -x
 
 die() {
   echo "$@" 1>&2 ; popd 2>/dev/null; exit 1
@@ -34,11 +35,11 @@ die() {
 function update_apt_repo  {
   sudo apt-get install -y software-properties-common wget &&
     sudo apt-get update -y
-    sudo apt-get install curl
+    sudo apt-get install -y curl
 } 
 
 function install_java {
-  sudo apt-get install openjdk-8-jre
+  sudo apt-get install -y openjdk-8-jre
 }
 
 function install_hadoop {
@@ -171,8 +172,10 @@ EOF
 
 function setup_environment {
   export HADOOP_HOME=/usr/local/hadoop/home
-  sudo sed -i -- 's/JAVA_HOME=\${JAVA_HOME}/JAVA_HOME=\$(readlink -f \/usr\/bin\/java | sed "s:bin\/java::")/' \
-	  $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+  sudo echo 'JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+  cat $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
   setup_core_xml &&
     setup_mapred_xml &&
     setup_hdfs_xml || die "error in generating xml configuration files"
@@ -186,19 +189,23 @@ function passwordless_ssh {
   mkdir ~/.ssh
   ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
   cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-  chmod og-wx ~/.ssh/authorized_keys
+  cat ~/.ssh/authorized_keys
   ssh-keyscan -H localhost >> ~/.ssh/known_hosts
+  ssh-keyscan -H 127.0.0.1 >> ~/.ssh/known_hosts
   ssh-keyscan -H 0.0.0.0 >> ~/.ssh/known_hosts
+  chmod go-w ~/
   sudo service ssh restart || die "error restarting ssh service"
 }
 
 function run {
   update_apt_repo || die "error updating apt-repo"
+  passwordless_ssh || die "error setting up passwordless ssh"
   install_java || die "error installing java"
   create_hadoop_user || die "error creating hadoop user"
   install_hadoop || die "error installing hadoop"
   setup_environment || die "error setting up environment"
-  passwordless_ssh || die "error setting up passwordless ssh"
 }
 
 run
+# sleep to make sure the ssh service restart is done because systemd
+sleep 2

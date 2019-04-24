@@ -31,20 +31,43 @@ die() {
   echo "$@" 1>&2 ; popd 2>/dev/null; exit 1
 }
 
+run_cask_minio() {
+  minio server /tmp/minio-data || die "could not run minio server"
+}
+
 run_docker_minio() {
   mkdir -p /tmp/minio-data
   docker run -e MINIO_ACCESS_KEY=minio -e MINIO_SECRET_KEY=miniosecretkey \
        -d -p 9999:9000 minio/minio server /tmp/minio-data || die "could not run docker minio"
+  docker ps
+}
+
+super_export() {
+  # args:
+  #   var: variable name
+  #   val: variable value
+  # - exports to the environment
+  # - persists across task steps in azure
+  var=$1
+  val=$2
+  export $var=$val
+  echo "##vso[task.setvariable variable=$var]$val"
 }
 
 export_aws_keys() {
-  export AWS_ACCESS_KEY_ID=minio
-  export AWS_SECRET_ACCESS_KEY=miniosecretkey
+  super_export AWS_ACCESS_KEY_ID minio
+  super_export AWS_SECRET_ACCESS_KEY_ID miniosecretkey
+  super_export MINIO_ACCESS_KEY minio
+  super_export MINIO_SECRET_KEY miniosecretkey
 }
 
 run() {
-  run_docker_minio
   export_aws_keys
+  if [[ "$AGENT_OS" == "Darwin" ]]; then
+    run_cask_minio
+  else
+    run_docker_minio
+  fi
 }
 
-run 
+run
