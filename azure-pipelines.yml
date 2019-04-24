@@ -2,7 +2,7 @@ trigger:
 - ihn/az_ci_asan
 
 jobs:
-- job: Job
+- job: Unix
   strategy:
     matrix:
       linux:
@@ -31,8 +31,14 @@ jobs:
   steps:
   - template: scripts/azure-linux_mac.yml
 
-#- job: Windows
-#  pool:
-#    vmImagee: 'vs2017-win2016'
-#  matrix:
-#  template: azure-windows.yml
+- job: Windows
+  strategy: 
+    matrix:
+      VS2015:
+        imageName: 'vs2015-win2012r2'
+      VS2017:
+        imageName: 'vs2017-win2016'
+  pool:
+    vmImage: $(imageName)
+  steps: 
+  - template: scripts/azure-windows.yml
