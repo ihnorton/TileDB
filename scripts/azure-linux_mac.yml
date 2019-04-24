@@ -28,6 +28,7 @@ steps:
 
     # Start minio server if S3 is enabled
     if [[ "$TILEDB_S3" == "ON" ]]; then
+      sudo apt-get install libcurl-dev
       source scripts/install-minio.sh;
       source scripts/run-minio.sh;
     fi
