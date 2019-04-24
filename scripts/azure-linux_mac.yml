@@ -6,7 +6,14 @@ steps:
     echo "%%%%%%%%%% Azure env"
     env
     echo "####################"
-  displayName: 'Echo azure environment'
+    cat <<EOF
+      error() {
+        echo "ERROR: '$1' --- '$2'"
+        echo "$3"
+      }
+    trap 'error "${BASH_SOURCE}" "${LINENO}" "${BASH_COMMAND}"' ERR
+    EOF | sudo tee -e /etc/profile
+  displayName: 'Echo and set up azure environment'
 
 # Need this for virtualenv
 - task: UsePythonVersion@0
@@ -14,8 +21,6 @@ steps:
     versionSpec: '3.x'
 
 - bash: |
-    set -xeo pipefail
-   
     # Start HDFS server if enabled
     if [[ "$TILEDB_HDFS" == "ON" ]]; then
       # - ssh to localhost is required for HDFS launch...
@@ -40,7 +45,6 @@ steps:
   displayName: 'Clone Unit-Test-Arrays'
 
 - bash: |
-    set -xeo pipefail
     if [[ "$AGENT_OS" == "Linux" ]]; then
       # Install clangformat (v5.0)
       sudo scripts/install-clangformat.sh
@@ -64,16 +68,9 @@ steps:
     if [[ "$TILEDB_DEBUG" == "ON" ]]; then
       bootstrap_args="${bootstrap_args} --enable-debug";
     fi
-
-    # Enable address sanitizer (matrix for linux only; requires gcc7)
-    if [[ "$TILEDB_CI_SAN" == "ON" ]]; then
-      export CMAKE_C_FLAGS="-fsanitizer=address -fsanitizer=threads"
-      export CMAKE_CXX_FLAGS="-fsanitizer=address -fsanitizer=threads"
-    fi
   displayName: 'Install dependencies'
 
 - bash: |
-    set -xeo pipefail
     # Set up arguments for bootstrap.sh
     bootstrap_args="--enable=verbose,static-tiledb";
     if [[ "$TILEDB_HDFS" == "ON" ]]; then
@@ -98,7 +95,6 @@ steps:
   displayName: 'Build libtiledb'
 
 - bash: |
-    set -xeo pipefail
     python -m pip install --upgrade pip virtualenv
     # Build the documentation (this does not deploy to RTD).
     pushd $BUILD_REPOSITORY_LOCALPATH/doc;
@@ -108,7 +104,6 @@ steps:
   displayName: 'Build docs (no deployment)'
 
 - bash: |
-    set -xeo pipefail
     cd $BUILD_REPOSITORY_LOCALPATH/build
     make check-format
   condition: eq(variables['Agent.OS'], 'Linux')
