@@ -21,14 +21,13 @@ steps:
       # - /home/vsts has permissions g+w and is owned by user 'docker'
       #   for VSTS purposes, so disable ssh strictness
       sudo sed -i "s/StrictModes\ yes/StrictModes\ no/g" /etc/ssh/sshd_config
- 
+
       source scripts/install-hadoop.sh
       source scripts/run-hadoop.sh
     fi
 
     # Start minio server if S3 is enabled
     if [[ "$TILEDB_S3" == "ON" ]]; then
-      sudo apt-get install libcurl-dev
       source scripts/install-minio.sh;
       source scripts/run-minio.sh;
     fi
@@ -39,9 +38,9 @@ steps:
       # Install clangformat (v5.0)
       sudo scripts/install-clangformat.sh
       # Install doxygen
-      sudo apt-get -y install doxygen
       # Install libpng for the PNG ingestion example.
-      sudo apt-get install libpng-dev
+      # Install libcurl4-openssl-dev to build against
+      sudo apt-get install libpng-dev doxygen libcurl4-openssl-dev
     fi
     
     # Set up arguments for bootstrap.sh
