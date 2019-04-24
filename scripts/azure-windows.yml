@@ -20,10 +20,10 @@ steps:
     }
 
     if ($env:TILEDB_S3 -eq "true") {
-      $env:BUILD_SOURCESDIRECTORY\bootstrap.ps1 -EnableS3 -EnableVerbose -EnableStaticTileDB
-      $env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1
+      & "$env:BUILD_SOURCESDIRECTORY\bootstrap.ps1" -EnableS3 -EnableVerbose -EnableStaticTileDB
+      & "$env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1"
     } else {
-      $env:BUILD_SOURCESDIRECTORY\bootstrap.ps1 -EnableVerbose -EnableStaticTileDB
+      & "$env:BUILD_SOURCESDIRECTORY\bootstrap.ps1" -EnableVerbose -EnableStaticTileDB
     }
 
     if ($LastExitCode -ne 0) {
