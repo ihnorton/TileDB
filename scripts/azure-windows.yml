@@ -6,15 +6,18 @@
 #  TILEDB_S3: false
 
 steps:
-- powershell: | 
+- powershell: |
     mkdir build
 
     cd build
 
-    if ($env:APPVEYOR_BUILD_WORKER_IMAGE -eq "Visual Studio 2015") {
+    if ($env:imageName -eq "vs2015-win2012r2") {
       $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin"
-    } else {
+    } elsef ($env:imageName -eq "vs2017-win2016") {
       $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin"
+    } else {
+      Write-Host "Unknown image name: '$($env:imageName)'"
+      $host.SetShouldExit(1)
     }
 
     if ($env:TILEDB_S3 -eq "true") {
@@ -39,7 +42,7 @@ steps:
 
 test_script:
 - powershell:
-    cd $env:APPVEYOR_BUILD_FOLDER\build\tiledb
+    cd "$env:AGENT_BUILDDIRECTORY\build\tiledb"
 
     cmake --build . --target check --config Release -- /verbosity:minimal
 
@@ -62,7 +65,7 @@ test_script:
        $host.SetShouldExit($LastExitCode)
     }
 
-    $env:Path += ";$env:APPVEYOR_BUILD_FOLDER\dist\bin;..\externals\install\bin"
+    $env:Path += ";$env:AGEND_BUILDDIRECTORY\dist\bin;..\externals\install\bin"
 
     try {
       .\examples\c_api\Release\quickstart_dense_c.exe
@@ -90,13 +93,13 @@ test_script:
        $host.SetShouldExit($LastExitCode)
     }
 
-    cd $env:APPVEYOR_BUILD_FOLDER\examples\cmake_project
+    cd "$env:AGENT_BUILDDIRECTORY\examples\cmake_project"
 
     mkdir build
 
     cd build
 
-    cmake -A X64 -DCMAKE_PREFIX_PATH=$env:APPVEYOR_BUILD_FOLDER\dist ..
+    cmake -A X64 -DCMAKE_PREFIX_PATH="$env:AGENT_BUILDDIRECTORY\dist" ..
 
     cmake --build . --config Release -- /verbosity:minimal
 
@@ -113,19 +116,10 @@ test_script:
     cd dist
 
     7z a tiledb-windows-x64.zip tiledb-windows-x64
+
   displayName: "Test"
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: build\dist\tiledb-windows-x64.zip '$(Build.ArtifactStagingDirectory)'
-    artifactName: drop
-
-for:
--
-  branches:
-    only:
-      - master
-      - dev
-  artifacts:
-  - path: 
-    name: tiledb-windows-x64.zip
+    pathtoPublish: '$env:AGENT_BUILDDIRECTORY\build\dist\tiledb-windows-x64.zip'
+    artifactName: tiledb-windows-x64.zip
