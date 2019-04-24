@@ -1,0 +1,131 @@
+#version: '{build}'
+#image:
+#- Visual Studio 2017
+#- Visual Studio 2015
+#environment:
+#  TILEDB_S3: false
+
+steps:
+- powershell: | 
+    mkdir build
+
+    cd build
+
+    if ($env:APPVEYOR_BUILD_WORKER_IMAGE -eq "Visual Studio 2015") {
+      $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin"
+    } else {
+      $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin"
+    }
+
+    if ($env:TILEDB_S3 -eq "true") {
+      ..\bootstrap.ps1 -EnableS3 -EnableVerbose -EnableStaticTileDB
+      ..\scripts\install-minio.ps1
+    } else {
+      ..\bootstrap.ps1 -EnableVerbose -EnableStaticTileDB
+    }
+
+    if ($LastExitCode -ne 0) {
+       Write-Host "Bootstrap failed."
+       $host.SetShouldExit($LastExitCode)
+    }
+
+    cmake --build . --config Release -- /verbosity:minimal
+
+    if ($LastExitCode -ne 0) {
+       Write-Host "Build failed."
+       $host.SetShouldExit($LastExitCode)
+    }
+  displayName: "Build"
+
+test_script:
+- powershell:
+    cd $env:APPVEYOR_BUILD_FOLDER\build\tiledb
+
+    cmake --build . --target check --config Release -- /verbosity:minimal
+
+    if ($LastExitCode -ne 0) {
+       Write-Host "Tests failed."
+       $host.SetShouldExit($LastExitCode)
+    }
+
+    cmake --build . --target examples --config Release -- /verbosity:minimal
+
+    if ($LastExitCode -ne 0) {
+       Write-Host "Examples failed to build."
+       $host.SetShouldExit($LastExitCode)
+    }
+
+    cmake --build . --target install --config Release
+
+    if ($LastExitCode -ne 0) {
+       Write-Host "Installation failed."
+       $host.SetShouldExit($LastExitCode)
+    }
+
+    $env:Path += ";$env:APPVEYOR_BUILD_FOLDER\dist\bin;..\externals\install\bin"
+
+    try {
+      .\examples\c_api\Release\quickstart_dense_c.exe
+    } catch {
+       Write-Host "C API example failed."
+       $host.SetShouldExit(1)
+    }
+
+    if ($LastExitCode -ne 0) {
+       Write-Host "C API example failed."
+       $host.SetShouldExit($LastExitCode)
+    }
+
+    rm -Recurse -Force quickstart_dense
+
+    try {
+      .\examples\cpp_api\Release\quickstart_dense_cpp.exe
+    } catch {
+       Write-Host "C++ API example failed."
+       $host.SetShouldExit(1)
+    }
+
+    if ($LastExitCode -ne 0) {
+       Write-Host "C++ API example failed."
+       $host.SetShouldExit($LastExitCode)
+    }
+
+    cd $env:APPVEYOR_BUILD_FOLDER\examples\cmake_project
+
+    mkdir build
+
+    cd build
+
+    cmake -A X64 -DCMAKE_PREFIX_PATH=$env:APPVEYOR_BUILD_FOLDER\dist ..
+
+    cmake --build . --config Release -- /verbosity:minimal
+
+    .\Release\ExampleExe.exe
+
+    .\Release\ExampleExe_static.exe
+
+    cd $env:APPVEYOR_BUILD_FOLDER\build
+
+    mkdir dist
+
+    mv ..\dist dist\tiledb-windows-x64
+
+    cd dist
+
+    7z a tiledb-windows-x64.zip tiledb-windows-x64
+  displayName: "Test"
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: build\dist\tiledb-windows-x64.zip '$(Build.ArtifactStagingDirectory)'
+    artifactName: drop
+
+for:
+-
+  branches:
+    only:
+      - master
+      - dev
+  artifacts:
+  - path: 
+    name: tiledb-windows-x64.zip
