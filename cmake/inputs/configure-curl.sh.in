@@ -3,6 +3,7 @@
 # Script that will run curl's configure script after setting the
 # LIBS environment variable. This is used by CMake at build time,
 # which will expand all of the @VAR@ variables.
+set -x
 
 export LIBS="@TILEDB_CURL_LIBS@"
 $@
