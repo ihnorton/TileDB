@@ -193,17 +193,16 @@ function passwordless_ssh {
   ssh-keyscan -H localhost >> ~/.ssh/known_hosts
   ssh-keyscan -H 127.0.0.1 >> ~/.ssh/known_hosts
   ssh-keyscan -H 0.0.0.0 >> ~/.ssh/known_hosts
-  chmod go-w ~/
   sudo service ssh restart || die "error restarting ssh service"
 }
 
 function run {
   update_apt_repo || die "error updating apt-repo"
-  passwordless_ssh || die "error setting up passwordless ssh"
   install_java || die "error installing java"
   create_hadoop_user || die "error creating hadoop user"
   install_hadoop || die "error installing hadoop"
   setup_environment || die "error setting up environment"
+  passwordless_ssh || die "error setting up passwordless ssh"
 }
 
 run

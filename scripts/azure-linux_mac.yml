@@ -6,19 +6,16 @@ steps:
     echo "%%%%%%%%%% Azure env"
     env
     echo "####################"
-    cat <<EOF
-      error() {
-        echo "ERROR: '$1' --- '$2'"
-        echo "$3"
-      }
-    trap 'error "${BASH_SOURCE}" "${LINENO}" "${BASH_COMMAND}"' ERR
-    EOF | sudo tee -e /etc/profile
   displayName: 'Echo and set up azure environment'
 
 # Need this for virtualenv
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '3.x'
+
+- bash: |
+    git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
+  displayName: 'Clone Unit-Test-Arrays'
 
 - bash: |
     # Start HDFS server if enabled
@@ -38,11 +35,6 @@ steps:
       source scripts/run-minio.sh;
     fi
   displayName: 'Install and start servers {HDFS|minio}'
-
-
-- bash: |
-    git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
-  displayName: 'Clone Unit-Test-Arrays'
 
 - bash: |
     if [[ "$AGENT_OS" == "Linux" ]]; then
@@ -93,6 +85,18 @@ steps:
     make examples -j4
     make -C tiledb install
   displayName: 'Build libtiledb'
+
+- bash: |
+    # Dump log files if the build failed
+    echo "Dumping log files"
+    for f in $(find $BUILD_REPOSITORY_LOCALPATH/build -name *.log);
+      do echo "-------"
+         echo $f
+         echo "======="
+         cat $f
+      done;
+  condition: failed() # only run this job if the build step failed
+  displayName: "Print log files (failed build only)"
 
 - bash: |
     python -m pip install --upgrade pip virtualenv
