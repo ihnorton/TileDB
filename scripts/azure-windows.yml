@@ -40,7 +40,7 @@ steps:
   displayName: "Build"
 
 - powershell:
-    cd $env:BUILD_SOURCESDIRECTORY\build\tiledb
+    cd $env:AGENT_BUILDDIRECTORY\build\tiledb
 
     cmake --build . --target check --config Release -- /verbosity:minimal
 
@@ -92,10 +92,13 @@ steps:
     }
 
     # Build examples
-    cd $env:BUILD_SOURCESDIRECTORY\examples\cmake_project
+    cd $env:AGENT_BUILDDIRECTORY\examples\cmake_project
+
     mkdir build
+
     cd build
 
+    # Build zip artifact
     cmake -A X64 -DCMAKE_PREFIX_PATH="$env:AGENT_BUILDDIRECTORY\dist" ..
 
     cmake --build . --config Release -- /verbosity:minimal
