@@ -2,7 +2,7 @@ trigger:
 - ihn/az_ci_asan
 
 jobs:
-- job: Unix
+- job:
   strategy:
     matrix:
       linux:
@@ -19,7 +19,7 @@ jobs:
         TILEDB_HDFS: ON
         CXX: g++
         SHELLOPTS: errexit
-      osx:
+      macOS:
         imageName: 'macOS-10.13'
         TILEDB_S3: ON
         TILEDB_DEBUG: ON
@@ -32,7 +32,7 @@ jobs:
   - template: scripts/azure-linux_mac.yml
 
 - job: Windows
-  strategy: 
+  strategy:
     matrix:
       VS2015:
         imageName: 'vs2015-win2012r2'
