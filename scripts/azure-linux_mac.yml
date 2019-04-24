@@ -114,6 +114,12 @@ steps:
     cd $BUILD_REPOSITORY_LOCALPATH/build
     ls -la
     printenv
+
+    if [[ ( "$AGENT_OS" == "Linux" && "$TILEDB_S3" == "ON" ) ]]; then
+      # make sure docker is still running...
+      docker ps -a
+    fi
+
     make check
   displayName: 'Run tests ("make check")'
 
