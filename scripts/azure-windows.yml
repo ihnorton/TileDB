@@ -39,7 +39,7 @@ steps:
     }
   displayName: "Build"
 
-- powershell:
+- powershell: |
     cd $env:AGENT_BUILDDIRECTORY\build\tiledb
 
     cmake --build . --target check --config Release -- /verbosity:minimal
