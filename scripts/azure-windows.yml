@@ -40,7 +40,6 @@ steps:
     }
   displayName: "Build"
 
-test_script:
 - powershell:
     cd "$env:AGENT_BUILDDIRECTORY\build\tiledb"
 
@@ -123,3 +122,4 @@ test_script:
   inputs:
     pathtoPublish: '$env:AGENT_BUILDDIRECTORY\build\dist\tiledb-windows-x64.zip'
     artifactName: tiledb-windows-x64.zip
+  condition: succeeded()
