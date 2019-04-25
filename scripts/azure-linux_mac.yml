@@ -5,16 +5,15 @@ steps:
     echo "####################"
   displayName: 'Echo and set up azure environment'
 
-# Need this for virtualenv
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'
-
 - bash: |
-      cd $BUILD_REPOSITORY_LOCALPATH/build
-      make check-format
-    condition: eq(variables['Agent.OS'], 'Linux')
-    displayName: 'Formatting ("make check-format", linux only)'
+    # libpng (example dependency)
+    sudo apt-get install libpng-dev
+    # Install clangformat (v5.0)
+    sudo scripts/install-clangformat.sh
+    cd $BUILD_REPOSITORY_LOCALPATH/build
+    make check-format
+  condition: eq(variables['Agent.OS'], 'Linux')
+  displayName: 'Formatting ("make check-format", linux only)'
 
 - bash: |
     set -e pipefail
@@ -40,15 +39,6 @@ steps:
       source scripts/run-minio.sh;
     fi
     # displayName: 'Install and start servers {HDFS|minio}'
-
-    # - bash: |
-    if [[ "$AGENT_OS" == "Linux" ]]; then
-      # Install clangformat (v5.0)
-      sudo scripts/install-clangformat.sh
-      # Install doxygen
-      # Install libpng for the PNG ingestion example.
-      sudo apt-get install libpng-dev doxygen
-    fi
 
     # Set up arguments for bootstrap.sh
     bootstrap_args="--enable=verbose,static-tiledb";
@@ -169,9 +159,16 @@ steps:
   condition: failed() # only run this job if the build step failed
   displayName: "Print log files (failed build only)"
 
+# Need this for virtualenv
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
 
 - bash: |
     python -m pip install --upgrade pip virtualenv
+    # Install doxygen
+    sudo apt-get install doxygen
+
     # Build the documentation (this does not deploy to RTD).
     pushd $BUILD_REPOSITORY_LOCALPATH/doc;
     ./local-build.sh;
