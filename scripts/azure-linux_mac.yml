@@ -12,9 +12,9 @@ steps:
 
 - bash: |
     git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
-  #   displayName: 'Clone Unit-Test-Arrays'
+    #   displayName: 'Clone Unit-Test-Arrays'
 
-  # - bash: |
+    # - bash: |
     # Start HDFS server if enabled
     if [[ "$TILEDB_HDFS" == "ON" ]]; then
       # - ssh to localhost is required for HDFS launch...
@@ -31,9 +31,9 @@ steps:
       source scripts/install-minio.sh;
       source scripts/run-minio.sh;
     fi
-  # displayName: 'Install and start servers {HDFS|minio}'
+    # displayName: 'Install and start servers {HDFS|minio}'
 
-  # - bash: |
+    # - bash: |
     if [[ "$AGENT_OS" == "Linux" ]]; then
       # Install clangformat (v5.0)
       sudo scripts/install-clangformat.sh
@@ -59,9 +59,9 @@ steps:
     if [[ "$TILEDB_DEBUG" == "ON" ]]; then
       bootstrap_args="${bootstrap_args} --enable-debug";
     fi
-  # displayName: 'Install dependencies'
+    # displayName: 'Install dependencies'
 
-  # - bash: |
+    # - bash: |
     # Set up arguments for bootstrap.sh
     bootstrap_args="--enable=verbose,static-tiledb";
     if [[ "$TILEDB_HDFS" == "ON" ]]; then
@@ -83,24 +83,24 @@ steps:
     make -j4
     make examples -j4
     make -C tiledb install
-  # displayName: 'Build libtiledb'
+    # displayName: 'Build libtiledb'
 
-  # - bash: |
+    # - bash: |
     python -m pip install --upgrade pip virtualenv
     # Build the documentation (this does not deploy to RTD).
     pushd $BUILD_REPOSITORY_LOCALPATH/doc;
     ./local-build.sh;
     popd;
-  #condition: eq(variables['Agent.OS'], 'Linux')
-  #displayName: 'Build docs (no deployment)'
+    #condition: eq(variables['Agent.OS'], 'Linux')
+    #displayName: 'Build docs (no deployment)'
 
-  #- bash: |
-    cd $BUILD_REPOSITORY_LOCALPATH/build
-    make check-format
-  #condition: eq(variables['Agent.OS'], 'Linux')
-  #displayName: 'Formatting ("make check-format", linux only)'
+    #- bash: |
+      cd $BUILD_REPOSITORY_LOCALPATH/build
+      make check-format
+    #condition: eq(variables['Agent.OS'], 'Linux')
+    #displayName: 'Formatting ("make check-format", linux only)'
 
-  #- bash: |
+    #- bash: |
     cd $BUILD_REPOSITORY_LOCALPATH/build
     ls -la
     printenv
@@ -111,9 +111,9 @@ steps:
     fi
 
     make check
-  #  displayName: 'Run tests ("make check")'
+    #  displayName: 'Run tests ("make check")'
 
-  # - bash: |
+    # - bash: |
     pushd $BUILD_REPOSITORY_LOCALPATH/examples/cmake_project
     mkdir build && cd build
     cmake -DCMAKE_PREFIX_PATH=$BUILD_REPOSITORY_LOCALPATH/dist .. && make
@@ -160,7 +160,7 @@ steps:
     $CXX -std=c++11 -g -O0 -Wall -Werror -I$BUILD_REPOSITORY_LOCALPATH/dist/include -L$BUILD_REPOSITORY_LOCALPATH/dist/lib $testfile -o $testfile.exe -ltiledb && \
     $testfile.exe && \
     rm -f $testfile $testfile.exe
-  #  displayName: 'Build examples, PNG test, and benchmarks (build-only)'
+    #  displayName: 'Build examples, PNG test, and benchmarks (build-only)'
 
 - bash: |
     # Display log files if the build failed
