@@ -6,9 +6,13 @@ steps:
   displayName: 'Echo and set up azure environment'
 
 - bash: |
-    # Must install doxygen *before running cmake*
+    # check-format dependencies must be installed *before running cmake*
+    # Install clangformat (v5.0)
+    sudo scripts/install-clangformat.sh
+    # Install doxygen
     sudo apt-get install doxygen
   condition: eq(variables['Agent.OS'], 'Linux')
+  displayName: 'Install doxygen'
 
 - bash: |
     set -e pipefail
@@ -160,8 +164,6 @@ steps:
 
 
 - bash: |
-    # Install clangformat (v5.0)
-    sudo scripts/install-clangformat.sh
     cd $BUILD_REPOSITORY_LOCALPATH/build
     make check-format
   condition: eq(variables['Agent.OS'], 'Linux')
