@@ -64,6 +64,16 @@ steps:
     }
 
     $env:Path += ";$env:AGENT_BUILDDIRECTORY\dist\bin;$env:AGENT_BUILDDIRECTORY\build\externals\install\bin"
+ 
+    Write-Host "Foo1"
+
+    Write-Host $env:Path
+
+    Write-Host "Foo2"
+
+    $env:path.split(';') | ForEach-Object {
+      ls -r $_
+    }
 
     try {
        .\examples\c_api\Release\quickstart_dense_c.exe
@@ -74,7 +84,9 @@ steps:
     }
 
     if ($LastExitCode -ne 0) {
-       $host.SetShouldExit($LastExitCode)
+      Write-Host "C API example failed."
+      Write-Host $_
+      $host.SetShouldExit($LastExitCode)
     }
 
     rm -Recurse -Force quickstart_dense_array
