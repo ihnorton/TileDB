@@ -1,4 +1,4 @@
-Lsteps:
+steps:
 - bash: |
     echo "%%%%%%%%%% Azure env"
     env
