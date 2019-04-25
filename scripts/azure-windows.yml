@@ -77,7 +77,7 @@ steps:
        $host.SetShouldExit($LastExitCode)
     }
 
-    rm -Recurse -Force quickstart_dense
+    rm -Recurse -Force quickstart_dense_array
 
     try {
       .\examples\cpp_api\Release\quickstart_dense_cpp.exe

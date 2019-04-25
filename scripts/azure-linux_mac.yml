@@ -11,6 +11,8 @@ steps:
     versionSpec: '3.x'
 
 - bash: |
+    set -e pipefail
+
     git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
     #   displayName: 'Clone Unit-Test-Arrays'
 
@@ -41,7 +43,7 @@ steps:
       # Install libpng for the PNG ingestion example.
       sudo apt-get install libpng-dev doxygen
     fi
-    
+
     # Set up arguments for bootstrap.sh
     bootstrap_args="--enable=verbose,static-tiledb";
     if [[ "$TILEDB_HDFS" == "ON" ]]; then
