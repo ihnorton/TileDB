@@ -6,16 +6,6 @@ steps:
   displayName: 'Echo and set up azure environment'
 
 - bash: |
-    # libpng (example dependency)
-    sudo apt-get install libpng-dev
-    # Install clangformat (v5.0)
-    sudo scripts/install-clangformat.sh
-    cd $BUILD_REPOSITORY_LOCALPATH/build
-    make check-format
-  condition: eq(variables['Agent.OS'], 'Linux')
-  displayName: 'Formatting ("make check-format", linux only)'
-
-- bash: |
     set -e pipefail
 
     git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
@@ -104,6 +94,9 @@ steps:
     popd
     # Build and run the PNG ingestion example.
     if [[ "$AGENT_OS" == "Linux" ]]; then
+      # libpng (example dependency)
+      sudo apt-get install libpng-dev
+
       pushd $BUILD_REPOSITORY_LOCALPATH/examples/png_ingestion;
       mkdir build && cd build;
       cmake -DCMAKE_PREFIX_PATH=$BUILD_REPOSITORY_LOCALPATH/dist .. && make;
@@ -158,6 +151,16 @@ steps:
       done;
   condition: failed() # only run this job if the build step failed
   displayName: "Print log files (failed build only)"
+
+
+- bash: |
+    # Install clangformat (v5.0)
+    sudo scripts/install-clangformat.sh
+    cd $BUILD_REPOSITORY_LOCALPATH/build
+    make check-format
+  condition: eq(variables['Agent.OS'], 'Linux')
+  displayName: 'Formatting ("make check-format", linux only)'
+
 
 # Need this for virtualenv
 - task: UsePythonVersion@0
