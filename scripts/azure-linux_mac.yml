@@ -102,8 +102,6 @@ steps:
 
     make check
     # run it again here to make sure invocaton says in sync
-    make check-format
-    #  displayName: 'Run tests ("make check")'
     
     # - bash: |
     pushd $BUILD_REPOSITORY_LOCALPATH/examples/cmake_project
