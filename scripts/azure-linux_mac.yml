@@ -1,4 +1,4 @@
-steps:
+Lsteps:
 - bash: |
     echo "%%%%%%%%%% Azure env"
     env
@@ -6,15 +6,27 @@ steps:
   displayName: 'Echo and set up azure environment'
 
 - bash: |
-    # check-format dependencies must be installed *before running cmake*
-    # Install clangformat (v5.0)
-    sudo scripts/install-clangformat.sh
-    # Install doxygen
+    # Install doxygen *before* running cmake
     sudo apt-get install doxygen
   condition: eq(variables['Agent.OS'], 'Linux')
-  displayName: 'Install doxygen'
+  displayName: 'Install doxygen (linux only)'
+
 
 - bash: |
+    # Install clang-format (v5.0)
+    sudo scripts/install-clangformat.sh
+    src=$BUILD_REPOSITORY_LOCALPATH
+    cd $src
+    $src/scripts/run-clang-format.sh $src clang-format-5.0 0 \
+      `find $src/tiledb $src/test/src $src/examples $src/tools
+       -name "*.cc" -or -name "*.c" -or -name "*.h"`
+  condition: eq(variables['Agent.OS'], 'Linux')
+  displayName: 'Check formatting (linux only)'
+
+
+- bash: |
+    # azure bash does not fail on error
+    # https://github.com/Microsoft/azure-pipelines-yaml/issues/135
     set -e pipefail
 
     git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
@@ -93,6 +105,7 @@ steps:
     fi
 
     make check
+    make check-format
     #  displayName: 'Run tests ("make check")'
     
     # - bash: |
@@ -161,13 +174,6 @@ steps:
       done;
   condition: failed() # only run this job if the build step failed
   displayName: "Print log files (failed build only)"
-
-
-- bash: |
-    cd $BUILD_REPOSITORY_LOCALPATH/build
-    make check-format
-  condition: eq(variables['Agent.OS'], 'Linux')
-  displayName: 'check-format (linux only)'
 
 
 # Need this for virtualenv
