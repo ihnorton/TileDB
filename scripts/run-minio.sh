@@ -32,6 +32,9 @@ die() {
 }
 
 run_cask_minio() {
+  export MINIO_ACCESS_KEY=minio
+  export MINIO_SECRET_KEY=miniosecretkey
+
   minio server --address localhost:9999 /tmp/minio-data &
   [[ "$?" -eq "0" ]] || die "could not run minio server"
 }
@@ -46,8 +49,6 @@ run_docker_minio() {
 export_aws_keys() {
   export AWS_ACCESS_KEY_ID=minio
   export AWS_SECRET_ACCESS_KEY=miniosecretkey
-  export MINIO_ACCESS_KEY=$AWS_ACCESS_KEY
-  export MINIO_SECRET_KEY=$AWS_SECRET_ACCESS_KEY
 }
 
 run() {
