@@ -32,7 +32,7 @@ die() {
 }
 
 run_cask_minio() {
-  minio server /tmp/minio-data &
+  minio server --address localhost:9999 /tmp/minio-data &
   [[ "$?" -eq "0" ]] || die "could not run minio server"
 }
 
