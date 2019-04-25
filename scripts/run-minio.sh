@@ -56,10 +56,10 @@ super_export() {
 }
 
 export_aws_keys() {
-  super_export AWS_ACCESS_KEY_ID minio
-  super_export AWS_SECRET_ACCESS_KEY_ID miniosecretkey
-  super_export MINIO_ACCESS_KEY minio
-  super_export MINIO_SECRET_KEY miniosecretkey
+  export AWS_ACCESS_KEY_ID=minio
+  export AWS_SECRET_ACCESS_KEY_ID=miniosecretkey
+  export MINIO_ACCESS_KEY=minio
+  export MINIO_SECRET_KEY=miniosecretkey
 }
 
 run() {

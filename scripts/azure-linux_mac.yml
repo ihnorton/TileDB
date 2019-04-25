@@ -11,6 +11,12 @@ steps:
     versionSpec: '3.x'
 
 - bash: |
+      cd $BUILD_REPOSITORY_LOCALPATH/build
+      make check-format
+    condition: eq(variables['Agent.OS'], 'Linux')
+    displayName: 'Formatting ("make check-format", linux only)'
+
+- bash: |
     set -e pipefail
 
     git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git test/inputs/arrays/read_compatibility_test
@@ -85,7 +91,6 @@ steps:
     make -j4
     make examples -j4
     make -C tiledb install
-    # displayName: 'Build libtiledb'
 
     #- bash: |
     cd $BUILD_REPOSITORY_LOCALPATH/build
@@ -99,7 +104,7 @@ steps:
 
     make check
     #  displayName: 'Run tests ("make check")'
-
+    
     # - bash: |
     pushd $BUILD_REPOSITORY_LOCALPATH/examples/cmake_project
     mkdir build && cd build
@@ -148,6 +153,7 @@ steps:
     $testfile.exe && \
     rm -f $testfile $testfile.exe
     #  displayName: 'Build examples, PNG test, and benchmarks (build-only)'
+    displayName: 'Build libtiledb'
 
 
 - bash: |
@@ -172,10 +178,3 @@ steps:
     popd;
     condition: eq(variables['Agent.OS'], 'Linux')
     displayName: 'Build docs (no deployment)'
-
-
-- bash: |
-      cd $BUILD_REPOSITORY_LOCALPATH/build
-      make check-format
-    condition: eq(variables['Agent.OS'], 'Linux')
-    displayName: 'Formatting ("make check-format", linux only)'
