@@ -32,7 +32,8 @@ die() {
 }
 
 run_cask_minio() {
-  minio server /tmp/minio-data & || die "could not run minio server"
+  nohup minio server /tmp/minio-data &
+  [[ "$?" -eq "0" ]] || die "could not run minio server"
 }
 
 run_docker_minio() {
