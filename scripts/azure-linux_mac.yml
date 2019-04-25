@@ -1,11 +1,6 @@
 steps:
 - bash: |
-    echo "%%%%%%%%%% Azure env"
-    env
-    echo "####################"
-  displayName: 'Echo and set up azure environment'
-
-- bash: |
+    set -e pipefail
     # Install doxygen *before* running cmake
     sudo apt-get install doxygen
   condition: eq(variables['Agent.OS'], 'Linux')
@@ -13,6 +8,7 @@ steps:
 
 
 - bash: |
+    set -e pipefail
     # Install clang-format (v5.0)
     sudo scripts/install-clangformat.sh
     src=$BUILD_REPOSITORY_LOCALPATH
@@ -25,7 +21,7 @@ steps:
 
 
 - bash: |
-    # azure bash does not fail on error
+    # azure bash does not treat intermediate failure as error
     # https://github.com/Microsoft/azure-pipelines-yaml/issues/135
     set -e pipefail
 
@@ -105,6 +101,7 @@ steps:
     fi
 
     make check
+    # run it again here to make sure invocaton says in sync
     make check-format
     #  displayName: 'Run tests ("make check")'
     
@@ -158,11 +155,14 @@ steps:
     $CXX -std=c++11 -g -O0 -Wall -Werror -I$BUILD_REPOSITORY_LOCALPATH/dist/include -L$BUILD_REPOSITORY_LOCALPATH/dist/lib $testfile -o $testfile.exe -ltiledb && \
     $testfile.exe && \
     rm -f $testfile $testfile.exe
+
+    ps -U $(whoami) -o comm= | sort | uniq
     #  displayName: 'Build examples, PNG test, and benchmarks (build-only)'
   displayName: 'Build and test libtiledb'
 
 
 - bash: |
+    set -e pipefail
     # Display log files if the build failed
     echo "Dumping log files for failed build"
     echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
@@ -182,6 +182,7 @@ steps:
     versionSpec: '3.x'
 
 - bash: |
+    set -e pipefail
     python -m pip install --upgrade pip virtualenv
 
     # Build the documentation (this does not deploy to RTD).
