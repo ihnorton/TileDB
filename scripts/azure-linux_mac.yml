@@ -146,7 +146,7 @@ steps:
     $testfile.exe && \
     rm -f $testfile $testfile.exe
     #  displayName: 'Build examples, PNG test, and benchmarks (build-only)'
-  displayName: 'Build libtiledb'
+  displayName: 'Build and test libtiledb'
 
 
 - bash: |

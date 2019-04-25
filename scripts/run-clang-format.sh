@@ -31,6 +31,10 @@ shift
 # the source tree or in a path relative to the source tree
 pushd $SOURCE_DIR
 
+echo "Args: '$SOURCE_DIR'  '$CLANG_FORMAT'  '$APPLY_FIXES'"
+echo "In directory:"
+echo `pwd`
+
 if [ "$APPLY_FIXES" == "1" ]; then
   $CLANG_FORMAT -i $@
 
