@@ -6,9 +6,9 @@ steps:
   displayName: 'Echo and set up azure environment'
 
 - bash: |
-    # Install doxygen *before running cmake*
+    # Must install doxygen *before running cmake*
     sudo apt-get install doxygen
-    condition: eq(variables['Agent.OS'], 'Linux')
+  condition: eq(variables['Agent.OS'], 'Linux')
 
 - bash: |
     set -e pipefail
