@@ -66,7 +66,7 @@ steps:
     $env:Path += ";$env:AGENT_BUILDDIRECTORY\dist\bin;$env:AGENT_BUILDDIRECTORY\externals\install\bin"
 
     try {
-       & "$env:AGENT_BUILDDIRECTORY\examples\c_api\Release\quickstart_dense_c.exe"
+       .\examples\c_api\Release\quickstart_dense_c.exe
     } catch {
        Write-Host "C API example failed."
        $host.SetShouldExit(1)

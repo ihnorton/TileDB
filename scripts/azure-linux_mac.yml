@@ -50,6 +50,9 @@ steps:
     fi;
     if [[ "$TILEDB_S3" == "ON" ]]; then
       bootstrap_args="${bootstrap_args} --enable-s3";
+      # system libcurl on ubuntu 16.04 is linked against libssl1.0
+      # probably good to have one test doing full bootstrap anyway.
+      bootstrap_args="${bootstrap_args} --force-build-all-deps";
     fi;
     if [[ "$TILEDB_TBB" == "OFF" ]]; then
       bootstrap_args="${bootstrap_args} --disable-tbb";
@@ -85,11 +88,12 @@ steps:
 
 - bash: |
     # Dump log files if the build failed
-    echo "Dumping log files"
+    echo "Dumping log files for failed build"
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     for f in $(find $BUILD_REPOSITORY_LOCALPATH/build -name *.log);
-      do echo "-------"
+      do echo "------"
          echo $f
-         echo "======="
+         echo "======"
          cat $f
       done;
   condition: failed() # only run this job if the build step failed
