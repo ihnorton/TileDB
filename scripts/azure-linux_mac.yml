@@ -167,7 +167,7 @@ steps:
     cd $BUILD_REPOSITORY_LOCALPATH/build
     make check-format
   condition: eq(variables['Agent.OS'], 'Linux')
-  displayName: 'Formatting ("make check-format", linux only)'
+  displayName: 'check-format (linux only)'
 
 
 # Need this for virtualenv

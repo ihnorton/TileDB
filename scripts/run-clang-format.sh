@@ -19,7 +19,6 @@
 #   $3 - Apply fixes (will raise an error if false and not there where changes)
 #   $ARGN - Files to run clang format on
 #
-set -x
 
 SOURCE_DIR=$1
 shift
