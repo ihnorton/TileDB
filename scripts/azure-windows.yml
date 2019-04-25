@@ -63,17 +63,17 @@ steps:
        $host.SetShouldExit($LastExitCode)
     }
 
-    $env:Path += ";$env:AGENT_BUILDDIRECTORY\dist\bin;$env:AGENT_BUILDDIRECTORY\externals\install\bin"
+    $env:Path += ";$($env:AGENT_BUILDDIRECTORY\dist\bin;$env:AGENT_BUILDDIRECTORY\build\externals\install\bin"
 
     try {
        .\examples\c_api\Release\quickstart_dense_c.exe
     } catch {
-       Write-Host "C API example failed."
+       Write-Host "C API example failed. Error:"
+       Write-Host $_
        $host.SetShouldExit(1)
     }
 
     if ($LastExitCode -ne 0) {
-       Write-Host "C API example failed."
        $host.SetShouldExit($LastExitCode)
     }
 
