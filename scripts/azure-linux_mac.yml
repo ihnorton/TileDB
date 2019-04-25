@@ -87,21 +87,6 @@ steps:
     make -C tiledb install
     # displayName: 'Build libtiledb'
 
-    # - bash: |
-    python -m pip install --upgrade pip virtualenv
-    # Build the documentation (this does not deploy to RTD).
-    pushd $BUILD_REPOSITORY_LOCALPATH/doc;
-    ./local-build.sh;
-    popd;
-    #condition: eq(variables['Agent.OS'], 'Linux')
-    #displayName: 'Build docs (no deployment)'
-
-    #- bash: |
-      cd $BUILD_REPOSITORY_LOCALPATH/build
-      make check-format
-    #condition: eq(variables['Agent.OS'], 'Linux')
-    #displayName: 'Formatting ("make check-format", linux only)'
-
     #- bash: |
     cd $BUILD_REPOSITORY_LOCALPATH/build
     ls -la
@@ -164,6 +149,7 @@ steps:
     rm -f $testfile $testfile.exe
     #  displayName: 'Build examples, PNG test, and benchmarks (build-only)'
 
+
 - bash: |
     # Display log files if the build failed
     echo "Dumping log files for failed build"
@@ -178,3 +164,18 @@ steps:
   displayName: "Print log files (failed build only)"
 
 
+- bash: |
+    python -m pip install --upgrade pip virtualenv
+    # Build the documentation (this does not deploy to RTD).
+    pushd $BUILD_REPOSITORY_LOCALPATH/doc;
+    ./local-build.sh;
+    popd;
+    condition: eq(variables['Agent.OS'], 'Linux')
+    displayName: 'Build docs (no deployment)'
+
+
+- bash: |
+      cd $BUILD_REPOSITORY_LOCALPATH/build
+      make check-format
+    condition: eq(variables['Agent.OS'], 'Linux')
+    displayName: 'Formatting ("make check-format", linux only)'

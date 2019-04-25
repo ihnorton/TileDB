@@ -72,7 +72,7 @@ steps:
     Write-Host "Foo2"
 
     $env:path.split(';') | ForEach-Object {
-      ls -r $_
+      ls $_
     }
 
     try {
