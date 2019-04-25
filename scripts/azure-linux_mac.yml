@@ -79,6 +79,7 @@ steps:
 
     if [[ ( "$AGENT_OS" == "Linux" && "$TILEDB_S3" == "ON" ) ]]; then
       # make sure docker is still running...
+      printenv
       docker ps -a
     fi
 

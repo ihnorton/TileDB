@@ -32,6 +32,10 @@ die() {
 }
 
 run_cask_minio() {
+  export AWS_ACCESS_KEY_ID=minio
+  export AWS_SECRET_ACCESS_KEY=miniosecretkey
+  export MINIO_ACCESS_KEY=$AWS_ACCESS_KEY
+  export MINIO_SECRET_KEY=$AWS_SECRET_ACCESS_KEY
   nohup minio server /tmp/minio-data &
   [[ "$?" -eq "0" ]] || die "could not run minio server"
 }
@@ -58,17 +62,15 @@ super_export() {
 export_aws_keys() {
   export AWS_ACCESS_KEY_ID=minio
   export AWS_SECRET_ACCESS_KEY_ID=miniosecretkey
-  export MINIO_ACCESS_KEY=minio
-  export MINIO_SECRET_KEY=miniosecretkey
 }
 
 run() {
-  export_aws_keys
   if [[ "$AGENT_OS" == "Darwin" ]]; then
     run_cask_minio
   else
     run_docker_minio
   fi
+  export_aws_keys
 }
 
 run
