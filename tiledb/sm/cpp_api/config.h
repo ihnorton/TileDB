@@ -368,6 +368,9 @@ class Config {
    *    The scale factor for exponential backofff when connecting to S3.
    *    Any `long` value is acceptable. <br>
    *    **Default**: 25
+   * - `vfs.s3.logging_level` <br>
+   *    The AWS SDK logging level.
+   *    **Default**: ""
    * - `vfs.s3.request_timeout_ms` <br>
    *    The request timeout in ms. Any `long` value is acceptable. <br>
    *    **Default**: 3000
