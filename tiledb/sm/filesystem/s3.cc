@@ -32,6 +32,7 @@
 
 #ifdef HAVE_S3
 
+#include <aws/core/utils/logging/LogLevel.h>
 #include <aws/s3/model/AbortMultipartUploadRequest.h>
 #include <aws/s3/model/CreateMultipartUploadRequest.h>
 #include <boost/interprocess/streams/bufferstream.hpp>
@@ -48,6 +49,26 @@
 #endif
 
 #include "tiledb/sm/filesystem/s3.h"
+
+namespace {
+
+Aws::Utils::Logging::LogLevel aws_log_name_to_level(std::string loglevel) {
+  if (loglevel == "Fatal")
+    return Aws::Utils::Logging::LogLevel::Fatal;
+  else if (loglevel == "Error")
+    return Aws::Utils::Logging::LogLevel::Error;
+  else if (loglevel == "Warn")
+    return Aws::Utils::Logging::LogLevel::Warn;
+  else if (loglevel == "Info")
+    return Aws::Utils::Logging::LogLevel::Info;
+  else if (loglevel == "Debug")
+    return Aws::Utils::Logging::LogLevel::Debug;
+  else if (loglevel == "Trace")
+    return Aws::Utils::Logging::LogLevel::Trace;
+  else
+    return Aws::Utils::Logging::LogLevel::Off;
+}
+}  // namespace
 
 namespace tiledb {
 namespace sm {
@@ -110,6 +131,12 @@ Status S3::init(
   if (thread_pool == nullptr) {
     return LOG_STATUS(
         Status::S3Error("Can't initialize with null thread pool."));
+  }
+
+  const char* aws_log_var = getenv("TILEDB_AWS_LOGGING");
+  if (aws_log_var != nullptr) {
+    options_.loggingOptions.logLevel =
+        aws_log_name_to_level(std::string(aws_log_var));
   }
 
   // Initialize the library once per process.
