@@ -1,5 +1,9 @@
 steps:
 - bash: |
+    printenv
+  displayName: 'Print Azure environment variables'
+
+- bash: |
     set -e pipefail
     # Install doxygen *before* running cmake
     sudo apt-get install doxygen
