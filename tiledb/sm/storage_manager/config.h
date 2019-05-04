@@ -120,6 +120,7 @@ class Config {
     std::string proxy_password_;
     std::string aws_access_key_id;
     std::string aws_secret_access_key;
+    std::string logging_level_;
 
     S3Params() {
       region_ = constants::s3_region;
@@ -140,6 +141,7 @@ class Config {
       proxy_password_ = constants::s3_proxy_password;
       aws_access_key_id = constants::aws_access_key_id;
       aws_secret_access_key = constants::aws_secret_access_key;
+      logging_level_ = constants::s3_logging_level;
     }
   };
 
@@ -378,6 +380,9 @@ class Config {
    *    The proxy password. Note: this parameter is not serialized by
    *    `tiledb_config_save_to_file`. <br>
    *    **Default**: ""
+   * - `vfs.s3.logging_level` <br>
+   *    The AWS SDK logging level.
+   *    **Default**: ""
    * - `vfs.hdfs.name_node"` <br>
    *    Name node for HDFS. <br>
    *    **Default**: ""
@@ -532,8 +537,11 @@ class Config {
   /** Sets the S3 virtual addressing. */
   Status set_vfs_s3_use_virtual_addressing(const std::string& value);
 
-  /** Sets the S3 virtual addressing. */
+  /** Sets the S3 multipart upload boolean. */
   Status set_vfs_s3_use_multipart_upload(const std::string& value);
+
+  /** Sets the S3 logging level. */
+  Status set_vfs_s3_logging_level(const std::string& value);
 
   /** Sets the maximum number of parallel S3 operations. */
   Status set_vfs_s3_max_parallel_ops(const std::string& value);

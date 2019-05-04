@@ -133,11 +133,8 @@ Status S3::init(
         Status::S3Error("Can't initialize with null thread pool."));
   }
 
-  const char* aws_log_var = getenv("TILEDB_AWS_LOGGING");
-  if (aws_log_var != nullptr) {
-    options_.loggingOptions.logLevel =
-        aws_log_name_to_level(std::string(aws_log_var));
-  }
+  options_.loggingOptions.logLevel =
+      aws_log_name_to_level(s3_config.logging_level_);
 
   // Initialize the library once per process.
   std::call_once(aws_lib_initialized, [this]() { Aws::InitAPI(options_); });
