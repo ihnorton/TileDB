@@ -2,42 +2,70 @@ jobs:
 - job:
   strategy:
     matrix:
-      linux:
+      linux1:
         imageName: 'ubuntu-16.04'
         CXX: g++
-      linux_s3:
+      linux2:
         imageName: 'ubuntu-16.04'
-        TILEDB_S3: ON
         CXX: g++
-      linux_hdfs:
+      linux3:
         imageName: 'ubuntu-16.04'
-        TILEDB_HDFS: ON
         CXX: g++
-      macOS:
-        imageName: 'macOS-10.13'
-        TILEDB_S3: ON
-        CXX: clang++
-      linux_asan:
+      linux4:
         imageName: 'ubuntu-16.04'
-        TILEDB_CI_ASAN: ON
-        TILEDB_TBB: OFF
-        CXX: g++-7
-    maxParallel: 4
+        CXX: g++
+      linux5:
+        imageName: 'ubuntu-16.04'
+        CXX: g++
+      linux6:
+        imageName: 'ubuntu-16.04'
+        CXX: g++
+      linux7:
+        imageName: 'ubuntu-16.04'
+        CXX: g++
+      linux8:
+        imageName: 'ubuntu-16.04'
+        CXX: g++
+      linux9:
+        imageName: 'ubuntu-16.04'
+        CXX: g++
+      linux10:
+        imageName: 'ubuntu-16.04'
+        CXX: g++
+
+  #      linux_s3:
+  #        imageName: 'ubuntu-16.04'
+  #        TILEDB_S3: ON
+  #        CXX: g++
+  #      linux_hdfs:
+  #        imageName: 'ubuntu-16.04'
+  #        TILEDB_HDFS: ON
+  #        CXX: g++
+  #      macOS:
+  #        imageName: 'macOS-10.13'
+  #        TILEDB_S3: ON
+  #        CXX: clang++
+  #      linux_asan:
+  #        imageName: 'ubuntu-16.04'
+  #        TILEDB_CI_ASAN: ON
+  #        TILEDB_TBB: OFF
+  #        CXX: g++-7
+    maxParallel: 5
   pool:
     vmImage: $(imageName)
   steps:
   - template: scripts/azure-linux_mac.yml
 
-- job: Windows
-  strategy:
-    matrix:
-      VS2015:
-        imageName: 'vs2015-win2012r2'
-        TILEDB_S3: ON
-      VS2017:
-        imageName: 'vs2017-win2016'
-        TILEDB_S3: ON
-  pool:
-    vmImage: $(imageName)
-  steps:
-  - template: scripts/azure-windows.yml
+  #- job: Windows
+  #  strategy:
+  #    matrix:
+  #      VS2015:
+  #        imageName: 'vs2015-win2012r2'
+  #        TILEDB_S3: ON
+  #      VS2017:
+  #        imageName: 'vs2017-win2016'
+  #        TILEDB_S3: ON
+  #  pool:
+  #    vmImage: $(imageName)
+  #  steps:
+  #  - template: scripts/azure-windows.yml

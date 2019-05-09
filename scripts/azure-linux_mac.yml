@@ -75,6 +75,12 @@ steps:
     mkdir -p $BUILD_REPOSITORY_LOCALPATH/build
     cd $BUILD_REPOSITORY_LOCALPATH/build
 
+    # TEMPORARY DELETE ME
+    # disable catch signal handler, enable libSegfault
+    export CFLAGS=-DCATCH_CONFIG_NO_POSIX_SIGNALS
+    export CXXFLAGS=-DCATCH_CONFIG_NO_POSIX_SIGNALS
+    export LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
+
     # Configure and build TileDB
     $BUILD_REPOSITORY_LOCALPATH/bootstrap $bootstrap_args
 
@@ -99,7 +105,7 @@ steps:
     if [[ "$TILEDB_CI_ASAN" == "ON" ]]; then
       export ASAN_OPTIONS=detect_leaks=0 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.4
     fi
-    make check
+    catchsegv make check
 
     # - bash: |
     pushd $BUILD_REPOSITORY_LOCALPATH/examples/cmake_project
