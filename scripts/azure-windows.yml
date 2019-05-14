@@ -12,7 +12,7 @@ steps:
       $host.SetShouldExit(1)
     }
 
-    if ($env:TILEDB_S3 -eq "true") {
+    if ($env:TILEDB_S3 -eq "ON") {
       & "$env:BUILD_SOURCESDIRECTORY\bootstrap.ps1" -EnableS3 -EnableVerbose -EnableStaticTileDB
       & "$env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1"
     } else {
