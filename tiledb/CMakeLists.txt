@@ -602,10 +602,12 @@ if (CURL_APPEND_LIBS)
   target_link_libraries(tiledb_shared
     PRIVATE
     ${CURL_APPEND_LIBS})
-  target_link_libraries(tiledb_static
-    INTERFACE
-    ${CURL_APPEND_LIBS}
-  )
+  if (TILEDB_STATIC)
+    target_link_libraries(tiledb_static
+      INTERFACE
+      ${CURL_APPEND_LIBS}
+    )
+  endif()
 endif()
 
 ############################################################

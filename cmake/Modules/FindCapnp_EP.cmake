@@ -48,7 +48,6 @@ find_package(Git REQUIRED)
 
 # If not found, add it as an external project
 if (NOT CAPNP_FOUND)
-  message(STATUS "HERE!")
   if (TILEDB_SUPERBUILD)
     message(STATUS "Adding Capnp as an external project")
 
