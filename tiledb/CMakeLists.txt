@@ -460,6 +460,12 @@ if (TARGET CURL::libcurl)
   endif()
 endif()
 
+if (CURL_APPEND_LIBS)
+  target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
+    INTERFACE
+    ${CURL_APPEND_LIBS})
+endif()
+
 ############################################################
 # Generated dependency information (for installation)
 ############################################################
@@ -486,14 +492,6 @@ if (TILEDB_STATIC)
         "  add_library(${APPEND_LIB} UNKNOWN IMPORTED)\n"
         "  set_target_properties(${APPEND_LIB} PROPERTIES IMPORTED_LOCATION ${TARGET_LOC})\n"
       )
-
-      # Append the link targets found ear
-      if (TARGET_LIBS AND ("${APPEND_LIB}" MATCHES "CURL"))
-        string(CONCAT TILEDB_STATIC_DEP_STRING
-          "${TILEDB_STATIC_DEP_STRING}"
-          "  set_target_properties(${APPEND_LIB} PROPERTIES INTERFACE_LINK_LIBRARIES \"${CURL_APPEND_LIBS}\")\n"
-        )
-      endif()
 
       string(CONCAT TILEDB_STATIC_DEP_STRING
         "${TILEDB_STATIC_DEP_STRING}"
@@ -596,18 +594,6 @@ if (TILEDB_STATIC)
     PRIVATE
       $<TARGET_PROPERTY:TILEDB_CORE_OBJECTS_ILIB,INTERFACE_LINK_LIBRARIES>
   )
-endif()
-
-if (CURL_APPEND_LIBS)
-  target_link_libraries(tiledb_shared
-    PRIVATE
-    ${CURL_APPEND_LIBS})
-  if (TILEDB_STATIC)
-    target_link_libraries(tiledb_static
-      INTERFACE
-      ${CURL_APPEND_LIBS}
-    )
-  endif()
 endif()
 
 ############################################################
