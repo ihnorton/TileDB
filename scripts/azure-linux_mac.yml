@@ -67,10 +67,14 @@ steps:
       source scripts/install-minio.sh;
       source scripts/run-minio.sh;
     fi
-    # displayName: 'Install and start servers {HDFS|minio}'
 
     # Set up arguments for bootstrap.sh
-    bootstrap_args="--enable=verbose,static-tiledb";
+    bootstrap_args="--enable=verbose";
+
+    # Enable TILEDB_STATIC by default
+    if [[ "$TILEDB_STATIC" -ne "OFF" ]];
+      bootstrap_args="${bootstrap_args} --enable-static-tiledb";
+    fi
     if [[ "$TILEDB_HDFS" == "ON" ]]; then
       bootstrap_args="${bootstrap_args} --enable-hdfs";
     fi;
@@ -102,7 +106,6 @@ steps:
       # Add superbuild flag
       bootstrap_args="${bootstrap_args} --force-build-all-deps";
     fi
-
 
     # displayName: 'Install dependencies'
 

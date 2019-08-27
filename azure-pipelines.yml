@@ -16,6 +16,7 @@ jobs:
       linux_s3:
         imageName: 'ubuntu-16.04'
         TILEDB_S3: ON
+        TILEDB_STATIC: OFF
         CXX: g++
       linux_hdfs:
         imageName: 'ubuntu-16.04'
