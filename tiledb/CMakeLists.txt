@@ -433,7 +433,7 @@ target_include_directories(TILEDB_CORE_OBJECTS
 #   - https://github.com/TileDB-Inc/TileDB/pull/1253
 # NOTE: just like the static dependencies in TileDBConfig create above
 #       (via TILEDB_DEP_STRING), this linkage embeds absolute paths.
-if (TILEDB_S3 OR TILEDB_SERIALIZATION)
+if (TILEDB_S3 OR TILEDB_SERIALIZATION AND NOT WIN32)
   if (TILEDB_CURL_EP_BUILT)
     set(CURL_CONFIG_BINARY "${TILEDB_EP_BASE}/install/bin/curl-config")
   else()
