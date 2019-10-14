@@ -42,10 +42,10 @@ steps:
 
     # CMake exits with non-0 status if there are any warnings during the build, so
     # build the unit test executable before running tests.
-    cmake --build tiledb --target tiledb_unit --config Release -- /verbosity:minimal
+    cmake --build $env:AGENT_BUILDDIRECTORY\build\tiledb --target tiledb_unit --config Release -- /verbosity:minimal
     # Actually run tests
     cd tiledb
-    ctest -C Release -V
+    cmake --build $env:AGENT_BUILDDIRECTORY\build\tiledb --target check --config Release -- /verbosity:minimal
     cd ..
 
     if ($LastExitCode -ne 0) {
@@ -132,8 +132,8 @@ steps:
   #    verbose: # Optional
 
 - powershell: |
-  # tiledb_unit is configured to set a job-level variable TILEDB_CI_SUCCESS=1
-  # following the test run. If this variable is not set, the build should fail.
+    # tiledb_unit is configured to set a job-level variable TILEDB_CI_SUCCESS=1
+    # following the test run. If this variable is not set, the build should fail.
     if ($env:TILEDB_CI_SUCCESS -ne 1) {
       Write-Host "tiledb_unit sanity-check failed! Go check logs."
       $host.SetShouldExit(1)
