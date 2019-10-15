@@ -33,6 +33,7 @@
 
 #include "catch.hpp"
 #include "tiledb/sm/cpp_api/tiledb"
+#include "tiledb/sm/misc/uri.h"
 
 #include <chrono>
 #include <iostream>
@@ -78,9 +79,9 @@ TEST_CASE(
     "Backwards compatibility: Test error opening 1.3.0 array",
     "[backwards-compat]") {
   Context ctx;
-  std::string array_uri(arrays_dir + "/dense_array_v1_3_0");
+  sm::URI array_uri(arrays_dir + "/dense_array_v1_3_0");
   try {
-    Array array(ctx, array_uri, TILEDB_READ);
+    Array array(ctx, array_uri.to_path(), TILEDB_READ);
     REQUIRE(false);
   } catch (const TileDBError& e) {
     // Check correct exception type and error message.
@@ -95,8 +96,8 @@ TEST_CASE(
     "Backwards compatibility: Test reading 1.4.0 array with non-split coords",
     "[backwards-compat][non-split-coords]") {
   Context ctx;
-  std::string array_uri(arrays_dir + "/non_split_coords_v1_4_0");
-  Array array(ctx, array_uri, TILEDB_READ);
+  sm::URI array_uri(arrays_dir + "/non_split_coords_v1_4_0");
+  Array array(ctx, array_uri.to_path(), TILEDB_READ);
   std::vector<int> subarray = {1, 4, 10, 10};
   auto max_el = array.max_buffer_elements(subarray);
   std::vector<int> a_read;
@@ -121,13 +122,14 @@ TEST_CASE(
     "version of tiledb",
     "[backwards-compat]") {
   Context ctx;
-  std::string compat_folder(arrays_dir + "/read_compatibility_test");
-  if (Object::object(ctx, compat_folder).type() != Object::Type::Group)
+  sm::URI compat_folder(arrays_dir + "/read_compatibility_test");
+  if (Object::object(ctx, compat_folder.to_path()).type() !=
+      Object::Type::Group)
     return;
 
   std::string encryption_key = "unittestunittestunittestunittest";
 
-  tiledb::ObjectIter versions_iter(ctx, compat_folder);
+  tiledb::ObjectIter versions_iter(ctx, compat_folder.to_path());
   for (const auto& groupVersions : versions_iter) {
     tiledb::ObjectIter obj_iter(ctx, groupVersions.uri());
     for (const auto& object : obj_iter) {
@@ -463,10 +465,10 @@ TEST_CASE(
 TEST_CASE(
     "Backwards compatibility: Write to an array of older version",
     "[backwards-compat][write-to-older-version]") {
-  std::string old_array_name(arrays_dir + "/non_split_coords_v1_4_0");
+  sm::URI old_array_name(arrays_dir + "/non_split_coords_v1_4_0");
   Context ctx;
   try {
-    Array old_array(ctx, old_array_name, TILEDB_WRITE);
+    Array old_array(ctx, old_array_name.to_path(), TILEDB_WRITE);
     CHECK(false);
   } catch (const std::exception& e) {
     CHECK(true);
