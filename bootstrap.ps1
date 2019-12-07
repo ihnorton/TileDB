@@ -32,8 +32,14 @@ Enable verbose status messages.
 .PARAMETER EnableS3
 Enables building with the S3 storage backend.
 
+.PARAMETER DisableS3
+Disables building with the S3 storage backend.
+
 .PARAMETER EnableSerialization
 Enables building with serialization support.
+
+.PARAMETER DisableSerialization
+Disables building with serialization support.
 
 .PARAMETER EnableStaticTileDB
 Enables building TileDB as a static library.
@@ -76,7 +82,9 @@ Param(
     [switch]$EnableCoverage,
     [switch]$EnableVerbose,
     [switch]$EnableS3,
+    [switch]$DisableS3,
     [switch]$EnableSerialization,
+    [switch]$DisableSerialization,
     [switch]$EnableStaticTileDB,
     [switch]$EnableTools,
     [switch]$EnableBuildDeps,
@@ -121,15 +129,24 @@ if ($EnableVerbose.IsPresent) {
 }
 
 # Set TileDB S3 flag
-$UseS3 = "OFF"
+$UseS3 = "ON"
 if ($EnableS3.IsPresent) {
+    # deprecated
+    $UseS3 = "ON"
+}
+if ($DisableS3.IsPresent) {
     $UseS3 = "ON"
 }
 
 $UseSerialization = "OFF"
 if ($EnableSerialization.IsPresent) {
+    # deprecated
     $UseSerialization = "ON"
 }
+if ($DisableSerialization.IsPresent) {
+    $UseSerialization = "OFF"
+}
+
 
 $Werror = "ON"
 if ($DisableWerror.IsPresent) {

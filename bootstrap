@@ -44,6 +44,8 @@ Configuration:
     --disable-tbb                   disables use of TBB for parallelization
     --disable-stats                 disables internal TileDB statistics
     --disable-avx2                  disables use of AVX2 instructions
+    --disable-s3                    enables the s3 storage backend
+    --disable-serialization         enables query serialization support
     --enable-static-tiledb          enables building TileDB as a static library
     --enable-sanitizer=SAN          enable sanitizer (clang only)
                                     (address|memory|thread|undefined)
@@ -51,7 +53,6 @@ Configuration:
     --enable-coverage               enable build with code coverage support
     --enable-verbose                enable verbose status messages
     --enable-hdfs                   enables the hdfs storage backend
-    --enable-s3                     enables the s3 storage backend
     --enable-serialization          enables query serialization support
     --enable-tools                  enables TileDB CLI tools (experimental)
     --enable=arg1,arg2...           same as "--enable-arg1 --enable-arg2 ..."
@@ -88,7 +89,7 @@ tiledb_tbb="ON"
 tiledb_stats="ON"
 tiledb_static="OFF"
 tiledb_disable_avx2=""
-tiledb_serialization="OFF"
+tiledb_serialization="ON"
 tiledb_tools="OFF"
 enable_multiple=""
 while test $# != 0; do
@@ -112,7 +113,9 @@ while test $# != 0; do
     --enable-verbose) tiledb_verbose="ON";;
     --enable-hdfs) tiledb_hdfs="ON";;
     --enable-s3) tiledb_s3="ON";;
+    --disable-s3) tiledb_s3="OFF";;
     --enable-serialization) tiledb_serialization="ON";;
+    --disable-serialization) tiledb_serialization="OFF";;
     --enable-tools) tiledb_tools="ON";;
     --enable=*) s=`arg "$1"`
                 enable_multiple="$s";;
