@@ -46,7 +46,7 @@ run_cask_minio() {
 
 run_docker_minio() {
   # note: minio data directories *must* follow parameter arguments
-  docker run -v /tmp/minio-data:/tmp/minio-data \
+  docker run -v $AGENT_TEMPDIRECTORY/minio-data:/tmp/minio-data \
        -e MINIO_ACCESS_KEY=minio -e MINIO_SECRET_KEY=miniosecretkey \
        -d -p 9999:9000 \
        minio/minio server -S /tmp/minio-data/test_certs \
@@ -64,7 +64,7 @@ run() {
   export_aws_keys
 
   mkdir -p /tmp/minio-data
-  cp -f -r $DIR/../test/inputs/test_certs /tmp/minio-data
+  cp -f -r $DIR/../test/inputs/test_certs $AGENT_TEMPDIRECTORY/minio-data
 
   if [[ "$AGENT_OS" == "Darwin" ]]; then
     run_cask_minio

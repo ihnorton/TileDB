@@ -1,25 +1,25 @@
 steps:
-- task: UsePythonVersion@0
-- task: PowerShell@2
-  condition: eq(variables['TILEDB_S3'], 'ON')
-  inputs:
-    pwsh: $[ ne(variables['imageName'], 'vs2015-win2012r2') ]
-    targetType: 'inline'
-    script: |
-      # This must be run in the same task section as the tests so minio doesn't exit
-      if ($env:TILEDB_S3 -eq "ON") {
-        $env:MINIO_ACCESS_KEY = "minio"
-        $env:MINIO_SECRET_KEY = "miniosecretkey"
-        $env:AWS_ACCESS_KEY_ID = "minio"
-        $env:AWS_SECRET_ACCESS_KEY = "miniosecretkey"
-        & "$env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1"
-      }
-      if (Test-Path variable:global:minio_proc) {
-          # kill the minio background process or else the pipeline will hang waiting
-          Write-Host "killing minio to avoid hanging pipeline"
-          $global:minio_proc | kill
-      }
-  displayName: "Start and test minio"
+#- task: UsePythonVersion@0
+#- task: PowerShell@2
+#  condition: eq(variables['TILEDB_S3'], 'ON')
+#  inputs:
+#    pwsh: $[ ne(variables['imageName'], 'vs2015-win2012r2') ]
+#    targetType: 'inline'
+#    script: |
+#      # This must be run in the same task section as the tests so minio doesn't exit
+#      if ($env:TILEDB_S3 -eq "ON") {
+#        $env:MINIO_ACCESS_KEY = "minio"
+#        $env:MINIO_SECRET_KEY = "miniosecretkey"
+#        $env:AWS_ACCESS_KEY_ID = "minio"
+#        $env:AWS_SECRET_ACCESS_KEY = "miniosecretkey"
+#        & "$env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1"
+#      }
+#      if (Test-Path variable:global:minio_proc) {
+#          # kill the minio background process or else the pipeline will hang waiting
+#          Write-Host "killing minio to avoid hanging pipeline"
+#          $global:minio_proc | kill
+#      }
+#  displayName: "Start and test minio"
 
 - powershell: |
     mkdir $env:AGENT_BUILDDIRECTORY\build
@@ -52,13 +52,15 @@ steps:
     }
   displayName: "Build"
 
+- bash: scripts/run-minio.sh
+  displayName: "Start minio"
+
 - powershell: |
     if ($env:TILEDB_S3 -eq "ON") {
       $env:MINIO_ACCESS_KEY = "minio"
       $env:MINIO_SECRET_KEY = "miniosecretkey"
       $env:AWS_ACCESS_KEY_ID = "minio"
       $env:AWS_SECRET_ACCESS_KEY = "miniosecretkey"
-      & "$env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1"
     }
     python "$env:BUILD_SOURCESDIRECTORY\scripts\test-minio.py"
     if ($LastExitCode -ne 0) {
