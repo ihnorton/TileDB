@@ -124,8 +124,7 @@ ArrayFx::ArrayFx() {
             config, "vfs.s3.ca_file", test_ca_file.c_str(), &error) ==
         TILEDB_OK);
     REQUIRE(
-        tiledb_config_set(
-            config, "vfs.s3.verify_ssl", "false", &error) ==
+        tiledb_config_set(config, "vfs.s3.verify_ssl", "false", &error) ==
         TILEDB_OK);
     REQUIRE(error == nullptr);
 #endif
@@ -1334,8 +1333,7 @@ TEST_CASE_METHOD(
             config, "vfs.s3.ca_path", test_ca_path.c_str(), &error) ==
         TILEDB_OK);
     REQUIRE(
-        tiledb_config_set(
-            config, "vfs.s3.verify_ssl","false", &error) ==
+        tiledb_config_set(config, "vfs.s3.verify_ssl", "false", &error) ==
         TILEDB_OK);
     REQUIRE(error == nullptr);
 #endif
