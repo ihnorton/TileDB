@@ -1,5 +1,19 @@
 steps:
+
+- bash: scripts/run-minio.sh
+  displayName: "Start minio"
+  condition: eq(variables['TILEDB_S3'], 'ON')
+
 #- task: UsePythonVersion@0
+#  condition: eq(variables['TILEDB_S3'], 'ON')
+
+- powershell: |
+    python "$env:BUILD_SOURCESDIRECTORY\scripts\test-minio.py"
+    if ($LastExitCode -ne 0) {
+        throw "minio test failed!"
+    }
+  condition: eq(variables['TILEDB_S3'], 'ON')
+
 #- task: PowerShell@2
 #  condition: eq(variables['TILEDB_S3'], 'ON')
 #  inputs:
@@ -14,12 +28,7 @@ steps:
 #        $env:AWS_SECRET_ACCESS_KEY = "miniosecretkey"
 #        & "$env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1"
 #      }
-#      if (Test-Path variable:global:minio_proc) {
-#          # kill the minio background process or else the pipeline will hang waiting
-#          Write-Host "killing minio to avoid hanging pipeline"
-#          $global:minio_proc | kill
-#      }
-#  displayName: "Start and test minio"
+#  displayName: "Test minio"
 
 - powershell: |
     mkdir $env:AGENT_BUILDDIRECTORY\build
@@ -52,19 +61,17 @@ steps:
     }
   displayName: "Build"
 
-- bash: scripts/run-minio.sh
-  displayName: "Start minio"
-
 - powershell: |
     if ($env:TILEDB_S3 -eq "ON") {
       $env:MINIO_ACCESS_KEY = "minio"
       $env:MINIO_SECRET_KEY = "miniosecretkey"
       $env:AWS_ACCESS_KEY_ID = "minio"
       $env:AWS_SECRET_ACCESS_KEY = "miniosecretkey"
-    }
-    python "$env:BUILD_SOURCESDIRECTORY\scripts\test-minio.py"
-    if ($LastExitCode -ne 0) {
-        throw "minio test failed!"
+
+      python "$env:BUILD_SOURCESDIRECTORY\scripts\test-minio.py"
+        if ($LastExitCode -ne 0) {
+          throw "minio test failed!"
+        }
     }
 
     # Clone backwards compatibility test arrays
