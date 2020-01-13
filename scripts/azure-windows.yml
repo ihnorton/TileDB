@@ -84,8 +84,8 @@ steps:
     cmake --build $env:AGENT_BUILDDIRECTORY\build\tiledb --target tiledb_unit --config Release -- /verbosity:minimal
 
     # Actually run tests
-    #cmake --build $env:AGENT_BUILDDIRECTORY\build\tiledb --target check --config Release -- /verbosity:minimal
-    & $env:AGENT_BUILDDIRECTORY\build\tiledb\test\Release\tiledb_unit.exe
+    cmake --build $env:AGENT_BUILDDIRECTORY\build\tiledb --target check --config Release -- /verbosity:normal
+    #& $env:AGENT_BUILDDIRECTORY\build\tiledb\test\Release\tiledb_unit.exe
 
     if ($LastExitCode -ne 0) {
         Write-Host "Tests failed. CMake exit status: " $LastExitCocde
