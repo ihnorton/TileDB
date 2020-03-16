@@ -142,16 +142,21 @@ Status S3::init(const Config::S3Params& s3_config, ThreadPool* thread_pool) {
   // If the user set config variables for AWS keys use them.
   if (!s3_config.aws_access_key_id.empty() &&
       !s3_config.aws_secret_access_key.empty()) {
+    std::cout << "got access key (and secret key): " << s3_config.aws_access_key_id.c_str() << std::endl;
     Aws::String access_key_id(s3_config.aws_access_key_id.c_str());
     Aws::String secret_access_key(s3_config.aws_secret_access_key.c_str());
     if (!s3_config.aws_session_token.c_str()) {
+      std::cout << "no session token: " << std::endl;
       client_creds_ = std::unique_ptr<Aws::Auth::AWSCredentials>(
         new Aws::Auth::AWSCredentials(access_key_id, secret_access_key));
     } else {
+      std::cout << "got session token: " << s3_config.aws_session_token.c_str() << std::endl;
       Aws::String session_token(s3_config.aws_session_token.c_str());
       client_creds_ = std::unique_ptr<Aws::Auth::AWSCredentials>(
         new Aws::Auth::AWSCredentials(access_key_id, secret_access_key, session_token));
     }
+  } else {
+    std::cout << "no access key or secret key: " << std::endl;
   }
 
   return Status::Ok();
