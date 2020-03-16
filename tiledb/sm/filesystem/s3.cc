@@ -366,6 +366,12 @@ bool S3::is_object(const URI& uri) const {
   head_object_request.SetBucket(aws_uri.GetAuthority());
   head_object_request.SetKey(aws_uri.GetPath());
   auto head_object_outcome = client_->HeadObject(head_object_request);
+
+  bool exists = head_object_outcome.IsSuccess();
+  if (!exists) {
+    std::cout << "is_object message: " << head_object_outcome.GetError().GetMessage() << std::endl;
+    throw(head_object_outcome.GetError());
+  }
   return head_object_outcome.IsSuccess();
 }
 
