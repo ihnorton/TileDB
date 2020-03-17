@@ -272,6 +272,9 @@ if (TILEDB_S3)
     INTERFACE
       AWSSDK::aws-cpp-sdk-s3
       AWSSDK::aws-cpp-sdk-core
+      AWSSDK::aws-c-event-stream
+      AWSSDK::aws-checksums
+      AWSSDK::aws-c-common
   )
   if (NOT WIN32)
     # No Curl required on Windows.
