@@ -455,7 +455,7 @@ const unsigned int s3_max_attempts = 100;
 const unsigned int s3_attempt_sleep_ms = 100;
 
 /** Maximum number of attempts to wait for an Azure response. */
-const unsigned int azure_max_attempts = 10;
+const unsigned int azure_max_attempts = 3;
 
 /** Milliseconds of wait time between Azure attempts. */
 const unsigned int azure_attempt_sleep_ms = 1000;

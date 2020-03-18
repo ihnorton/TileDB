@@ -69,18 +69,34 @@ Status Azure::init(const Config& config, ThreadPool* const thread_pool) {
   thread_pool_ = thread_pool;
 
   bool found;
-  const std::string account_name =
+  std::string account_name =
       config.get("vfs.azure.storage_account_name", &found);
+  if (getenv("AZURE_STORAGE_ACCOUNT") != NULL)
+    account_name = std::string(getenv("AZURE_STORAGE_ACCOUNT"));
   assert(found);
-  const std::string account_key =
+  std::string account_key =
       config.get("vfs.azure.storage_account_key", &found);
+  if (getenv("AZURE_STORAGE_KEY") != NULL)
+    account_key = std::string(getenv("AZURE_STORAGE_KEY"));
   assert(found);
-  const std::string blob_endpoint =
+  std::string blob_endpoint_tmp =
       config.get("vfs.azure.blob_endpoint", &found);
   assert(found);
+  const char* az_endpoint;
+  if (blob_endpoint_tmp.empty() &&
+      ((az_endpoint = getenv("AZURE_BLOB_ENDPOINT")) != NULL)) {
+    std::string blob_endpoint_env(az_endpoint);
+    if (!blob_endpoint_env.empty())
+      blob_endpoint_tmp = blob_endpoint_env;
+  }
+  const std::string blob_endpoint = blob_endpoint_tmp;
   bool use_https;
   RETURN_NOT_OK(config.get<bool>("vfs.azure.use_https", &use_https, &found));
   assert(found);
+  if (use_https && (getenv("AZURE_USE_HTTPS") != NULL)) {
+    std::string use_https_env(getenv("AZURE_USE_HTTPS"));
+    use_https = (!use_https_env.empty());
+  }
   RETURN_NOT_OK(config.get<uint64_t>(
       "vfs.azure.max_parallel_ops", &max_parallel_ops_, &found));
   assert(found);
