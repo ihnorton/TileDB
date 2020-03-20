@@ -142,6 +142,9 @@ Status S3::init(const Config::S3Params& s3_config, ThreadPool* thread_pool) {
                                                   Aws::Http::Scheme::HTTPS;
   config.connectTimeoutMs = s3_config.connect_timeout_ms_;
   config.requestTimeoutMs = s3_config.request_timeout_ms_;
+  config.caFile = s3_config.ca_file_.c_str();
+  config.caPath = s3_config.ca_path_.c_str();
+  config.verifySSL = s3_config.verify_ssl_;
 
   if (getenv("TILEDB_CA_FILE") != NULL) {
     config.caFile = std::string(getenv("TILEDB_CA_FILE"));
