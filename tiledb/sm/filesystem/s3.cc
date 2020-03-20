@@ -32,6 +32,10 @@
 
 #ifdef HAVE_S3
 
+#include <aws/core/utils/logging/AWSLogging.h>
+#include <aws/core/utils/logging/DefaultLogSystem.h>
+#include <aws/core/utils/logging/LogLevel.h>
+
 #include <boost/interprocess/streams/bufferstream.hpp>
 #include <fstream>
 #include <iostream>
@@ -103,6 +107,10 @@ Status S3::init(const Config::S3Params& s3_config, ThreadPool* thread_pool) {
 
   // Initialize the library once per process.
   std::call_once(aws_lib_initialized, [this]() { Aws::InitAPI(options_); });
+
+  Aws::Utils::Logging::InitializeAWSLogging(
+    Aws::MakeShared<Aws::Utils::Logging::DefaultLogSystem>(
+        "TileDB", Aws::Utils::Logging::LogLevel::Trace, "tiledb_s3_"));
 
   vfs_thread_pool_ = thread_pool;
   max_parallel_ops_ = s3_config.max_parallel_ops_;
