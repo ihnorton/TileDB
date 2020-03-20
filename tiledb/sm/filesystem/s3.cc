@@ -122,6 +122,7 @@ Status S3::init(const Config::S3Params& s3_config, ThreadPool* thread_pool) {
   client_config_ = std::unique_ptr<Aws::Client::ClientConfiguration>(
       new Aws::Client::ClientConfiguration);
   auto& config = *client_config_.get();
+  config.verifySSL = false;
   if (!s3_config.region_.empty())
     config.region = s3_config.region_.c_str();
   if (!s3_config.endpoint_override_.empty())
