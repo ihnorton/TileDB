@@ -143,6 +143,16 @@ Status S3::init(const Config::S3Params& s3_config, ThreadPool* thread_pool) {
   config.connectTimeoutMs = s3_config.connect_timeout_ms_;
   config.requestTimeoutMs = s3_config.request_timeout_ms_;
 
+  if (getenv("TILEDB_CA_FILE") != NULL) {
+    config.caFile = std::string(getenv("TILEDB_CA_FILE"));
+  }
+  if (getenv("TILEDB_CA_PATH") != NULL) {
+    config.caPath = std::string(getenv("TILEDB_CA_FILE"));
+  }
+  if (getenv("TILEDB_VERIFY_SSL") != NULL) {
+    config.verifySSL = (std::string(getenv("TILEDB_VERIFY_SSL")) != "0");
+  }
+
   config.retryStrategy = Aws::MakeShared<Aws::Client::DefaultRetryStrategy>(
       constants::s3_allocation_tag.c_str(),
       s3_config.connect_max_tries_,
