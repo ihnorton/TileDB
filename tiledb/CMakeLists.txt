@@ -33,6 +33,24 @@
 # C++ library, allow the VISIBLITY_PRESET for each c++ target to work
 cmake_policy(SET CMP0063 NEW)
 
+# Build with asserts on CI even in release build. Work around
+# CMake bug.
+# - See https://gitlab.kitware.com/cmake/community/-/wikis/FAQ
+#   "How can I build my MSVC application with a static runtime?"
+set(NDEBUG_RGX "-D[ \t]*NDEBUG|/D[ \t]*NDEBUG")
+if ("$ENV{TILEDB_BUILD_ASSERTS}" STREQUAL "ON")
+  message(STATUS "Enabling assertions in libtiledb ($env:TILEDB_BUILD_ASSERTS=ON)")
+  message(STATUS "  CMAKE_CXX_FLAGS before: '${CMAKE_CXX_FLAGS}'")
+  foreach(flag_var
+      CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+      CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+    if(${flag_var} MATCHES "${NDEBUG_RGX}")
+      string(REGEX REPLACE "${NDEBUG_RGX}" "" ${flag_var} "${${flag_var}}")
+    endif()
+  endforeach()
+  message(STATUS "  CMAKE_CXX_FLAGS before: '${CMAKE_CXX_FLAGS}'")
+endif()
+
 ############################################################
 # Source files
 ###########################################################

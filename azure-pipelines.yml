@@ -8,6 +8,9 @@ pr:
     include:
     - '*'  # must quote since "*" is a YAML reserved character; we want a string
 
+variables:
+  TILEDB_BUILD_ASSERTS: ON
+
 jobs:
 - job:
   strategy:
