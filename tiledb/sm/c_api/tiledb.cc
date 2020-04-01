@@ -1053,6 +1053,7 @@ int32_t tiledb_config_iter_done(
 /* ****************************** */
 
 int32_t tiledb_ctx_alloc(tiledb_config_t* config, tiledb_ctx_t** ctx) {
+  assert(false);
   if (config != nullptr && config->config_ == nullptr)
     return TILEDB_ERR;
 

@@ -44,11 +44,12 @@ if ("$ENV{TILEDB_BUILD_ASSERTS}" STREQUAL "ON")
   foreach(flag_var
       CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
       CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+    message(STATUS "  ${flag_var} before: '${${flag_var}}'")
     if(${flag_var} MATCHES "${NDEBUG_RGX}")
       string(REGEX REPLACE "${NDEBUG_RGX}" "" ${flag_var} "${${flag_var}}")
     endif()
   endforeach()
-  message(STATUS "  CMAKE_CXX_FLAGS before: '${CMAKE_CXX_FLAGS}'")
+  message(STATUS "  ${flag_var} after: '${${flag_var}}'")
 endif()
 
 ############################################################

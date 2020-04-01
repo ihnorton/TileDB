@@ -54,6 +54,7 @@ static std::string current_dir() {
 #endif
 
 TEST_CASE("URI: Test join", "[uri]") {
+  assert(false);
   URI uri("file:///path");
   CHECK(uri.join_path("").to_string() == "file:///path");
   CHECK(uri.join_path("abc").to_string() == "file:///path/abc");
