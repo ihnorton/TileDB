@@ -131,7 +131,7 @@ if (NOT CURL_FOUND AND TILEDB_SUPERBUILD)
           --enable-shared=no
           --disable-ldap
           --with-pic=yes
-          ${WITH_SSL}
+	  --without-ssl
           ${WITH_ZLIB}
       BUILD_IN_SOURCE TRUE
       BUILD_COMMAND $(MAKE)
