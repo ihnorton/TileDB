@@ -270,8 +270,8 @@ index db41a566a..37e7a0c92 100644
                     -DgRPC_SSL_PROVIDER=package
                     -DgRPC_CARES_PROVIDER=package
                     -DgRPC_PROTOBUF_PROVIDER=package
-+                   -DCMAKE_CXX_FLAGS=-fPIC
-+                   -DCMAKE_C_FLAGS=-fPIC
++                   -DCMAKE_CXX_FLAGS=-fPIC -DGPR_MANYLINUX1=1
++                   -DCMAKE_C_FLAGS=-fPIC -DGPR_MANYLINUX1=1
 +                   -DOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}
          BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> ${PARALLEL}
          LOG_DOWNLOAD ON
