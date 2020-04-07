@@ -93,36 +93,40 @@ if (NOT GCSSDK_FOUND)
       list(APPEND DEPENDS ep_zlib)
     endif()
 
+    if ($ENV{AUDITWHEEL_PLAT} STREQUAL "manylinux1_x86_64")
+      set(GPR_MANYLINUX_FLAG -DGPR_MANYLINUX1=1)
+    endif()
+
     # Fetch the number of CPUs on the this sytem.
     include(ProcessorCount)
     processorcount(NCPU)
 
     ExternalProject_Add(ep_gcssdk
       PREFIX "externals"
-      URL "https://github.com/googleapis/google-cloud-cpp/archive/v0.20.0.zip"
-      URL_HASH SHA1=6e7931a0e62779dfbd07427373373bf1ad6f8686
-      BUILD_IN_SOURCE 1
-      PATCH_COMMAND
-        patch -N -p1 < ${TILEDB_CMAKE_INPUTS_DIR}/patches/ep_gcssdk/build.patch &&
-        patch -N -p1 < ${TILEDB_CMAKE_INPUTS_DIR}/patches/ep_gcssdk/ls.patch
-      CONFIGURE_COMMAND
-        "${CMAKE_COMMAND}" -Hsuper -Bcmake-out
+      DEPENDS ${DEPENDS}
+      #URL "https://github.com/googleapis/google-cloud-cpp/archive/v0.20.0.zip"
+      #URL_HASH SHA1=6e7931a0e62779dfbd07427373373bf1ad6f8686
+      SOURCE_DIR
+        /home/tiledb/TileDB/google-cloud-cpp
+      SOURCE_SUBDIR
+        super
+      CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DBUILD_SHARED_LIBS=OFF
         -DBUILD_SAMPLES=OFF
-        -DCMAKE_PREFIX_PATH=${TILEDB_EP_INSTALL_PREFIX}
-        -DOPENSSL_ROOT_DIR=${TILEDB_OPENSSL_DIR}
-      BUILD_COMMAND "${CMAKE_COMMAND}" --build cmake-out -- -j${NCPU}
-      INSTALL_COMMAND
-          cp -r ${TILEDB_EP_SOURCE_DIR}/ep_gcssdk/cmake-out/external/lib ${TILEDB_EP_INSTALL_PREFIX}
-        COMMAND
-          cp -r ${TILEDB_EP_SOURCE_DIR}/ep_gcssdk/cmake-out/external/include ${TILEDB_EP_INSTALL_PREFIX}
-      LOG_DOWNLOAD TRUE
-      LOG_CONFIGURE TRUE
-      LOG_BUILD TRUE
-      LOG_INSTALL TRUE
+        -DGOOGLE_CLOUD_CPP_ENABLE_MACOS_OPENSSL_CHECK=OFF
+        -DCMAKE_PREFIX_PATH:PATH=${TILEDB_EP_INSTALL_PREFIX}
+        -DCMAKE_INSTALL_PREFIX=${TILEDB_EP_INSTALL_PREFIX}
+        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+        -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+        -DGPR_MANYLINUX_FLAG=${GPR_MANYLINUX_FLAG}
+        -DOPENSSL_ROOT_DIR:PATH=${TILEDB_OPENSSL_DIR}
+      #LOG_DOWNLOAD TRUE
+      #LOG_CONFIGURE TRUE
+      #LOG_BUILD TRUE
+      #LOG_INSTALL TRUE
       LOG_OUTPUT_ON_FAILURE ${TILEDB_LOG_OUTPUT_ON_FAILURE}
-      DEPENDS ${DEPENDS}
     )
 
     list(APPEND TILEDB_EXTERNAL_PROJECTS ep_gcssdk)
