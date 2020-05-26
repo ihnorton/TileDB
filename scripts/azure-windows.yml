@@ -146,6 +146,12 @@ steps:
   condition: failed() # only run this job if the build step failed
   displayName: "Print log files (failed build only)"
 
+- powershell: |
+    (Get-ChildItem -Path $env:AGENT_BUILDDIRECTORY -Include *.dll,*tiledb_unit*exe -Recurse).fullname | ForEach-Object {echo $_ ---; dumpbin /dependents $_; echo ===}
+  condition: always()
+  displayName: "Print dll dependencies"
+
+
 - task: PublishBuildArtifacts@1
   inputs:
     #pathtoPublish: '$(Build.ArtifactStagingDirectory)/tiledb-windows-x64-$(Build.SourceVersion).zip'
