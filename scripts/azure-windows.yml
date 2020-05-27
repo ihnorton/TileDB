@@ -1,5 +1,8 @@
 steps:
 - powershell: |
+    objdump
+    exit(1)
+
     mkdir $env:AGENT_BUILDDIRECTORY\build
     cd $env:AGENT_BUILDDIRECTORY\build
 
