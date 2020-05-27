@@ -1,8 +1,5 @@
 steps:
 - powershell: |
-    objdump
-    exit(1)
-
     mkdir $env:AGENT_BUILDDIRECTORY\build
     cd $env:AGENT_BUILDDIRECTORY\build
 
@@ -151,7 +148,7 @@ steps:
 
 - powershell: |
     $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\Hostx64"
-    (Get-ChildItem -Path $env:AGENT_BUILDDIRECTORY -Include *.dll,*tiledb_unit*exe -Recurse).fullname | ForEach-Object {echo $_ ---; dumpbin /dependents $_; echo ===}
+    (Get-ChildItem -Path $env:AGENT_BUILDDIRECTORY -Include *.dll,*tiledb_unit*exe -Recurse).fullname | ForEach-Object {echo $_ ---; objdump -p $_; echo ===}
   condition: always()
   displayName: "Print dll dependencies"
 
