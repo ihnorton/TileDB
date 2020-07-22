@@ -71,7 +71,13 @@ Status GCS::init(const Config& config, ThreadPool* const thread_pool) {
 
   // Create the client using the credentials file pointed to by the
   // env variable GOOGLE_APPLICATION_CREDENTIALS
-  client_ = google::cloud::storage::Client::CreateDefaultClient();
+  const std::string cert_file =
+    global_state::GlobalState::GetGlobalState().cert_file();
+  auto options = google::cloud::storage::ClientOptions::CreateDefaultClientOptions();
+  if (!cert_file.empty()) {
+    options.channel_options().set_ssl_root_path(cert_file);
+  }
+  client_ = google::cloud::storage::Client::Client(options);
   if (!client_) {
     return LOG_STATUS(Status::GCSError(
         "Failed to initialize GCS Client; " + client_.status().message()));
