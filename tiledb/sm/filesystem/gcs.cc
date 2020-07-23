@@ -40,6 +40,7 @@
 #include "tiledb/sm/filesystem/gcs.h"
 #include "tiledb/sm/misc/logger.h"
 #include "tiledb/sm/misc/utils.h"
+#include "tiledb/sm/global_state/global_state.h"
 
 namespace tiledb {
 namespace sm {
@@ -77,7 +78,7 @@ Status GCS::init(const Config& config, ThreadPool* const thread_pool) {
     global_state::GlobalState::GetGlobalState().cert_file();
   std::cout << "Got cert file: " << cert_file << std::endl;
 
-  ChannelOptions channel_options;
+  google::cloud::storage::ChannelOptions channel_options;
   if (!cert_file.empty()) {
     std::cout << "setting ssl_root_path " << cert_file << std::endl;
     channel_options.set_ssl_root_path(cert_file);
@@ -86,7 +87,8 @@ Status GCS::init(const Config& config, ThreadPool* const thread_pool) {
 //#else
 //  auto options = google::cloud::storage::ClientOptions::CreateDefaultClientOptions();
 //#endif
-  client_ = google::cloud::storage::Client::Client(options);
+  auto client = google::cloud::storage::Client(*options, google::cloud::storage::StrictIdempotencyPolicy());
+  client_ = google::cloud::StatusOr<google::cloud::storage::Client>(client);
   if (!client_) {
     return LOG_STATUS(Status::GCSError(
         "Failed to initialize GCS Client; " + client_.status().message()));
