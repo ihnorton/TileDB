@@ -33,6 +33,7 @@
 #ifdef HAVE_GCS
 
 #include <google/cloud/status.h>
+#include <google/cloud/storage/client_options.h>
 #include <sstream>
 #include <unordered_set>
 
@@ -71,7 +72,7 @@ Status GCS::init(const Config& config, ThreadPool* const thread_pool) {
 
   // Create the client using the credentials file pointed to by the
   // env variable GOOGLE_APPLICATION_CREDENTIALS
-#ifdef __linux__
+//#ifdef __linux__
   const std::string cert_file =
     global_state::GlobalState::GetGlobalState().cert_file();
   std::cout << "Got cert file: " << cert_file << std::endl;
@@ -82,9 +83,9 @@ Status GCS::init(const Config& config, ThreadPool* const thread_pool) {
     channel_options.set_ssl_root_path(cert_file);
   }
   auto options = google::cloud::storage::ClientOptions::CreateDefaultClientOptions(channel_options);
-#else
-  auto options = google::cloud::storage::ClientOptions::CreateDefaultClientOptions();
-#endif
+//#else
+//  auto options = google::cloud::storage::ClientOptions::CreateDefaultClientOptions();
+//#endif
   client_ = google::cloud::storage::Client::Client(options);
   if (!client_) {
     return LOG_STATUS(Status::GCSError(
