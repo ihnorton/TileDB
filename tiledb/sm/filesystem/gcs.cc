@@ -78,6 +78,8 @@ Status GCS::init(const Config& config, ThreadPool* const thread_pool) {
     global_state::GlobalState::GetGlobalState().cert_file();
   std::cout << "Got cert file: " << cert_file << std::endl;
 
+  
+  //std::cout << "BEFORE IS : " << options->channel_options().ssl_root_path() << std::endl;
   google::cloud::storage::ChannelOptions channel_options;
   if (!cert_file.empty()) {
     std::cout << "setting ssl_root_path " << cert_file << std::endl;
@@ -87,6 +89,7 @@ Status GCS::init(const Config& config, ThreadPool* const thread_pool) {
 //#else
 //  auto options = google::cloud::storage::ClientOptions::CreateDefaultClientOptions();
 //#endif
+  std::cout << "SET TO : " << options->channel_options().ssl_root_path() << std::endl;
   auto client = google::cloud::storage::Client(*options, google::cloud::storage::StrictIdempotencyPolicy());
   client_ = google::cloud::StatusOr<google::cloud::storage::Client>(client);
   if (!client_) {
