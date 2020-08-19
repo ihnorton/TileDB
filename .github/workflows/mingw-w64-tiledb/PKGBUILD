@@ -15,7 +15,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-lz4"
 makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
              "${MINGW_PACKAGE_PREFIX}-gcc"
              "${MINGW_PACKAGE_PREFIX}-curl")
-options=("staticlibs" "strip")
+options=("staticlibs")
 source_dir="$TILEDB_HOME"
 
 build() {
