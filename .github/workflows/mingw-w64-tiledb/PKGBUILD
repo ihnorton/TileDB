@@ -38,7 +38,7 @@ build() {
     -DTILEDB_S3=ON \
     ..
   make
-  make -C tiledb
+  make -j3 -C tiledb
 }
 
 package() {
