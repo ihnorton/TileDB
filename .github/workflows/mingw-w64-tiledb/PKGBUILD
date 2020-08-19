@@ -32,7 +32,7 @@ build() {
     -G"MSYS Makefiles" \
     -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DTILEDB_STATIC=ON \
     -DTILEDB_TBB=OFF \
     -DTILEDB_S3=ON \
