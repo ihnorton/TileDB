@@ -43,6 +43,7 @@ stages:
           macOS_azure:
             imageName: 'macOS-10.14'
             TILEDB_AZURE: ON
+            TILEDB_SERIALIZATION: ON
             CXX: clang++
           macOS_gcs:
             imageName: 'macOS-10.14'
