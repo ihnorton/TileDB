@@ -70,11 +70,12 @@ stages:
 
     - job: CentOS6_manylinux1
       container:
-        image: quay.io/pypa/manylinux1_x86_64:2020-11-11-0f1f128
+        image: quay.io/pypa/manylinux1_x86_64
       variables:
         CXX: g++
         TILEDB_FORCE_BUILD_DEPS: ON
         TILEDB_BUILD_ENABLE: "s3,azure,serialization,static-tiledb"
+        AGENT_USE_NODE10: false
       steps:
       - template: scripts/azure-centos6.yml
 
