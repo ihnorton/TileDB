@@ -118,7 +118,7 @@ if (NOT AZURESDK_FOUND)
           -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
         PATCH_COMMAND
           cd ${CMAKE_SOURCE_DIR} &&
-          ${GIT_EXECUTABLE} apply --ignore-whitespace -p1 --unsafe-paths --verbose --directory=${TILEDB_EP_SOURCE_DIR}/ep_azuresdk < ${TILEDB_CMAKE_INPUTS_DIR}/patches/ep_azuresdk/remove-uuid-dep.patch
+          ${GIT_EXECUTABLE} apply --ignore-whitespace -p1 --unsafe-paths --verbose --directory=${TILEDB_EP_SOURCE_DIR}/ep_azuresdk < ${TILEDB_CMAKE_INPUTS_DIR}/patches/ep_azuresdk/v0.3.0-patchset.patch
         LOG_DOWNLOAD TRUE
         LOG_CONFIGURE TRUE
         LOG_BUILD TRUE
