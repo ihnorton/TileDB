@@ -27,7 +27,7 @@
 # Installs and configures HDFS.
 set -x
 
-HADOOP_VERSION="3.1.4"
+HADOOP_VERSION="3.2.1"
 
 die() {
   echo "$@" 1>&2 ; popd 2>/dev/null; exit 1
@@ -41,7 +41,7 @@ function update_apt_repo  {
 } 
 
 function install_java {
-  sudo apt-get install -y openjdk-8-jre
+  sudo apt-get install -y openjdk-11-jre
 }
 
 function install_hadoop {
@@ -173,6 +173,11 @@ EOF
 }
 
 
+function setup_hdfs_ports {
+  sudo ufw allow 9870/tcp
+  sudo ufw allow 8088/tcp
+}
+
 function setup_environment {
   export HADOOP_HOME=/usr/local/hadoop/home
   sudo sed -i -- 's/JAVA_HOME=\${JAVA_HOME}/JAVA_HOME=\$(readlink -f \/usr\/bin\/java | sed "s:bin\/java::")/' \
@@ -180,6 +185,8 @@ function setup_environment {
   setup_core_xml &&
     setup_mapred_xml &&
     setup_hdfs_xml || die "error in generating xml configuration files"
+
+  setup_hdfs_ports || die "error in setting up Hadoop ports"
 }
 
 function passwordless_ssh {
