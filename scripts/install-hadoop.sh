@@ -175,6 +175,7 @@ EOF
 
 function setup_hdfs_ports {
   sudo ufw allow 9870/tcp
+  sudo ufw allow 9000/tcp
   sudo ufw allow 8088/tcp
 }
 
