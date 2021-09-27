@@ -181,8 +181,20 @@ EOF
 
 function setup_environment {
   export HADOOP_HOME=/usr/local/hadoop/home
-  sudo sed -i -- 's/JAVA_HOME=\${JAVA_HOME}/JAVA_HOME=\$(readlink -f \/usr\/bin\/java | sed "s:bin\/java::")/' \
-       $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+  JAVA_HOME=$(readlink -f \/usr\/bin\/java | sed "s:bin\/java::")
+  HADOOP_ENVSH=/usr/local/hadoop/home/etc/hadoop/hadoop-env.sh
+
+  # Make a copy
+  cp -n $HADOOP_ENVSH $HADOOP_ENVSH.bk
+  # Write the new one
+  echo "JAVA_HOME=${JAVA_HOME}" > $HADOOP_ENVSH
+  cat >> $HADOOP_ENVSH <<EOT
+export HDFS_NAMENODE_USER=root
+export HDFS_DATANODE_USER=root
+export HDFS_SECONDARYNAMENODE_USER=root
+export YARN_RESOURCEMANAGER_USER=root
+export YARN_NODEMANAGER_USER=root
+EOT
   setup_core_xml &&
     setup_mapred_xml &&
     setup_hdfs_xml || die "error in generating xml configuration files"
