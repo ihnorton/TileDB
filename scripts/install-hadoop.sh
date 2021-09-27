@@ -173,11 +173,11 @@ EOF
 }
 
 
-function setup_hdfs_ports {
-  sudo ufw allow 9870/tcp
-  sudo ufw allow 9000/tcp
-  sudo ufw allow 8088/tcp
-}
+#function setup_hdfs_ports {
+#  sudo ufw allow 9870/tcp
+#  sudo ufw allow 9000/tcp
+#  sudo ufw allow 8088/tcp
+#}
 
 function setup_environment {
   export HADOOP_HOME=/usr/local/hadoop/home
@@ -187,7 +187,7 @@ function setup_environment {
     setup_mapred_xml &&
     setup_hdfs_xml || die "error in generating xml configuration files"
 
-  setup_hdfs_ports || die "error in setting up Hadoop ports"
+  #setup_hdfs_ports || die "error in setting up Hadoop ports"
 }
 
 function passwordless_ssh {
