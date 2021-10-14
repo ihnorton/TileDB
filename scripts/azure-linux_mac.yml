@@ -10,16 +10,18 @@ steps:
   displayName: 'Print env'
 
 # Need this for virtualenv and arrow tests if enabled
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.8'
-
-- bash: |
-    set -e pipefail
-    python -m pip install --upgrade pip virtualenv
-    if [[ "$TILEDB_ARROW_TESTS" == "ON" ]]; then
-      pip install pyarrow pybind11 numpy
-    fi
+#- task: UsePythonVersion@0
+#  inputs:
+#    versionSpec: '3.8'
+#  condition: eq(variables['TILEDB_ARROW_TESTS'], 'ON')
+#
+#- bash: |
+#    set -e pipefail
+#    python -m pip install --upgrade pip virtualenv
+#    if [[ "$TILEDB_ARROW_TESTS" == "ON" ]]; then
+#      pip install pyarrow pybind11 numpy
+#    fi
+#  condition: eq(variables['TILEDB_ARROW_TESTS'], 'ON')
 
 - bash: |
     set -e pipefail
