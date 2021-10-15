@@ -39,7 +39,6 @@ stages:
         matrix:
           linux_asan:
             imageName: 'ubuntu-20.04'
-            TILEDB_CI_ASAN: ON
             TILEDB_SERIALIZATION: ON
             CXX: g++
             CC: gcc
