@@ -14,7 +14,6 @@ env:
   CXX: g++
   BACKWARDS_COMPATIBILITY_ARRAYS: ON
 
-
 jobs:
   build:
     runs-on: ubuntu-20.04
