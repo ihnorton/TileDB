@@ -29,13 +29,20 @@ include(common NO_POLICY_SCOPE)
 list(APPEND SOURCES
     thread_pool.cc
 )
-gather_sources(${SOURCES})
+
+#gather_sources(${SOURCES})
+
+
+add_library(thread_pool
+    OBJECT
+    ${SOURCES}
+)
+target_link_libraries(thread_pool PUBLIC spdlog::spdlog)
+
+add_library(tiledb::common::thread_pool ALIAS thread_pool)
 
 list(APPEND DEPENDENT_SOURCES
-    ../heap_memory.cc
-    ../heap_profiler.cc
-    ../logger.cc
-    ../status.cc
+    $<TARGET_OBJECTS:tiledb_common>
 )
 
 if (TILEDB_TESTS)
@@ -44,10 +51,7 @@ if (TILEDB_TESTS)
 
     add_executable(unit_thread_pool EXCLUDE_FROM_ALL)
     target_link_libraries(unit_thread_pool PUBLIC Catch2::Catch2)
-    target_link_libraries(unit_thread_pool PUBLIC spdlog::spdlog)
-
-    # Sources for code under test
-    target_sources(unit_thread_pool PUBLIC ${SOURCES})
+    target_link_libraries(unit_thread_pool PUBLIC tiledb::common::thread_pool)
 
     # Sources for code elsewhere required for tests
     target_sources(unit_thread_pool PUBLIC ${DEPENDENT_SOURCES})
@@ -56,6 +60,7 @@ if (TILEDB_TESTS)
     target_sources(unit_thread_pool PUBLIC
             test/main.cc
             test/unit_thread_pool.cc
+            $<TARGET_OBJECTS:thread_pool>
             )
 
     add_test(

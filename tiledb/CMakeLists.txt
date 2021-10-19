@@ -98,12 +98,6 @@ endif()
 
 # List of all core source files
 set(TILEDB_CORE_SOURCES
-  ${TILEDB_CORE_INCLUDE_DIR}/tiledb/common/heap_memory.cc
-  ${TILEDB_CORE_INCLUDE_DIR}/tiledb/common/heap_profiler.cc
-  ${TILEDB_CORE_INCLUDE_DIR}/tiledb/common/logger.cc
-  ${TILEDB_CORE_INCLUDE_DIR}/tiledb/common/memory.cc
-  ${TILEDB_CORE_INCLUDE_DIR}/tiledb/common/status.cc
-  ${TILEDB_CORE_INCLUDE_DIR}/tiledb/common/interval/interval.cc
   ${TILEDB_CORE_INCLUDE_DIR}/tiledb/sm/array/array.cc
   ${TILEDB_CORE_INCLUDE_DIR}/tiledb/sm/array_schema/array_schema.cc
   ${TILEDB_CORE_INCLUDE_DIR}/tiledb/sm/array_schema/array_schema_evolution.cc
@@ -199,7 +193,6 @@ set(TILEDB_CORE_SOURCES
   ${TILEDB_CORE_INCLUDE_DIR}/tiledb/sm/tile/tile.cc
   ${TILEDB_CORE_INCLUDE_DIR}/tiledb/sm/tile/generic_tile_io.cc
 )
-list(APPEND TILEDB_CORE_SOURCES ${TILEDB_COMMON_SOURCES})
 
 if (TILEDB_SERIALIZATION)
   list(APPEND TILEDB_CORE_SOURCES
@@ -257,6 +250,7 @@ set(TILEDB_EXTERNALS_SOURCES
 
 add_library(TILEDB_CORE_OBJECTS OBJECT
     ${TILEDB_CORE_SOURCES}
+    $<TARGET_OBJECTS:tiledb::common>
     ${TILEDB_EXTERNALS_SOURCES}
 )
 
