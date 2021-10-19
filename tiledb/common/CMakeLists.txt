@@ -26,19 +26,22 @@
 
 include(common-root)
 
+add_subdirectory(thread_pool)
+
 add_library(
     tiledb_common
     OBJECT
     heap_memory.cc
     heap_profiler.cc
     logger.cc
+    memory.cc
     status.cc
+    $<TARGET_OBJECTS:tiledb::common::thread_pool>
 )
 
 # we need to target the root directory here because includes are prefixed
 target_include_directories(tiledb_common PUBLIC ${CMAKE_SOURCE_DIR})
 
-add_subdirectory(thread_pool)
 
 if (TILEDB_TESTS)
     add_subdirectory(interval)
@@ -47,5 +50,5 @@ endif()
 #get_gathered(COMMON_SOURCES)
 #set(TILEDB_COMMON_SOURCES ${COMMON_SOURCES} PARENT_SCOPE)
 
-target_link_libraries(tiledb_common tiledb::common::thread_pool)
+target_link_libraries(tiledb_common PUBLIC tiledb::common::thread_pool)
 add_library(tiledb::common ALIAS tiledb_common)

@@ -233,6 +233,8 @@ endif()
 add_executable(
   tiledb_unit EXCLUDE_FROM_ALL
   $<TARGET_OBJECTS:TILEDB_CORE_OBJECTS>
+  $<TARGET_OBJECTS:tiledb::common>
+  $<TARGET_OBJECTS:tiledb::common::thread_pool> # this should not be necessary
   ${TILEDB_TEST_SOURCES}
 )
 
