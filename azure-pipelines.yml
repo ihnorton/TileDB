@@ -40,7 +40,7 @@ stages:
           linux_asan:
             imageName: 'ubuntu-20.04'
             TILEDB_SERIALIZATION: ON
-            TILEDB_ASAN: ON
+            TILEDB_CI_ASAN: ON
             CXX: g++
             CC: gcc
             CXXFLAGS: "-lrt"

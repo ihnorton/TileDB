@@ -26,7 +26,8 @@ steps:
 - bash: |
     set -xe pipefail
     yum install libasan5.x86_64 devtoolset-8-libasan-devel.x86_64
-  condition: and(eq(variables['TILEDB_CI_ASAN'], 'ON'), eq(variables['USE_MANYLINUX'], 'ON'))
+  condition: eq(variables['TILEDB_CI_ASAN'], 'ON')
+  displayName: 'Install libasan for Dockerfile build'
 
 - bash: |
     set -e pipefail
