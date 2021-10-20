@@ -24,12 +24,6 @@ steps:
 #  condition: eq(variables['TILEDB_ARROW_TESTS'], 'ON')
 
 - bash: |
-    set -xe pipefail
-    sudo yum install libasan5.x86_64 devtoolset-8-libasan-devel.x86_64
-  condition: eq(variables['TILEDB_CI_ASAN'], 'ON')
-  displayName: 'Install libasan for Dockerfile build'
-
-- bash: |
     set -e pipefail
     open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
     sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -allowUntrusted -target /
