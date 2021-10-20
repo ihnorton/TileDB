@@ -40,10 +40,12 @@ stages:
           linux_asan:
             imageName: 'ubuntu-20.04'
             TILEDB_SERIALIZATION: ON
+            TILEDB_ASAN: ON
             CXX: g++
             CC: gcc
             CXXFLAGS: "-lrt"
             CFLAGS: "-lrt"
+            USE_MANYLINUX: ON
       pool:
         vmImage: '$(imageName)'
       container: ${{ variables.manylinuxImage }}
