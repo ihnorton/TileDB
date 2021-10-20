@@ -1,5 +1,7 @@
 steps:
 - bash: |
+    echo "ulimit -a is: " $(ulimit -a)
+    echo "----------------------------------------------------------"
     echo "'uname -s' is:"
     echo "uname: " $(uname)
     echo "uname -m: " $(uname -m)
@@ -35,7 +37,6 @@ steps:
     ulimit -c               # should output 0 if disabled
     ulimit -c unlimited     # Enable core dumps to be captured (must be in same run block)
     ulimit -c               # should output 'unlimited' now
-
     # Azure sets "SYSTEM=build" for unknown reasons, which breaks the OpenSSL configure script
     #   - openssl configure uses ENV{SYSTEM} if available:
     #     https://github.com/openssl/openssl/blob/6d745d740d37d680ff696486218b650512bbbbc6/config#L56
