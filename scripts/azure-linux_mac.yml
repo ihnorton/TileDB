@@ -2,6 +2,7 @@ steps:
 - bash: |
     echo "ulimit -a is: " $(ulimit -a)
     echo "----------------------------------------------------------"
+    echo "----------------------------------------------------------"
     echo "'uname -s' is:"
     echo "uname: " $(uname)
     echo "uname -m: " $(uname -m)
