@@ -43,7 +43,8 @@ stages:
     - job: linux_manylinux
       pool: { vmImage: $(imageName) }
       container: ${{ variables.manylinuxImage }}
-        imageName: 'ubuntu-20.04'
+      imageName: 'ubuntu-20.04'
+      variables:
         TILEDB_SERIALIZATION: ON
         CXX: g++
         CC: gcc
