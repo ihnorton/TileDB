@@ -40,20 +40,16 @@ stages:
       steps:
       - template: scripts/azure-linux_mac.yml
 
-    - job:
-      strategy:
-        matrix:
-          linux_manylinux:
-            imageName: 'ubuntu-20.04'
-            TILEDB_SERIALIZATION: ON
-            CXX: g++
-            CC: gcc
-            CXXFLAGS: "-lrt"
-            CFLAGS: "-lrt"
-            USE_MANYLINUX: ON
-      pool:
-        vmImage: $(imageName)
+    - job: linux_manylinux
+      pool: { vmImage: $(imageName) }
       container: ${{ variables.manylinuxImage }}
+        imageName: 'ubuntu-20.04'
+        TILEDB_SERIALIZATION: ON
+        CXX: g++
+        CC: gcc
+        CXXFLAGS: "-lrt"
+        CFLAGS: "-lrt"
+        USE_MANYLINUX: ON
       steps:
       - template: scripts/azure-linux_mac.yml
     - job: Windows
@@ -110,8 +106,8 @@ stages:
        pool:
          vmImage: $(imageName)
        steps:
-         - template: scripts/azure-linux_mac-release.yml
-     - job: linux
+       - template: scripts/azure-linux_mac-release.yml
+     - job: linux_manylinux
        pool: { vmImage: 'ubuntu-20.04' }
        container: ${{ variables.manylinuxImage }}
        variables:
@@ -122,7 +118,7 @@ stages:
          ARTIFACT_ARCH: 'x86_64'
          SUDO: ''
        steps:
-         - template: scripts/azure-linux_mac-release.yml
+       - template: scripts/azure-linux_mac-release.yml
      - job: Windows
        strategy:
          matrix:
@@ -136,7 +132,7 @@ stages:
        pool:
          vmImage: $(imageName)
        steps:
-         - template: scripts/azure-windows-release.yml
+       - template: scripts/azure-windows-release.yml
 
   # NOTE: this section cannot be conditional because `Build.Repository.Name` is an agent-scoped variable.
   - stage: Github_Release
