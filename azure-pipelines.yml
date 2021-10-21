@@ -29,15 +29,21 @@ stages:
             TILEDB_SERIALIZATION: ON
             CXX: clang++
             ARTIFACT_OS: macOS_azure
+          linux_asan:
+            imageName: 'ubuntu-20.04'
+            TILEDB_CI_ASAN: ON
+            TILEDB_SERIALIZATION: ON
+            CXX: g++
+            CC: gcc
       pool:
-        vmImage: '$(imageName)'
+        vmImage: $(imageName)
       steps:
       - template: scripts/azure-linux_mac.yml
 
     - job:
       strategy:
         matrix:
-          linux_asan:
+          linux_manylinux:
             imageName: 'ubuntu-20.04'
             TILEDB_SERIALIZATION: ON
             CXX: g++
@@ -46,7 +52,7 @@ stages:
             CFLAGS: "-lrt"
             USE_MANYLINUX: ON
       pool:
-        vmImage: '$(imageName)'
+        vmImage: $(imageName)
       container: ${{ variables.manylinuxImage }}
       steps:
       - template: scripts/azure-linux_mac.yml

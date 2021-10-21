@@ -10,7 +10,7 @@ on:
       - '*'  # must quote since "*" is a YAML reserved character; we want a string
 env:
   TILEDB_SERIALIZATION: ON # NOTE: currently defined directly inline
-  TILEDB_CI_ASAN: ON # NOTE: currently defined directly inline
+  TILEDB_S3: ON
   CXX: g++
   BACKWARDS_COMPATIBILITY_ARRAYS: ON
 
@@ -50,13 +50,12 @@ jobs:
 
           #   name: 'Clone Unit-Test-Arrays'
 
-          bootstrap_args="${bootstrap_args} --enable-serialization  --enable-sanitizer=address --enable-debug";
+          bootstrap_args="${bootstrap_args} --enable-serialization  --enable-s3";
           source $GITHUB_WORKSPACE/scripts/ci/build_libtiledb.sh
 
           # Bypass Catch2 Framework stdout interception with awk on test output
           # make check | awk '/1: ::set-output/{sub(/.*1: /, ""); print; next} 1'
-          ./tiledb/test/tiledb_unit -d yes
-          #| awk '/1: ::set-output/{sub(/.*1: /, ""); print; next} 1'
+          ./tiledb/test/tiledb_unit -d yes | awk '/1: ::set-output/{sub(/.*1: /, ""); print; next} 1'
 
 
           # - bash: |
