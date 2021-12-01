@@ -1157,10 +1157,10 @@ Status Query::check_buffer_names() {
                      coord_offsets_buffer_is_set_) ?
                         array_schema_->dim_num() :
                         0;
-    if (buffers_.size() != expected_num)
-      return logger_->status(Status::WriterError(
-          "Writes expect all attributes (and coordinates in "
-          "the sparse/unordered case) to be set"));
+    //if (buffers_.size() != expected_num)
+    //  return logger_->status(Status::WriterError(
+    //      "Writes expect all attributes (and coordinates in "
+    //      "the sparse/unordered case) to be set"));
   }
 
   return Status::Ok();
