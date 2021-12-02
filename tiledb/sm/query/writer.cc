@@ -2107,23 +2107,23 @@ Status Writer::prepare_tiles(
   for (const auto& it : buffers_) {
     bool has_dim = false;
     array_schema_->domain()->has_dimension(it.first, &has_dim);
-    if (continuation_ && has_dim)
-      continue;
-    (*tiles)[it.first] = std::vector<Tile>();
-  }
+      if (continuation_ && has_dim && written_fragment_info_.size() > 0)
+        continue;
+      (*tiles)[it.first] = std::vector<Tile>();
+    }
 
-  // Prepare tiles for all attributes and coordinates
-  auto buffer_num = buffers_.size();
-  auto status = parallel_for(
-      storage_manager_->compute_tp(), 0, buffer_num, [&](uint64_t i) {
-        auto buff_it = buffers_.begin();
-        std::advance(buff_it, i);
-        const auto& name = buff_it->first;
+    // Prepare tiles for all attributes and coordinates
+    auto buffer_num = buffers_.size();
+    auto status = parallel_for(
+        storage_manager_->compute_tp(), 0, buffer_num, [&](uint64_t i) {
+          auto buff_it = buffers_.begin();
+          std::advance(buff_it, i);
+          const auto& name = buff_it->first;
 
-        /*
-        bool has_dim = false;
-        array_schema_->domain()->has_dimension(name, &has_dim);
-        if (continuation_ && has_dim)
+          /*
+          bool has_dim = false;
+          array_schema_->domain()->has_dimension(name, &has_dim);
+          if (continuation_ && has_dim)
           return Status::Ok();
         */
 
@@ -2149,7 +2149,8 @@ Status Writer::prepare_tiles(
 
   bool has_dim = false;
   array_schema_->domain()->has_dimension(name, &has_dim);
-  if (continuation_ && has_dim)
+
+  if (continuation_ && has_dim && written_fragment_info_.size() > 0)
     return Status::Ok();
 
   return array_schema_->var_size(name) ?
@@ -2427,7 +2428,7 @@ Status Writer::unordered_write() {
       RETURN_CANCEL_OR_ERROR(compute_coord_dups(cell_pos_, &coord_dups_));
 
     // Create new fragment
-    auto frag_meta_ = tdb::make_shared<FragmentMetadata>(HERE());
+    frag_meta_ = tdb::make_shared<FragmentMetadata>(HERE());
     RETURN_CANCEL_OR_ERROR(create_fragment(false, frag_meta_));
   }
   const auto& uri = frag_meta_->fragment_uri();
@@ -2477,11 +2478,14 @@ Status Writer::unordered_write() {
   // Add written fragment info
   RETURN_NOT_OK_ELSE(add_written_fragment_info(uri), clean_up(uri));
 
-  if (!continuation_) {
-    // The following will make the fragment visible
-    auto ok_uri =
-        URI(uri.remove_trailing_slash().to_string() + constants::ok_file_suffix);
-    RETURN_NOT_OK_ELSE(storage_manager_->vfs()->touch(ok_uri), clean_up(uri));
+  // The following will make the fragment visible
+  auto ok_uri =
+      URI(uri.remove_trailing_slash().to_string() + constants::ok_file_suffix);
+  RETURN_NOT_OK_ELSE(storage_manager_->vfs()->touch(ok_uri), clean_up(uri));
+
+  // for continuation queries, after the first one we must skip oob
+  if (continuation_) {
+    check_coord_oob_ = false;
   }
 
   return Status::Ok();
