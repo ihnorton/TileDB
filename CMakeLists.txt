@@ -239,6 +239,7 @@ endif()
 
 # Definitions for all targets
 add_definitions(-D_FILE_OFFSET_BITS=64)
+add_definitions(-DOPENSSL_OPEN_COMPAT=0x10100000L)
 
 # AVX2 flag
 include(CheckAVX2Support)
