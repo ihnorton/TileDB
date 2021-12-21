@@ -231,6 +231,16 @@ class Subarray {
       uint32_t dim_idx, Range&& range, const bool read_range_oob_error = true);
 
   /**
+   * @brief Set point ranges from an array
+   *
+   * @param dim_idx Dimension index
+   * @param start Pointer to start of the array
+   * @param count Number of elements to add
+   * @return Status
+   */
+  Status add_point_ranges(unsigned dim_idx, const void* start, uint64_t count);
+
+  /**
    * Adds a range along the dimension with the given index, without
    * performing any error checks.
    */
