@@ -853,11 +853,11 @@ void ArraySchema::clear() {
   timestamp_range_ = std::make_pair(0, 0);
 }
 
+/*
 Status ArraySchema::generate_uri() {
   std::string uuid;
   RETURN_NOT_OK(uuid::generate_uuid(&uuid, false));
 
-  auto timestamp = utils::time::timestamp_now_ms();
   timestamp_range_ = std::make_pair(timestamp, timestamp);
   std::stringstream ss;
   ss << "__" << timestamp_range_.first << "_" << timestamp_range_.second << "_"
@@ -868,13 +868,16 @@ Status ArraySchema::generate_uri() {
 
   return Status::Ok();
 }
+*/
 
 Status ArraySchema::generate_uri(
-    const std::pair<uint64_t, uint64_t>& timestamp_range) {
+    optional<const std::pair<uint64_t, uint64_t>> timestamp_range) {
   std::string uuid;
   RETURN_NOT_OK(uuid::generate_uuid(&uuid, false));
 
-  timestamp_range_ = timestamp_range;
+  auto timestamp = utils::time::timestamp_now_ms();
+  timestamp_range_ =
+      timestamp_range.value_or(std::make_pair(timestamp, timestamp));
   std::stringstream ss;
   ss << "__" << timestamp_range_.first << "_" << timestamp_range_.second << "_"
      << uuid;

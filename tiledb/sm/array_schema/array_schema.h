@@ -340,11 +340,9 @@ class ArraySchema {
   /** Set the schema name. */
   void set_name(const std::string& name);
 
-  /** Generates a new array schema URI. */
-  Status generate_uri();
-
   /** Generates a new array schema URI with specified timestamp range. */
-  Status generate_uri(const std::pair<uint64_t, uint64_t>& timestamp_range);
+  Status generate_uri(
+      optional<const std::pair<uint64_t, uint64_t>> timestamp_range = nullopt);
 
  private:
   /* ********************************* */
