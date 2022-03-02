@@ -102,6 +102,9 @@ Status ArraySchemaEvolution::evolve_schema(
   if (std::get<0>(timestamp_range_) != 0) {
     RETURN_NOT_OK(schema->set_timestamp_range(timestamp_range_));
     RETURN_NOT_OK(schema->generate_uri(timestamp_range_));
+  } else {
+    // Generate new schema URI
+    RETURN_NOT_OK(schema->generate_uri());
   }
 
   *new_schema = schema;
