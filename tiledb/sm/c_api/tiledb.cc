@@ -81,8 +81,15 @@
 using namespace tiledb::common;
 
 /* ****************************** */
-/*       ENUMS TO/FROM STR        */
+/*   WRAPPED API IMPLEMENTATIONS  */
 /* ****************************** */
+
+// C API implementations: functions defined in this section are called
+// by wrappers defined below, outside the detail namespace.
+// See `api_exception_safety.h` for `api_entry` definition.
+//
+// New functions *should* be defined in this section and use the exception-safe
+// wrappers.
 
 namespace tiledb::common::detail {
 
@@ -300,6 +307,14 @@ int32_t tiledb_vfs_mode_from_str(const char* str, tiledb_vfs_mode_t* vfs_mode) {
 }
 
 }  // namespace tiledb::common::detail
+
+/* ****************************** */
+/*      EXCEPTION-WRAPPED API     */
+/* ****************************** */
+
+// Functions in this section forward all arguments into the `::detail` namespace
+// implementations above, via an exception-safe wrapper struct.
+// See `api_exception_safety.h` for `api_entry` definition.
 
 int32_t tiledb_query_type_to_str(
     tiledb_query_type_t query_type, const char** str) {
