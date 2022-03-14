@@ -131,7 +131,7 @@ steps:
     fi
     if [[ "$TILEDB_CI_ASAN" == "ON" ]]; then
       # Add address sanitizer flag if necessary
-      bootstrap_args="${bootstrap_args} --enable-sanitizer=address --enable-debug";
+      bootstrap_args="${bootstrap_args} --enable-sanitizer=address";
     fi
     if [[ "$TILEDB_CI_TSAN" == "ON" ]]; then
       # Add thread sanitizer flag if necessary
