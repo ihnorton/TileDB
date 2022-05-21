@@ -31,3 +31,12 @@
  */
 
 #include "unit_dag.h"
+#include "experimental/tiledb/common/dag/dag.h"
+
+using namespace tiledb::common;
+
+TEST_CASE("Dag: Test bind", "[dag]") {
+  Source<int> left;
+  Sink<int> right;
+  bind(left, right);
+}
