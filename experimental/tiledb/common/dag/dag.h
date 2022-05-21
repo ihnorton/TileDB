@@ -122,7 +122,67 @@ class Source {
   /**
    * Assign a correspondent for this Source.
    */
-  void bind(Sink<Block>*);
+  void bind(Sink<Block>* predecessor) {
+    correspondent_ = predecessor;
+  }
+
+  /**
+   * Remove the current correspondent, if any.
+   */
+  void unbind();
+};
+
+/**
+ * A data flow sink, used by both edges and nodes.
+ *
+ * Sink objects have two states: full and ready.
+ */
+template <class Block>
+class Sink {
+  friend class Source<Block>;
+
+  /**
+   * @inv If an item is present, `try_receive` will succeed.
+   */
+  std::optional<Block> item_;
+
+  /**
+   * The correspondent Source, if any
+   */
+  Source<Block>* correspondent_;
+
+  /**
+   * Mutex shared by a correspondent pair. It's defined in only the Sink
+   * arbitrarily.  Protects transfer of data item from Source to the Sink.
+   */
+  std::mutex m_;
+
+ public:
+  /**
+   * Notification function to be called by a correspondent Source to signal that
+   * it is ready to send data. If `try_send()` is called immediately, it should
+   * ordinarily succeed.
+   *
+   * At the point of construction it should be as if
+   * ready_to_send(false) was called in the constructor body.
+   *
+   * @pre This Sink object is registered as alive with the Scheduler.
+   */
+  void ready_to_send();
+
+  /**
+   * Receive a block from a correspondent source. Called by the source.
+   * Call is non-blocking and will return an empty object if there is
+   * no item available to return.
+   */
+  std::optional<Block> try_receive();
+
+  /**
+   * Assign a correspondent for this Sink.
+   */
+  void bind(Source<Block>* successor) {
+    correspondent_ = successor;
+  }
 
   /**
    * Remove the current correspondent, if any.
@@ -166,60 +226,6 @@ class Edge : public Source<Block>, public Sink<Block> {
 
  public:
   Edge(Source<Block>& from, Sink<Block>& to);
-};
-
-/**
- * A data flow sink, used by both edges and nodes.
- *
- * Sink objects have two states: full and ready.
- */
-template <class Block>
-class Sink {
-  friend class Source<Block>;
-
-  /**
-   * @inv If an item is present, `try_receive` will succeed.
-   */
-  std::optional<Block> item_;
-
-  /**
-   * The correspondent Source, if any
-   */
-  Source<Block>* correspondent_;
-
-  /**
-   * Mutex shared by a correspondent pair. It's defined in only the Sink
-   * arbitrarily.
-   */
-  std::mutex m_;
-
- public:
-  /**
-   * Notification function to be called by a correspondent Source to signal that
-   * it is ready to send data. If `try_send()` is called immediately, it should
-   * ordinarily succeed.
-   *
-   * At the point of construction it should be as if
-   * ready_to_send(false) was called in the constructor body.
-   *
-   * @pre This Sink object is registered as alive with the Scheduler.
-   */
-  void ready_to_send();
-
-  /**
-   * Receive a block from a correspondent source. Called by the source.
-   */
-  Block try_receive();
-
-  /**
-   * Assign a correspondent for this Sink.
-   */
-  void bind(Source<Block>*);
-
-  /**
-   * Remove the current correspondent, if any.
-   */
-  void unbind();
 };
 
 /**
