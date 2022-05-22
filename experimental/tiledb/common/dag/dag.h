@@ -94,12 +94,12 @@ class Source {
   /**
    * @inv If an item is present, `try_send` will succeed.
    */
-  std::optional<Block> item_;
+  std::optional<Block> item_{};
 
   /**
    * The correspondent Sink, if any
    */
-  Sink<Block>* correspondent_;
+  Sink<Block>* correspondent_{nullptr};
 
  public:
   /**
@@ -122,14 +122,21 @@ class Source {
   /**
    * Assign a correspondent for this Source.
    */
-  void bind(Sink<Block>* predecessor) {
-    correspondent_ = predecessor;
+  void bind(Sink<Block>& predecessor) {
+    if (correspondent_ == nullptr) {
+      correspondent_ = &predecessor;
+    } else {
+      throw std::runtime_error(
+          "Attempting to bind to already bound correspondent");
+    }
   }
 
   /**
    * Remove the current correspondent, if any.
    */
-  void unbind();
+  void unbind() {
+    correspondent_ = nullptr;
+  }
 };
 
 /**
@@ -140,6 +147,8 @@ class Source {
 template <class Block>
 class Sink {
   friend class Source<Block>;
+  template <class Bl>
+  friend void bind(Source<Bl>& src, Sink<Bl>& snk);
 
   /**
    * @inv If an item is present, `try_receive` will succeed.
@@ -149,13 +158,13 @@ class Sink {
   /**
    * The correspondent Source, if any
    */
-  Source<Block>* correspondent_;
+  Source<Block>* correspondent_{nullptr};
 
   /**
    * Mutex shared by a correspondent pair. It's defined in only the Sink
    * arbitrarily.  Protects transfer of data item from Source to the Sink.
    */
-  std::mutex m_;
+  std::mutex mutex_;
 
  public:
   /**
@@ -180,14 +189,21 @@ class Sink {
   /**
    * Assign a correspondent for this Sink.
    */
-  void bind(Source<Block>* successor) {
-    correspondent_ = successor;
+  void bind(Source<Block>& successor) {
+    if (correspondent_ == nullptr) {
+      correspondent_ = &successor;
+    } else {
+      throw std::runtime_error(
+          "Attempting to bind to already bound correspondent");
+    }
   }
 
   /**
    * Remove the current correspondent, if any.
    */
-  void unbind();
+  void unbind() {
+    correspondent_ = nullptr;
+  }
 };
 
 /**
@@ -195,8 +211,9 @@ class Sink {
  */
 template <class Block>
 inline void bind(Source<Block>& src, Sink<Block>& snk) {
-  src.bind(&snk);
-  snk.bind(&src);
+  std::scoped_lock(snk.mutex_);
+  src.bind(snk);
+  snk.bind(src);
 }
 
 /**
@@ -206,6 +223,7 @@ inline void bind(Source<Block>& src, Sink<Block>& snk) {
  */
 template <class Block>
 inline void unbind(Source<Block>& src, Sink<Block>& snk) {
+  std::scoped_lock(snk.mutex_);
   src.unbind();
   snk.unbind();
 };

@@ -59,32 +59,54 @@ class generator {
 
 /**
  * Prototype source node.  Constructed with a function that creates items.
+=======
+/*
+ * Prototype source node.  Generates N integers
+>>>>>>> 375141756 (add scaffolding for proto nodes for testing)
  */
 template <class Block = size_t>
 class producer_node : public Source<Block> {
   using Base = Source<Block>;
+<<<<<<< HEAD
   std::function<Block()> f_;
+=======
+
+  std::atomic<size_t> i_{0};
+  size_t N_{0};
+>>>>>>> 375141756 (add scaffolding for proto nodes for testing)
 
  public:
   /**
    * Constructor
+<<<<<<< HEAD
    * @param f A function that accepts items.
    * @tparam The type of the function (or function object) that generates items.
    */
   template <class Function>
   explicit producer_node(Function&& f)
       : f_{std::forward<Function>(f)} {
+=======
+   * @tparam N The number of integers to generate
+   */
+  producer_node(size_t N)
+      : N_{N} {
+>>>>>>> 375141756 (add scaffolding for proto nodes for testing)
   }
 
   /**
    * Generate an output.
    */
   void run() {
+<<<<<<< HEAD
     Base::item_ = f_();
+=======
+    Base::item_ = i_++;
+>>>>>>> 375141756 (add scaffolding for proto nodes for testing)
   }
 };
 
 /**
+<<<<<<< HEAD
  * Consumer function object class.  Takes items and puts them on an Output
  * Iterator.
  */
@@ -108,10 +130,19 @@ template <class Block = size_t>
 class consumer_node : public Sink<Block> {
   using Base = Sink<Block>;
   std::function<void(Block&)> f_;
+=======
+ * A proto consumer node.  Puts received data onto on output iterator
+ */
+template <class Iterator, class Block = size_t>
+class output_node : public Sink<Block> {
+  using Base = Sink<Block>;
+  Iterator iter_;
+>>>>>>> 375141756 (add scaffolding for proto nodes for testing)
 
  public:
   /**
    * Constructor
+<<<<<<< HEAD
    * @param f A function that accepts items.
    * @tparam The type of the function (or function object) that accepts items.
    */
