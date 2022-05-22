@@ -118,5 +118,30 @@ class consumer_node : public Sink<Block> {
     f_(Base::item_);
   }
 };
+
+/**
+ * Purely notional proto `function_node`.  Constructed with function that
+ * accepts an item and returns an item.
+ */
+template <class Block>
+class function_node : public Source<Block>, public Sink<Block> {
+  std::function<Block(Block)> f_;
+  using SourceBase = Source<Block>;
+  using SinkBase = Sink<Block>;
+
+ public:
+  template <class Function>
+  function_node(Function&& f)
+      : f_{std::forward<Function>(f)} {
+  }
+
+  /**
+   * Receive an item from a source and put it on a sink.
+   */
+  Block run() {
+    SinkBase::item_ = f_(SourceBase::item_);
+  }
+};
+
 }  // namespace tiledb::common
 #endif  // TILEDB_PROTO_H
