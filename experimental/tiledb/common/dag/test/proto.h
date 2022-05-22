@@ -110,8 +110,7 @@ class consumer {
 template <class Block = size_t>
 class consumer_node : public Sink<Block> {
   using Base = Sink<Block>;
-  Iterator iter_;
-  std::function<void(Block)> f_;
+  std::function<void(Block&)> f_;
 
  public:
   /**
