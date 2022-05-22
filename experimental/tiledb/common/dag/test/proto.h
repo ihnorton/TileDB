@@ -40,9 +40,18 @@ namespace tiledb::common {
 
 template <class Block = size_t>
 class generator {
-  static std::atomic<Block> i_{0};
+  std::atomic<Block> N_{0};
+  std::atomic<Block> i_{0};
 
  public:
+  generator(Block N)
+      : N_{N} {
+  }
+  generator(const generator& rhs)
+      : N_(rhs.N_.load())
+      , i_(rhs.i_.load()) {
+  }
+
   Block operator()() {
     return i_++;
   }
@@ -63,7 +72,7 @@ class producer_node : public Source<Block> {
    * @tparam The type of the function (or function object) that generates items.
    */
   template <class Function>
-  producer_node(Function&& f)
+  explicit producer_node(Function&& f)
       : f_{std::forward<Function>(f)} {
   }
 
@@ -98,7 +107,7 @@ class consumer {
 template <class Block = size_t>
 class consumer_node : public Sink<Block> {
   using Base = Sink<Block>;
-  std::function<void(Block)> f_;
+  std::function<void(Block&)> f_;
 
  public:
   /**
@@ -107,7 +116,7 @@ class consumer_node : public Sink<Block> {
    * @tparam The type of the function (or function object) that accepts items.
    */
   template <class Function>
-  consumer_node(Function&& f)
+  explicit consumer_node(Function&& f)
       : f_{std::forward<Function>(f)} {
   }
 

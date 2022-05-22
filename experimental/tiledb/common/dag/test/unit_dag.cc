@@ -41,3 +41,28 @@ TEST_CASE("Dag: Test bind", "[dag]") {
   Sink<int> right;
   bind(left, right);
 }
+
+TEST_CASE("Dag: Test proto producer_node", "[dag]") {
+  auto gen = generator<size_t>(10UL);
+  auto pn = producer_node<size_t>(std::move(gen));
+}
+
+TEST_CASE("Dag: Test proto consumer_node", "[dag]") {
+  std::vector<size_t> v;
+  auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
+      std::back_insert_iterator<std::vector<size_t>>(v));
+  auto cn = consumer_node<size_t>(std::move(con));
+}
+
+TEST_CASE(
+    "Dag: Test connect proto consumer_node and proto producer_node", "[dag]") {
+  std::vector<size_t> v;
+  auto gen = generator<size_t>(10UL);
+  auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
+      std::back_insert_iterator<std::vector<size_t>>(v));
+
+  auto pn = producer_node<size_t>(std::move(gen));
+  auto cn = consumer_node<size_t>(std::move(con));
+
+  bind(pn, cn);
+}
