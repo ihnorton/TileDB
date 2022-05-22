@@ -37,56 +37,86 @@
 #include "../dag.h"
 
 namespace tiledb::common {
-/*
- * Prototype source node.  Generates N integers
+
+template <class Block = size_t>
+class generator {
+  static std::atomic<Block> i_{0};
+
+ public:
+  Block operator()() {
+    return i_++;
+  }
+};
+
+/**
+ * Prototype source node.  Constructed with a function that creates items.
  */
 template <class Block = size_t>
 class producer_node : public Source<Block> {
   using Base = Source<Block>;
-
-  std::atomic<size_t> i_{0};
-  size_t N_{0};
+  std::function<Block()> f_;
 
  public:
   /**
    * Constructor
-   * @tparam N The number of integers to generate
+   * @param f A function that accepts items.
+   * @tparam The type of the function (or function object) that generates items.
    */
-  producer_node(size_t N)
-      : N_{N} {
+  template <class Function>
+  producer_node(Function&& f)
+      : f_{std::forward<Function>(f)} {
   }
 
   /**
    * Generate an output.
    */
   void run() {
-    Base::item_ = i_++;
+    Base::item_ = f_();
   }
 };
 
 /**
- * A proto consumer node.  Puts received data onto on output iterator
+ * Consumer function object class.  Takes items and puts them on an Output
+ * Iterator.
  */
-template <class Iterator, class Block = size_t>
-class output_node : public Sink<Block> {
+template <class OutputIterator, class Block = size_t>
+class consumer {
+  OutputIterator iter_;
+
+ public:
+  consumer(OutputIterator iter)
+      : iter_(iter) {
+  }
+  void operator()(Block& item) {
+    *iter_++ = item;
+  }
+};
+
+/**
+ * A proto consumer node.  Constructed with a function that accepts items.
+ */
+template <class Block = size_t>
+class consumer_node : public Sink<Block> {
   using Base = Sink<Block>;
-  Iterator iter_;
+  std::function<void(Block)> f_;
 
  public:
   /**
    * Constructor
-   * @param out An output iterator for
+   * @param f A function that accepts items.
+   * @tparam The type of the function (or function object) that accepts items.
    */
-  output_node(Iterator iter)
-      : iter_{iter} {
+  template <class Function>
+  consumer_node(Function&& f)
+      : f_{std::forward<Function>(f)} {
   }
 
   /**
-   * Coroutine to receive an input, case where Input is not void
+   *  Receive an item from a Source
    */
   void run() {
-    *iter_++ = Base::item_;
+    f_(Base::item_);
   }
-};  // namespace tiledb::common
+};
 }  // namespace tiledb::common
 #endif  // TILEDB_PROTO_H
