@@ -32,6 +32,7 @@
 
 #include "unit_dag.h"
 #include "experimental/tiledb/common/dag/dag.h"
+#include "proto.h"
 
 using namespace tiledb::common;
 

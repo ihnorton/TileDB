@@ -28,4 +28,7 @@
  * @section DESCRIPTION
  */
 
+#ifndef TILEDB_UNIT_DAG_H
+#define TILEDB_UNIT_DAG_H
 #include <catch.hpp>
+#endif  // TILEDB_UNIT_DAG_H
