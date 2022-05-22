@@ -104,8 +104,8 @@ class Source {
  public:
   /**
    * Notification function to be called by a correspondent Sink to signal that
-   * it is ready to send data. If `try_send()` is called immediately, it should
-   * ordinarily succeed.
+   * it is ready to receive data. If `try_send()` is called immediately, it
+   * should ordinarily succeed.
    *
    * At the point of construction it should be as if
    * ready_to_receive(false) was called in the constructor body.
