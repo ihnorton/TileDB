@@ -113,11 +113,15 @@ class Source {
   void ready_to_receive(bool);
 
   /**
-   * Send a block to a correspondent sink.  Called by the sink.
+   * Send the item_ to a correspondent sink.  Called by the sink.
    *
-   * @post If return is true, `item_` is empty.
+   * Call is non-blocking and will return false if there is no item available to
+   * return. Otherwise, `block` will be swapped with `item_`.
+   *
+   * @param block Reference to item to receive data in the sink.
+   * @post If copied to the sink, `item_` will be empty.
    */
-  bool try_send(Block);
+  bool try_get(std::optional<Block>& block);
 
   /**
    * Assign a correspondent for this Source.
@@ -169,7 +173,7 @@ class Sink {
  public:
   /**
    * Notification function to be called by a correspondent Source to signal that
-   * it is ready to send data. If `try_send()` is called immediately, it should
+   * it is ready to send data. If `try_put()` is called immediately, it should
    * ordinarily succeed.
    *
    * At the point of construction it should be as if
@@ -181,10 +185,16 @@ class Sink {
 
   /**
    * Receive a block from a correspondent source. Called by the source.
-   * Call is non-blocking and will return an empty object if there is
-   * no item available to return.
+   *
+   * If `item_` is empty when `try_receive` is called, it will be swapped with
+   * the item being sent and true will be returned.  Otherwise, false will be
+   * returned.
+   *
+   * @param block The item to be sent.  Normally this will be the source's
+   * `item_`.
+   * @post If return value is true, item_ will contain `block`.
    */
-  std::optional<Block> try_receive();
+  bool try_put(std::optional<Block>& block);
 
   /**
    * Assign a correspondent for this Sink.
