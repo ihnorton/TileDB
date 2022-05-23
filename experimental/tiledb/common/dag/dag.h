@@ -38,6 +38,7 @@
 #include <optional>
 
 #include "tiledb/common/thread_pool.h"
+#include "tiledb/common/common-std.h"
 
 namespace tiledb::common {
 
@@ -63,26 +64,102 @@ class Node;
  * A fixed size block, an untyped carrier for data to be interpreted by its
  * users.
  *
- * Intended to be allocated from a pool with a bitmap allocation strategy.
+ * Intended to be allocated from a pool with a bitmap allocation strategy.  
+ *
  * Implemented internally as a span.
  *
  * Implements standard library interface for random access container.
  */
 class DataBlock {
+  constexpr static const size_t N_ = 4'194'304;  // 4M
+
+  using storage_t = std::vector<std::byte>; // For prototyping
+  using data_t = tcb::span<std::byte>;
+  storage_t storage_;
+  data_t data_;
  public:
-  DataBlock();  // fixed size configured as private constexpr
+  DataBlock() : storage_ (N_), data_(storage_.data(), storage_.data()) {}
 
-  class DataBlockIterator;
-  class DataBlockConstIterator;
+  using DataBlockIterator = data_t::iterator;
+  using DataBlockConstIterator = data_t::iterator;
 
-  size_t size() const;
+  using value_type = data_t::value_type;
+  // using  allocator_type = ??
+  using size_type = std::size_t;
+  using difference_type	= std::ptrdiff_t;
+  using reference = value_type&;
+  using const_reference = const value_type&;
+  using pointer = data_t::pointer;
+  using const_pointer = data_t::const_pointer;
   using iterator = DataBlockIterator;
   using const_iterator = DataBlockConstIterator;
-  const_iterator cbegin() const;
-  iterator begin();
-  const_iterator cend() const;
-  iterator end();
-};
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+  reference operator[](size_type idx) {
+    return data_[idx];
+  }
+  const_reference operator[](size_type idx) const {
+    return data_[idx];
+  }
+
+  pointer data() {
+    return data_.data();
+  }
+  const_pointer data() const {
+    return data_.data();
+  }
+
+  iterator begin() {
+    return data_.begin();
+  }
+  const_iterator begin() const {
+    return data_.begin();
+  }
+  const_iterator cbegin() const {
+    return data_.begin();
+  }
+  reverse_iterator rbegin() {
+    return data_.rbegin();
+  }
+  const_reverse_iterator rbegin() const {
+    return data_.rbegin();
+  }
+  const_reverse_iterator crbegin() const {
+    return data_.rbegin();
+  }
+
+  iterator end() {
+    return data_.end();
+  }
+  const_iterator end() const {
+    return data_.end();
+  }
+  const_iterator cend() const {
+    return data_.end();
+  }
+  reverse_iterator rend() {
+    return data_.rend();
+  }
+  const_reverse_iterator rend() const {
+    return data_.rend();
+  }
+  const_reverse_iterator crend() const {
+    return data_.rend();
+  }
+
+  bool empty() const {
+    return data_.empty();
+  }
+
+  size_t size() const {
+    return data_.size();
+  }
+  size_t capacity() const {
+    return storage_.size();
+  }
+
+};  // namespace tiledb::common
 
 /**
  * A data flow source, used by both edges and nodes.
