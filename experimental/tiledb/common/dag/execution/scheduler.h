@@ -33,6 +33,8 @@
 #ifndef TILEDB_DAG_SCHEDULER_H
 #define TILEDB_DAG_SCHEDULER_HH
 
+namespace tiledb::common {
+
 /**
  * Scheduler for the graph.
  *
@@ -53,4 +55,5 @@ class Scheduler {
   // wakeup(Sink *);
 };
 
+}  // namespace tiledb::common
 #endif  // TILEDB_DAG_SCHEDULER_HH
