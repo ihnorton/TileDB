@@ -26,9 +26,10 @@
  * THE SOFTWARE.
  */
 
-#include "../dag.h"
+#include "../ports.h"
 
 int main() {
-  (void)sizeof(tiledb::common::Dag);
+  (void)sizeof(tiledb::common::Sink);
+  (void)sizeof(tiledb::common::Source);
   return 0;
 }

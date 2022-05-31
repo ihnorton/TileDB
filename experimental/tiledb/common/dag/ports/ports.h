@@ -51,10 +51,20 @@
  * scheduler as either alive or quiescent.
  */
 
-#ifndef TILEDB_PORTS_H
-#define TILEDB_PORTS_H
+#ifndef TILEDB_DAG_PORTS_H
+#define TILEDB_DAG_PORTS_H
 
-namespace tiledb::comon {
+#include <mutex>
+#include <optional>
+
+namespace tiledb::common {
+
+/* Forward declarations */
+template <class Block>
+class Source;
+
+template <class Block>
+class Sink;
 
 /**
  * A data flow source, used by both edges and nodes.
@@ -210,5 +220,5 @@ inline void unbind(Source<Block>& src, Sink<Block>& snk) {
   snk.unbind();
 };
 
-}  // namespace tiledb::comon
-#endif TILEDB_PORTS_H
+}  // namespace tiledb::common
+#endif  // TILEDB_DAG_PORTS_H

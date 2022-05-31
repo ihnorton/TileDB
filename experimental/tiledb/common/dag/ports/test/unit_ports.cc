@@ -1,5 +1,5 @@
 /**
- * @file unit_dag.cc
+ * @file unit_ports.cc
  *
  * @section LICENSE
  *
@@ -30,8 +30,8 @@
  * Tests the `Dag` class.
  */
 
-#include "unit_dag.h"
-#include "experimental/tiledb/common/dag/dag.h"
+#include "unit_ports.h"
+#include "experimental/tiledb/common/dag/ports/ports.h"
 #include "proto.h"
 
 using namespace tiledb::common;
@@ -67,6 +67,7 @@ TEST_CASE(
   bind(pn, cn);
 }
 
+#if 0
 void db_test_0(DataBlock& db) {
   auto a = db.begin();
   auto b = db.cbegin();
@@ -124,3 +125,4 @@ TEST_CASE("Dag: Test create DataBlock", "[dag]") {
   db_test_0(db);
   db_test_1(db);
 }
+#endif

@@ -30,11 +30,11 @@
  * This file defines some elementary node types for testing
  */
 
-#ifndef TILEDB_PROTO_H
-#define TILEDB_PROTO_H
+#ifndef TILEDB_DAG_PROTO_H
+#define TILEDB_DAG_PROTO_H
 
 #include <atomic>
-#include "../dag.h"
+#include "../ports.h"
 
 namespace tiledb::common {
 
@@ -156,4 +156,4 @@ class function_node : public Source<Block>, public Sink<Block> {
 };
 
 }  // namespace tiledb::common
-#endif  // TILEDB_PROTO_H
+#endif  // TILEDB_DAG_PROTO_H
