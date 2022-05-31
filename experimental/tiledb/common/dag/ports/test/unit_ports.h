@@ -28,7 +28,7 @@
  * @section DESCRIPTION
  */
 
-#ifndef TILEDB_UNIT_DAG_H
-#define TILEDB_UNIT_DAG_H
+#ifndef TILEDB_UNIT_PORTS_H
+#define TILEDB_UNIT_PORTS_H
 #include <catch.hpp>
-#endif  // TILEDB_UNIT_DAG_H
+#endif  // TILEDB_UNIT_PORTS_H
