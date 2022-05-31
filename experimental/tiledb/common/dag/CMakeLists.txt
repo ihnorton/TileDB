@@ -45,7 +45,6 @@ add_executable(compile_dag EXCLUDE_FROM_ALL)
 target_link_libraries(compile_dag PRIVATE dag)
 target_sources(compile_dag PRIVATE test/compile_dag_main.cc)
 
-
 if (TILEDB_TESTS)
     add_executable(unit_dag EXCLUDE_FROM_ALL)
     target_link_libraries(unit_dag PUBLIC dag)
