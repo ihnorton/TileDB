@@ -5,7 +5,7 @@
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2018-2021 TileDB, Inc.
+ * @copyright Copyright (c) 2022 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,8 @@
 #ifndef TILEDB_DAG_EDGE_H
 #define TILEDB_DAG_EDGE_H
 
+namespace tiledb::common {
+
 /**
  * An edge in a task graph.
  *
@@ -50,5 +52,7 @@ class Edge : public Source<Block>, public Sink<Block> {
  public:
   Edge(Source<Block>& from, Sink<Block>& to);
 };
+
+}  // namespace tiledb::common
 
 #endif  // TILEDB_DAG_EDGE_H

@@ -33,6 +33,13 @@
 #ifndef TILEDB_DAG_NODE_H
 #define TILEDB_DAG_NODE_H
 
+namespace tiledb::common {
+
+/*
+ * To be defined. First test is to hook up a raw source and a raw sink with an
+ * edge.
+ */
 class Node;
 
+}  // namespace tiledb::common
 #endif  // TILEDB_DAG_NODE_H

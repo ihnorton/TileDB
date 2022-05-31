@@ -5,7 +5,7 @@
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2018-2021 TileDB, Inc.
+ * @copyright Copyright (c) 2022 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,8 @@
 
 #ifndef TILEDB_DAG_DATA_BLOCK_H
 #define TILEDB_DAG_DATA_BLOCK_H
+
+namespace tiledb::common {
 
 /**
  * A fixed size block, an untyped carrier for data to be interpreted by its
@@ -135,7 +137,8 @@ class DataBlock {
   size_t capacity() const {
     return storage_.size();
   }
+};
 
-};  // namespace tiledb::common
+}  // namespace tiledb::common
 
 #endif  // TILEDB_DAG_DATA_BLOCK_H

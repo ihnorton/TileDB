@@ -5,7 +5,7 @@
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2018-2021 TileDB, Inc.
+ * @copyright Copyright (c) 2022 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,27 +37,12 @@
 #include <mutex>
 #include <optional>
 
-#include "tiledb/common/thread_pool.h"
+#include "experimental/tiledb/common/node/edge.h"
+#include "experimental/tiledb/common/node/node.h"
+#include "experimental/tiledb/common/ports/ports.h"
 #include "tiledb/common/common-std.h"
+#include "tiledb/common/thread_pool.h"
 
-namespace tiledb::common {
-
-/*
- * Forward declarations
- */
-template <class Block>
-class EdgeQueue;
-
-template <class Block>
-class Source;
-
-template <class Block>
-class Sink;
-
-/*
- * To be defined. First test is to hook up a raw source and a raw sink with an
- * edge.
- */
-class Node;
+namespace tiledb::common {}  // namespace tiledb::common
 
 #endif  // TILEDB_DAG_H
