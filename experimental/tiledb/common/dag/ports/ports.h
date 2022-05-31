@@ -1,5 +1,5 @@
 /**
- * @file   dag.h
+ * @file   ports.h
  *
  * @section LICENSE
  *
@@ -27,139 +27,34 @@
  *
  * @section DESCRIPTION
  *
- * This file declares the Dag class as well as its associated classes.
- */
-
-#ifndef TILEDB_DAG_H
-#define TILEDB_DAG_H
-
-#include <cstddef>
-#include <mutex>
-#include <optional>
-
-#include "tiledb/common/thread_pool.h"
-#include "tiledb/common/common-std.h"
-
-namespace tiledb::common {
-
-/*
- * Forward declarations
- */
-template <class Block>
-class EdgeQueue;
-
-template <class Block>
-class Source;
-
-template <class Block>
-class Sink;
-
-/*
- * To be defined. First test is to hook up a raw source and a raw sink with an
- * edge.
- */
-class Node;
-
-/**
- * A fixed size block, an untyped carrier for data to be interpreted by its
- * users.
+ * This file declares the Source and Sink ports for dag.
  *
- * Intended to be allocated from a pool with a bitmap allocation strategy.  
  *
- * Implemented internally as a span.
+ * States for objects containing Source or Sink member variables.
  *
- * Implements standard library interface for random access container.
+ * The design goal of these states is to limit the total number of std::thread
+ * objects that simultaneously exist. Instead of a worker thread blocking
+ * because correspondent source is empty or because a correspondent sink is
+ * full, the worker can simply return. Tasks may become dormant without any
+ * thread that runs them needing to block.
+ *
+ * States:
+ *   Quiescent: initial and final state. No correspondent sources or sinks
+ *   Dormant: Some correspondent exists, but no thread is currently active
+ *   Active: Some correspondent exists, and some thread is currently active
+ *
+ * An element is alive if it is either dormant or active, that is, some
+ * correspondent exists, regardless of thread state.
+ *
+ * Invariant: an element is registered with the scheduler as alive if and only
+ * if the element is alive. Invariant: each element is registered with the
+ * scheduler as either alive or quiescent.
  */
-class DataBlock {
-  constexpr static const size_t N_ = 4'194'304;  // 4M
 
-  using storage_t = std::vector<std::byte>; // For prototyping
-  using data_t = tcb::span<std::byte>;
-  storage_t storage_;
-  data_t data_;
- public:
-  DataBlock() : storage_ (N_), data_(storage_.data(), storage_.data()) {}
+#ifndef TILEDB_PORTS_H
+#define TILEDB_PORTS_H
 
-  using DataBlockIterator = data_t::iterator;
-  using DataBlockConstIterator = data_t::iterator;
-
-  using value_type = data_t::value_type;
-  // using  allocator_type = ??
-  using size_type = std::size_t;
-  using difference_type	= std::ptrdiff_t;
-  using reference = value_type&;
-  using const_reference = const value_type&;
-  using pointer = data_t::pointer;
-  using const_pointer = data_t::const_pointer;
-  using iterator = DataBlockIterator;
-  using const_iterator = DataBlockConstIterator;
-  using reverse_iterator = std::reverse_iterator<iterator>;
-  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-
-  reference operator[](size_type idx) {
-    return data_[idx];
-  }
-  const_reference operator[](size_type idx) const {
-    return data_[idx];
-  }
-
-  pointer data() {
-    return data_.data();
-  }
-  const_pointer data() const {
-    return data_.data();
-  }
-
-  iterator begin() {
-    return data_.begin();
-  }
-  const_iterator begin() const {
-    return data_.begin();
-  }
-  const_iterator cbegin() const {
-    return data_.begin();
-  }
-  reverse_iterator rbegin() {
-    return data_.rbegin();
-  }
-  const_reverse_iterator rbegin() const {
-    return data_.rbegin();
-  }
-  const_reverse_iterator crbegin() const {
-    return data_.rbegin();
-  }
-
-  iterator end() {
-    return data_.end();
-  }
-  const_iterator end() const {
-    return data_.end();
-  }
-  const_iterator cend() const {
-    return data_.end();
-  }
-  reverse_iterator rend() {
-    return data_.rend();
-  }
-  const_reverse_iterator rend() const {
-    return data_.rend();
-  }
-  const_reverse_iterator crend() const {
-    return data_.rend();
-  }
-
-  bool empty() const {
-    return data_.empty();
-  }
-
-  size_t size() const {
-    return data_.size();
-  }
-  size_t capacity() const {
-    return storage_.size();
-  }
-
-};  // namespace tiledb::common
+namespace tiledb::comon {
 
 /**
  * A data flow source, used by both edges and nodes.
@@ -315,66 +210,5 @@ inline void unbind(Source<Block>& src, Sink<Block>& snk) {
   snk.unbind();
 };
 
-/**
- * An edge in a task graph.
- *
- * Contains a queue of blocks of size 3, that is, at any time it has between 0
- * and 3 blocks in it.  Three blocks in the queue allows one to be written to on
- * one side of the edge, read from on the other side of the edge, with one ready
- * to be read.
- *
- * Edges implement a demand-pull pattern for synchronization.
- */
-template <class Block>
-class Edge : public Source<Block>, public Sink<Block> {
-  EdgeQueue<Block*> queue_;
-
- public:
-  Edge(Source<Block>& from, Sink<Block>& to);
-};
-
-/**
- * Scheduler for the graph.
- *
- * The scheduler owns a thread pool. It is also an active object; at least one
- * thread in its pool is dedicated to its own operation.
- */
-template <class Block>
-class Scheduler {
-  ThreadPool tp_;
-
- public:
-  void notify_alive(Source<Block>*);
-  void notify_quiescent(Source<Block>*);
-  void notify_alive(Sink<Block>*);
-  void notify_quiescent(Sink<Block>*);
-  // Possibly needed
-  // wakeup(Source *);
-  // wakeup(Sink *);
-};
-
-/*
- * States for objects containing Source or Sink member variables.
- *
- * The design goal of these states is to limit the total number of std::thread
- * objects that simultaneously exist. Instead of a worker thread blocking
- * because correspondent source is empty or because a correspondent sink is
- * full, the worker can simply return. Tasks may become dormant without any
- * thread that runs them needing to block.
- *
- * States:
- *   Quiescent: initial and final state. No correspondent sources or sinks
- *   Dormant: Some correspondent exists, but no thread is currently active
- *   Active: Some correspondent exists, and some thread is currently active
- *
- * An element is alive if it is either dormant or active, that is, some
- * correspondent exists, regardless of thread state.
- *
- * Invariant: an element is registered with the scheduler as alive if and only
- * if the element is alive. Invariant: each element is registered with the
- * scheduler as either alive or quiescent.
- */
-
-}  // namespace tiledb::common
-
-#endif  // TILEDB_DAG_H
+}  // namespace tiledb::comon
+#endif TILEDB_PORTS_H
