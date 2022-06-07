@@ -1,11 +1,11 @@
 /**
- * @file   dag.cc
+ * @file   ports.cc
  *
  * @section LICENSE
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2018-2021 TileDB, Inc.
+ * @copyright Copyright (c) 2022 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,10 @@
  *
  * @section DESCRIPTION
  *
- * This file defines the Dag class.
+ * This file defines the ports classes for dag.
  */
 
 #include <cassert>
 
-#include "experimental/tiledb/common/dag/dag.h"
+#include "experimental/tiledb/common/dag/ports/ports.h"
 #include "tiledb/common/logger.h"
