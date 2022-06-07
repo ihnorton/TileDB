@@ -1,5 +1,5 @@
 /**
- * @file experimental/tiledb/common/dag/test/proto.h
+ * @file pseudo_nodes.h
  *
  * @section LICENSE
  *
@@ -30,8 +30,8 @@
  * This file defines some elementary node types for testing
  */
 
-#ifndef TILEDB_DAG_PROTO_H
-#define TILEDB_DAG_PROTO_H
+#ifndef TILEDB_DAG_PSEUDO_NODES_H
+#define TILEDB_DAG_PSEUDO_NODES_H
 
 #include <atomic>
 #include "../ports.h"
@@ -156,4 +156,4 @@ class function_node : public Source<Block>, public Sink<Block> {
 };
 
 }  // namespace tiledb::common
-#endif  // TILEDB_DAG_PROTO_H
+#endif  // TILEDB_DAG_PSEUDO_NODES_H

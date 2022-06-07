@@ -27,27 +27,28 @@
  *
  * @section DESCRIPTION
  *
- * Tests the `Dag` class.
+ * Tests the ports classes, `Source` and `Sink`.  We use some pseudo-nodes
+ * for the testing.
  */
 
 #include "unit_ports.h"
 #include "experimental/tiledb/common/dag/ports/ports.h"
-#include "proto.h"
+#include "pseudo_nodes.h"
 
 using namespace tiledb::common;
 
-TEST_CASE("Dag: Test bind", "[dag]") {
+TEST_CASE("Ports: Test bind", "[ports]") {
   Source<int> left;
   Sink<int> right;
   bind(left, right);
 }
 
-TEST_CASE("Dag: Test proto producer_node", "[dag]") {
+TEST_CASE("Ports: Test proto producer_node", "[ports]") {
   auto gen = generator<size_t>(10UL);
   auto pn = producer_node<size_t>(std::move(gen));
 }
 
-TEST_CASE("Dag: Test proto consumer_node", "[dag]") {
+TEST_CASE("Ports: Test proto consumer_node", "[ports]") {
   std::vector<size_t> v;
   auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
       std::back_insert_iterator<std::vector<size_t>>(v));
@@ -55,7 +56,8 @@ TEST_CASE("Dag: Test proto consumer_node", "[dag]") {
 }
 
 TEST_CASE(
-    "Dag: Test connect proto consumer_node and proto producer_node", "[dag]") {
+    "Ports: Test connect proto consumer_node and proto producer_node",
+    "[ports]") {
   std::vector<size_t> v;
   auto gen = generator<size_t>(10UL);
   auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
@@ -67,62 +69,3 @@ TEST_CASE(
   bind(pn, cn);
 }
 
-#if 0
-void db_test_0(DataBlock& db) {
-  auto a = db.begin();
-  auto b = db.cbegin();
-  auto c = db.end();
-  auto d = db.cend();
-
-  REQUIRE(a == b);
-  REQUIRE(++a == ++b);
-  REQUIRE(a++ == b++);
-  REQUIRE(a == b);
-  REQUIRE(++a != b);
-  REQUIRE(a == ++b);
-  REQUIRE(c == d);
-  auto e = c + 5;
-  auto f = d + 5;
-  REQUIRE(c == e - 5);
-  REQUIRE(d == f - 5);
-  REQUIRE(e == f);
-  REQUIRE(e - 5 == f - 5);
-  auto g = a + 1;
-  REQUIRE(g > a);
-  REQUIRE(g >= a);
-  REQUIRE(a < g);
-  REQUIRE(a <= g);
-}
-
-void db_test_1(const DataBlock& db) {
-  auto a = db.begin();
-  auto b = db.cbegin();
-  auto c = db.end();
-  auto d = db.cend();
-
-  REQUIRE(a == b);
-  REQUIRE(++a == ++b);
-  REQUIRE(a++ == b++);
-  REQUIRE(a == b);
-  REQUIRE(++a != b);
-  REQUIRE(a == ++b);
-  REQUIRE(c == d);
-  auto e = c + 5;
-  auto f = d + 5;
-  REQUIRE(c == e - 5);
-  REQUIRE(d == f - 5);
-  REQUIRE(e == f);
-  REQUIRE(e - 5 == f - 5);
-  auto g = a + 1;
-  REQUIRE(g > a);
-  REQUIRE(g >= a);
-  REQUIRE(a < g);
-  REQUIRE(a <= g);
-}
-
-TEST_CASE("Dag: Test create DataBlock", "[dag]") {
-  auto db = DataBlock();
-  db_test_0(db);
-  db_test_1(db);
-}
-#endif
