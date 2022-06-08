@@ -1,5 +1,6 @@
 name: build-ubuntu-2X.04-S3
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
