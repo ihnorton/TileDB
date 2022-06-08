@@ -1,4 +1,4 @@
-name: build-ubuntu-20.04-S3
+name: build-ubuntu-2X.04-S3
 on:
   push:
     branches:
@@ -32,8 +32,14 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os:
-          - ubuntu-20.04
+        os: [ubuntu-20.04, ubuntu-22.04]
+        include:
+          - os: ubuntu-22.04
+            cxx: g++-11
+            cc: gcc-11
+    env:
+      CXX: ${{ matrix.cxx }}
+      CC: ${{ matrix-cc }}
     if: ${{ startsWith(github.ref , 'refs/tags') != true && startsWith(github.ref , 'build-') != true }}
     timeout-minutes: 90
     name: Build - ${{matrix.os}} - S3
