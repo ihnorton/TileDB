@@ -40,7 +40,7 @@ jobs:
             cc: gcc-11
     env:
       CXX: ${{ matrix.cxx }}
-      CC: ${{ matrix-cc }}
+      CC: ${{ matrix.cc }}
     if: ${{ startsWith(github.ref , 'refs/tags') != true && startsWith(github.ref , 'build-') != true }}
     timeout-minutes: 90
     name: Build - ${{matrix.os}} - S3
