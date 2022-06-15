@@ -41,6 +41,8 @@
 #include <type_traits>
 #include <vector>
 
+namespace tiledb::common {
+
 template <bool MultipleQueues>
 struct QueueBase;
 template <>
@@ -234,4 +236,5 @@ class ThreadPool : public QueueBase<MultipleQueues> {
   std::vector<std::thread> threads_;
 };
 
+}  // namespace tiledb::common
 #endif  // TILEDB_THREADPOOL_H

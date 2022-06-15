@@ -66,6 +66,82 @@ TEST_CASE(
   auto pn = producer_node<size_t>(std::move(gen));
   auto cn = consumer_node<size_t>(std::move(con));
 
+  CHECK(pn.is_bound() == false);
+  CHECK(cn.is_bound() == false);
+
   bind(pn, cn);
+
+  SECTION("check bound") {
+    CHECK(pn.is_bound() == true);
+    CHECK(cn.is_bound() == true);
+  }
+
+  SECTION("unbind both") {
+    unbind(pn, cn);
+
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == false);
+  }
+
+  SECTION("bind other way") {
+    unbind(pn, cn);
+
+    bind(cn, pn);
+    CHECK(pn.is_bound() == true);
+    CHECK(cn.is_bound() == true);
+  }
+
+  SECTION("unbind and rebind both") {
+    unbind(pn, cn);
+
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == false);
+
+    bind(pn, cn);
+
+    CHECK(pn.is_bound() == true);
+    CHECK(cn.is_bound() == true);
+  }
+
+  SECTION("unbind only pn") {
+    pn.unbind();
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == true);
+    cn.unbind();
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == false);
+  }
+
+  SECTION("unbind only cn") {
+    cn.unbind();
+    CHECK(pn.is_bound() == true);
+    CHECK(cn.is_bound() == false);
+    pn.unbind();
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == false);
+  }
 }
 
+TEST_CASE("Ports: Test exceptions", "[ports]") {
+  std::vector<size_t> v;
+  auto gen = generator<size_t>(10UL);
+  auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
+      std::back_insert_iterator<std::vector<size_t>>(v));
+
+  auto pn = producer_node<size_t>(std::move(gen));
+  auto cn = consumer_node<size_t>(std::move(con));
+
+  bind(pn, cn);
+
+  SECTION("Invalid bind") {
+    CHECK_THROWS(bind(pn, cn));
+  }
+  SECTION("Invalid bind, one side") {
+    pn.unbind();
+    CHECK_THROWS(bind(pn, cn));
+  }
+  SECTION("Invalid bind, one side") {
+    cn.unbind();
+    CHECK_THROWS(bind(pn, cn));
+  }
+}
