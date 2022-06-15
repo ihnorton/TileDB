@@ -92,9 +92,9 @@ class join {
 
   // Default copy constructor and assignment operators are fine.
   join(const join&) = default;
-  join(const join&&) = default;
+  join(join&&) = default;
   join& operator=(const join&) = default;
-  join& operator=(const join&&) = default;
+  join& operator=(join&&) = default;
 
   template <bool is_const>
   class join_iterator {
@@ -141,7 +141,9 @@ class join {
       }
     }
 
+    join_iterator() = default;
     join_iterator(const join_iterator&) = default;
+    join_iterator(join_iterator&&) = default;
 
     template <typename = std::enable_if<is_const>>
     join_iterator(const join_iterator<false>& rhs)
@@ -152,6 +154,7 @@ class join {
     }
 
     join_iterator& operator=(const join_iterator&) = default;
+    join_iterator& operator=(join_iterator&&) = default;
 
     template <typename = std::enable_if<is_const>>
     join_iterator& operator=(
@@ -214,6 +217,9 @@ class join {
 
   using iterator = join_iterator<false>;
   using const_iterator = join_iterator<true>;
+
+  using value_type = typename iterator::value_type;
+  using reference = typename iterator::reference;
 
   iterator begin() {
     return {outer_begin_, outer_end_};
