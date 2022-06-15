@@ -30,6 +30,14 @@
  * This file declares an adaptor for joining a range of containers into
  * a view of a single container.  Modeled after std::ranges::join (and
  * derived from NWGraph hierarchical graph container).
+ *
+ * Todo: Add variadic constructor / initializer list constructor so
+ * that a range_join view can be constructed from a collection of
+ * containers, rather than having to explicitly form a container
+ * of containers (which could be expensive to construct).
+ *
+ * Todo: Create a random_access_range view if the constituent inner
+ * ranges are random_access.
  */
 
 #ifndef TILEDB_RANGE_JOIN_H
@@ -67,7 +75,9 @@ template <typename G>
 using inner_reference_t = typename inner_range_t<G>::reference;
 
 /**
- * A joined range view class
+ * A joined range view class.  Creates a single view of
+ * a range of ranges.  Currently, creates an input_range
+ * view.
  */
 template <class RangeOfRanges>
 class join {
@@ -85,6 +95,11 @@ class join {
   range_of_ranges_iterator outer_end_;
 
  public:
+  /**
+   * Construct view from a range of ranges.  The
+   * resulting view will appear as a single range, equal
+   * to the concatenation of the inner ranges.
+   */
   explicit join(RangeOfRanges& g)
       : outer_begin_(g.begin())
       , outer_end_(g.end()) {
