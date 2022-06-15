@@ -86,7 +86,7 @@ class Source {
  public:
   /**
    * Notification function to be called by a correspondent Sink to signal that
-   * it is ready to receive data. If `try_put()` is called immediately
+   * it is ready to receive data. If `try_get()` is called immediately
    * afterward, it should ordinarily succeed.
    *
    * At the point of construction it should be as if
@@ -103,7 +103,10 @@ class Source {
    * @param block Reference to item to receive data in the sink.
    * @post If copied to the sink, `item_` will be empty.
    */
-  bool try_get(std::optional<Block>& block);
+  bool try_get(std::optional<Block>& block) {
+    std::scoped_lock(correspondent_->mutex_);
+    std::swap(item_, correspondent_->item);
+  }
 
   /**
    * Assign a correspondent for this Source.
