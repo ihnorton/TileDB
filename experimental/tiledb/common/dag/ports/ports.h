@@ -49,6 +49,8 @@
  * Invariant: an element is registered with the scheduler as alive if and only
  * if the element is alive. Invariant: each element is registered with the
  * scheduler as either alive or quiescent.
+ *
+ * Todo: Refactor to use a Port base class.
  */
 
 #ifndef TILEDB_DAG_PORTS_H
@@ -95,17 +97,21 @@ class Source {
   void ready_to_receive(bool);
 
   /**
-   * Send the item_ to a correspondent sink.  Called by the sink.
+   * Send the item_ to a correspondent sink. Called by the sink.
    *
    * Call is non-blocking and will return false if there is no item available to
    * return. Otherwise, `block` will be swapped with `item_`.
    *
-   * @param block Reference to item to receive data in the sink.
+   * @return `true` if `item_` was swapped with `correpondent_->item_`
    * @post If copied to the sink, `item_` will be empty.
    */
-  bool try_get(std::optional<Block>& block) {
+  bool try_get() {
     std::scoped_lock(correspondent_->mutex_);
-    std::swap(item_, correspondent_->item);
+    if (item_.has_value() && !(correspondent_->item).has_value()) {
+      std::swap(item_, correspondent_->item);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -118,6 +124,13 @@ class Source {
       throw std::runtime_error(
           "Attempting to bind to already bound correspondent");
     }
+  }
+
+  /**
+   * Check if Sink is bound to a source
+   */
+  bool is_bound() const {
+    return correspondent_ != nullptr;
   }
 
   /**
@@ -138,6 +151,9 @@ class Sink {
   friend class Source<Block>;
   template <class Bl>
   friend void bind(Source<Bl>& src, Sink<Bl>& snk);
+
+  template <class Bl>
+  friend void unbind(Source<Bl>& src, Sink<Bl>& snk);
 
   /**
    * @inv If an item is present, `try_receive` will succeed.
@@ -175,11 +191,17 @@ class Sink {
    * the item being sent and true will be returned.  Otherwise, false will be
    * returned.
    *
-   * @param block The item to be sent.  Normally this will be the source's
-   * `item_`.
-   * @post If return value is true, item_ will contain `block`.
+   * @return true if items were successfully swapped
+   * @post If return value is true, item_ will be full
    */
-  bool try_put(std::optional<Block>& block);
+  bool try_put() {
+    std::scoped_lock lock(mutex_);
+    if (!item_.has_value() && (correspondent_->item).has_value()) {
+      std::swap(item_, correspondent_->item);
+      return true;
+    }
+    return false;
+  }
 
   /**
    * Assign a correspondent for this Sink.
@@ -194,10 +216,21 @@ class Sink {
   }
 
   /**
+   * Check if Sink is bound to a source
+   */
+  bool is_bound() const {
+    return correspondent_ != nullptr;
+  }
+
+  /**
    * Remove the current correspondent, if any.
    */
   void unbind() {
-    correspondent_ = nullptr;
+    if (correspondent_ == nullptr) {
+      throw std::runtime_error("Attempting to unbind unbound correspondent");
+    } else {
+      correspondent_ = nullptr;
+    }
   }
 };
 
@@ -209,6 +242,15 @@ inline void bind(Source<Block>& src, Sink<Block>& snk) {
   std::scoped_lock(snk.mutex_);
   src.bind(snk);
   snk.bind(src);
+  assert(src == snk.correspondent_ && snk == src.correspondent_);
+}
+
+/**
+ * Assign sink as correspondent to source and vice versa.
+ */
+template <class Block>
+inline void bind(Sink<Block>& snk, Source<Block>& src) {
+  bind(src, snk);
 }
 
 /**
@@ -219,8 +261,20 @@ inline void bind(Source<Block>& src, Sink<Block>& snk) {
 template <class Block>
 inline void unbind(Source<Block>& src, Sink<Block>& snk) {
   std::scoped_lock(snk.mutex_);
+  assert(src == snk.correspondent_ && snk == src.correspondent_);
+
   src.unbind();
   snk.unbind();
+};
+
+/**
+ * Remove the correspondent relationship between a source and sink
+ *
+ * @pre `src` and `snk` are in a correspondent relationship.
+ */
+template <class Block>
+inline void unbind(Sink<Block>& snk, Source<Block>& src) {
+  unbind(src, snk);
 };
 
 }  // namespace tiledb::common

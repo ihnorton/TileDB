@@ -42,6 +42,8 @@
 #include <deque>
 #include <queue>
 
+namespace tiledb::common {
+
 template <class Item, class Container, bool Bounded>
 class BoundedBufferQ {
  public:
@@ -278,5 +280,7 @@ using ProducerConsumerQueue = BoundedBufferQ<Item, Container, false>;
 
 template <class Item, class Container = std::deque<Item>>
 using BoundedBuffer = BoundedBufferQ<Item, Container, true>;
+
+}  // namespace tiledb::common
 
 #endif  // TILEDB_BOUNDED_BUFFER_H
