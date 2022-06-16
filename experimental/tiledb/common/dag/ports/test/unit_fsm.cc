@@ -1,11 +1,11 @@
 /**
- * @file experimental/tiledb/common/dag/test/main.cc
+ * @file unit_ports.cc
  *
  * @section LICENSE
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2021 TileDB, Inc.
+ * @copyright Copyright (c) 2022 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,14 @@
  *
  * @section DESCRIPTION
  *
- * This file defines a test `main()`
+ * Tests the ports classes, `Source` and `Sink`.  We use some pseudo-nodes
+ * for the testing.
  */
 
-#define CATCH_CONFIG_MAIN
 #include "unit_fsm.h"
-#include "unit_ports.h"
+#include "experimental/tiledb/common/dag/ports/fsm.h"
+
+using namespace tiledb::common;
+
+TEST_CASE("Port FSM: Construct", "[fsm]") {
+}

@@ -1,11 +1,11 @@
 /**
- * @file experimental/tiledb/common/dag/test/main.cc
+ * @file experimental/tiledb/common/thread_pool/test/unit_fsm.h
  *
  * @section LICENSE
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2021 TileDB, Inc.
+ * @copyright Copyright (c) 2022 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,9 @@
  * THE SOFTWARE.
  *
  * @section DESCRIPTION
- *
- * This file defines a test `main()`
  */
 
-#define CATCH_CONFIG_MAIN
-#include "unit_fsm.h"
-#include "unit_ports.h"
+#ifndef TILEDB_UNIT_FSM_H
+#define TILEDB_UNIT_FSM_H
+#include <catch.hpp>
+#endif  // TILEDB_UNIT_FSM_H

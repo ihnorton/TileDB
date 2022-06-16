@@ -75,6 +75,11 @@ class Sink;
  */
 template <class Block>
 class Source {
+  friend class Sink<Block>;
+
+  template <class Bl>
+  friend void unbind(Source<Bl>& src);
+
   /**
    * @inv If an item is present, `try_send` will succeed.
    */
@@ -97,7 +102,42 @@ class Source {
   void ready_to_receive(bool);
 
   /**
-   * Send the item_ to a correspondent sink. Called by the sink.
+   * Set `item_` in the Source.  This call will fail if there is already
+   * an `item_` being held.
+   *
+   * @return true if the `item_` was successfully set, false otherwise
+   * the `item_` is empty.  Also returns false if the Source is not bound
+   * to a correspondent.
+   *
+   */
+  bool try_set(Block& item) {
+    if (correspondent_ == nullptr) {
+      return false;
+    }
+    std::scoped_lock lock(correspondent_->mutex_);
+    if (!(correspondent_->item).has_value()) {
+      return false;
+    } else {
+      item_ = item;
+    }
+    return true;
+  }
+
+  bool try_set(Block&& item) {
+    if (correspondent_ == nullptr) {
+      return false;
+    }
+    std::scoped_lock lock(correspondent_->mutex_);
+    if (item_.has_value()) {
+      return false;
+    } else {
+      item_ = item;
+    }
+    return true;
+  }
+
+  /**
+   * Send the item_ to a correspondent sink. Called by the recipient sink.
    *
    * Call is non-blocking and will return false if there is no item available to
    * return. Otherwise, `block` will be swapped with `item_`.
@@ -107,8 +147,8 @@ class Source {
    */
   bool try_get() {
     std::scoped_lock(correspondent_->mutex_);
-    if (item_.has_value() && !(correspondent_->item).has_value()) {
-      std::swap(item_, correspondent_->item);
+    if (item_.has_value() && !(correspondent_->item_).has_value()) {
+      std::swap(item_, correspondent_->item_);
       return true;
     }
     return false;
@@ -149,11 +189,15 @@ class Source {
 template <class Block>
 class Sink {
   friend class Source<Block>;
+
   template <class Bl>
   friend void bind(Source<Bl>& src, Sink<Bl>& snk);
 
   template <class Bl>
   friend void unbind(Source<Bl>& src, Sink<Bl>& snk);
+
+  template <class Bl>
+  friend void unbind(Sink<Bl>& snk);
 
   /**
    * @inv If an item is present, `try_receive` will succeed.
@@ -185,19 +229,32 @@ class Sink {
   void ready_to_send();
 
   /**
-   * Receive a block from a correspondent source. Called by the source.
+   * Retrieve `item_` from the Sink.
    *
-   * If `item_` is empty when `try_receive` is called, it will be swapped with
-   * the item being sent and true will be returned.  Otherwise, false will be
-   * returned.
+   * @return The retrieved `item_`.  The return value will be empty if
+   * the `item_` is empty.
+   */
+  std::optional<Block> retrieve() {
+    std::scoped_lock lock(mutex_);
+    std::optional<Block> tmp{};
+    swap(tmp, item_);
+    return tmp;
+  }
+
+  /**
+   * Receive a block from a correspondent Source. Called by the Source.
+   *
+   * If `item_` is empty when `try_put` is called, it will be swapped with
+   * the item being sent and true will be returned.  Otherwise, false will
+   * be returned.
    *
    * @return true if items were successfully swapped
    * @post If return value is true, item_ will be full
    */
   bool try_put() {
     std::scoped_lock lock(mutex_);
-    if (!item_.has_value() && (correspondent_->item).has_value()) {
-      std::swap(item_, correspondent_->item);
+    if (!item_.has_value() && (correspondent_->item_).has_value()) {
+      std::swap(item_, correspondent_->item_);
       return true;
     }
     return false;
@@ -236,6 +293,8 @@ class Sink {
 
 /**
  * Assign sink as correspondent to source and vice versa.
+ *
+ * @pre Both src and snk are unbound
  */
 template <class Block>
 inline void bind(Source<Block>& src, Sink<Block>& snk) {
@@ -247,6 +306,8 @@ inline void bind(Source<Block>& src, Sink<Block>& snk) {
 
 /**
  * Assign sink as correspondent to source and vice versa.
+ *
+ * @pre Both src and snk are unbound
  */
 template <class Block>
 inline void bind(Sink<Block>& snk, Source<Block>& src) {
@@ -255,6 +316,9 @@ inline void bind(Sink<Block>& snk, Source<Block>& src) {
 
 /**
  * Remove the correspondent relationship between a source and sink
+ *
+ * @param src A Souce port
+ * @param snk A Sink port
  *
  * @pre `src` and `snk` are in a correspondent relationship.
  */
@@ -270,11 +334,36 @@ inline void unbind(Source<Block>& src, Sink<Block>& snk) {
 /**
  * Remove the correspondent relationship between a source and sink
  *
+ * @param snk A Sink port
+ * @param snk A Source port
+ *
  * @pre `src` and `snk` are in a correspondent relationship.
  */
 template <class Block>
 inline void unbind(Sink<Block>& snk, Source<Block>& src) {
   unbind(src, snk);
+};
+
+/**
+ * Remove the correspondent relationship between a Source  and
+ * its correspondent Sink
+ *
+ * @param src A Source port.
+ */
+template <class Block>
+inline void unbind(Source<Block>& src) {
+  unbind(src, *(src.correspondent_));
+};
+
+/**
+ * Remove the correspondent relationship between a Sink and
+ * its correspondent Source
+ *
+ * @param src A Sink port.
+ */
+template <class Block>
+inline void unbind(Sink<Block>& snk) {
+  unbind(*(snk.correspondent_), snk);
 };
 
 }  // namespace tiledb::common
