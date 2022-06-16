@@ -43,28 +43,11 @@ TEST_CASE("Ports: Test bind", "[ports]") {
   bind(left, right);
 }
 
-TEST_CASE("Ports: Test proto producer_node", "[ports]") {
-  auto gen = generator<size_t>(10UL);
-  auto pn = producer_node<size_t>(std::move(gen));
-}
-
-TEST_CASE("Ports: Test proto consumer_node", "[ports]") {
-  std::vector<size_t> v;
-  auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
-      std::back_insert_iterator<std::vector<size_t>>(v));
-  auto cn = consumer_node<size_t>(std::move(con));
-}
-
 TEST_CASE(
     "Ports: Test connect proto consumer_node and proto producer_node",
     "[ports]") {
-  std::vector<size_t> v;
-  auto gen = generator<size_t>(10UL);
-  auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
-      std::back_insert_iterator<std::vector<size_t>>(v));
-
-  auto pn = producer_node<size_t>(std::move(gen));
-  auto cn = consumer_node<size_t>(std::move(con));
+  auto pn = Source<size_t>{};
+  auto cn = Sink<size_t>{};
 
   CHECK(pn.is_bound() == false);
   CHECK(cn.is_bound() == false);
@@ -103,7 +86,7 @@ TEST_CASE(
     CHECK(cn.is_bound() == true);
   }
 
-  SECTION("unbind only pn") {
+  SECTION("unbind only pn (member)") {
     pn.unbind();
     CHECK(pn.is_bound() == false);
     CHECK(cn.is_bound() == true);
@@ -112,7 +95,7 @@ TEST_CASE(
     CHECK(cn.is_bound() == false);
   }
 
-  SECTION("unbind only cn") {
+  SECTION("unbind only cn (member)") {
     cn.unbind();
     CHECK(pn.is_bound() == true);
     CHECK(cn.is_bound() == false);
@@ -120,16 +103,32 @@ TEST_CASE(
     CHECK(pn.is_bound() == false);
     CHECK(cn.is_bound() == false);
   }
+
+  SECTION("unbind only pn (member)") {
+    pn.unbind();
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == true);
+    cn.unbind();
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == false);
+  }
+
+  SECTION("unbind from cn") {
+    unbind(cn);
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == false);
+  }
+
+  SECTION("unbind from pn") {
+    unbind(pn);
+    CHECK(pn.is_bound() == false);
+    CHECK(cn.is_bound() == false);
+  }
 }
 
 TEST_CASE("Ports: Test exceptions", "[ports]") {
-  std::vector<size_t> v;
-  auto gen = generator<size_t>(10UL);
-  auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
-      std::back_insert_iterator<std::vector<size_t>>(v));
-
-  auto pn = producer_node<size_t>(std::move(gen));
-  auto cn = consumer_node<size_t>(std::move(con));
+  auto pn = Source<size_t>{};
+  auto cn = Sink<size_t>{};
 
   bind(pn, cn);
 
@@ -144,4 +143,76 @@ TEST_CASE("Ports: Test exceptions", "[ports]") {
     cn.unbind();
     CHECK_THROWS(bind(pn, cn));
   }
+}
+
+TEST_CASE("Ports: Manual set source port values", "[ports]") {
+  Source<size_t> src;
+  Sink<size_t> snk;
+
+  SECTION("set source in bound pair") {
+    bind(src, snk);
+    CHECK(src.try_set(5) == true);
+  }
+  SECTION("set source in unbound src") {
+    CHECK(src.try_set(5) == false);
+  }
+  SECTION("set source that has value") {
+    bind(src, snk);
+    CHECK(src.try_set(5) == true);
+    CHECK(src.try_set(5) == false);
+  }
+}
+
+TEST_CASE("Ports: Manual retrieve sink values", "[ports]") {
+  Source<size_t> src;
+  Sink<size_t> snk;
+
+  SECTION("set source in bound pair") {
+    bind(src, snk);
+    CHECK(snk.retrieve().has_value() == false);
+  }
+}
+
+TEST_CASE("Ports: Manual send and receive", "[ports]") {
+  Source<size_t> src;
+  Sink<size_t> snk;
+
+  bind(src, snk);
+  CHECK(src.try_set(5) == true);
+  CHECK(snk.retrieve().has_value() == false);
+
+  SECTION("transfer value to snk") {
+    CHECK(src.try_get() == true);
+  }
+  SECTION("transfer value to snk, check snk has value") {
+    CHECK(src.try_get() == true);
+    CHECK(snk.retrieve().has_value() == true);
+  }
+  SECTION("transfer value to snk, check snk value") {
+    CHECK(src.try_get() == true);
+    CHECK(snk.retrieve() == 5);
+  }
+  SECTION("transfer value from src") {
+    CHECK(snk.try_put() == true);
+  }
+  SECTION("transfer value to snk, check snk has value") {
+    CHECK(snk.try_put() == true);
+    CHECK(snk.retrieve().has_value() == true);
+  }
+  SECTION("transfer value to snk, check snk value") {
+    CHECK(snk.try_put() == true);
+    CHECK(snk.retrieve() == 5);
+  }
+}
+
+TEST_CASE("Ports: Test construct proto producer_node", "[ports]") {
+  auto gen = generator<size_t>(10UL);
+  auto pn = producer_node<size_t>(std::move(gen));
+}
+
+TEST_CASE("Ports: Test construct proto consumer_node", "[ports]") {
+  std::vector<size_t> v;
+  auto con = consumer<std::back_insert_iterator<std::vector<size_t>>>(
+      std::back_insert_iterator<std::vector<size_t>>(v));
+  auto cn = consumer_node<size_t>(std::move(con));
 }

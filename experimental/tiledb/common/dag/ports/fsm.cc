@@ -1,11 +1,11 @@
 /**
- * @file experimental/tiledb/common/dag/test/main.cc
+ * @file   fsm.cc
  *
  * @section LICENSE
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2021 TileDB, Inc.
+ * @copyright Copyright (c) 2022 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,10 @@
  *
  * @section DESCRIPTION
  *
- * This file defines a test `main()`
+ * This file defines the fsm classes for dag.
  */
 
-#define CATCH_CONFIG_MAIN
-#include "unit_fsm.h"
-#include "unit_ports.h"
+#include <cassert>
+
+#include "experimental/tiledb/common/dag/ports/fsm.h"
+#include "tiledb/common/logger.h"
