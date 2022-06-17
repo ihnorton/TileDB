@@ -39,12 +39,12 @@
 namespace tiledb::common {
 
 enum class PortEvent : unsigned short {
-  item_produced = 0,
-  sink_empty,
+  src_data_fill = 0,
+  sink_drained,
   source_swap,
-  source_full,
+  source_filled,
   sink_swap,
-  item_consumed,
+  sink_data_drain,
   shutdown
 };
 
@@ -163,6 +163,18 @@ class PortStateMachine {
  private:
   PortState state_;
 
+ public:
+  /**
+   * Default constructor
+   */
+  PortStateMachine()
+      : state_(PortState::empty_empty){};
+
+  [[nodiscard]] inline PortState state() const {
+    return state_;
+  }
+
+ public:
   void event(PortEvent event) {
     auto new_state{transition_table[to_index(state_)][to_index(event)]};
     auto action{action_table[to_index(state_)][to_index(event)]};
@@ -178,6 +190,9 @@ class PortStateMachine {
         break;
 
       case PortAction::sink_swap:
+        break;
+
+      case PortAction::none:
         break;
 
       default:

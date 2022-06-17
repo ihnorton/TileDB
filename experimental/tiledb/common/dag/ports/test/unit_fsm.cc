@@ -1,5 +1,5 @@
 /**
- * @file unit_ports.cc
+ * @file unit_fsm.cc
  *
  * @section LICENSE
  *
@@ -27,8 +27,7 @@
  *
  * @section DESCRIPTION
  *
- * Tests the ports classes, `Source` and `Sink`.  We use some pseudo-nodes
- * for the testing.
+ * Tests the ports finite state machine.
  */
 
 #include "unit_fsm.h"
@@ -37,4 +36,120 @@
 using namespace tiledb::common;
 
 TEST_CASE("Port FSM: Construct", "[fsm]") {
+  [[maybe_unused]] auto a = PortStateMachine{};
+
+  CHECK(a.state() == PortState::empty_empty);
+}
+
+TEST_CASE("Port FSM: Source sequence", "[fsm]") {
+  [[maybe_unused]] auto a = PortStateMachine{};
+
+  CHECK(a.state() == PortState::empty_empty);
+  a.event(PortEvent::src_data_fill);
+
+  CHECK(a.state() == PortState::full_empty);
+
+  a.event(PortEvent::source_filled);
+
+  CHECK(a.state() == PortState::full_ready);
+
+  a.event(PortEvent::sink_drained);
+
+  CHECK(a.state() == PortState::ready_ready);
+
+  a.event(PortEvent::source_swap);
+
+  CHECK(a.state() == PortState::empty_full);
+
+  a.event(PortEvent::src_data_fill);
+
+  CHECK(a.state() == PortState::full_full);
+
+  a.event(PortEvent::sink_data_drain);
+
+  CHECK(a.state() == PortState::full_empty);
+
+  a.event(PortEvent::source_filled);
+
+  CHECK(a.state() == PortState::full_ready);
+
+  a.event(PortEvent::sink_swap);
+
+  CHECK(a.state() == PortState::empty_full);
+
+  a.event(PortEvent::sink_data_drain);
+
+  CHECK(a.state() == PortState::empty_empty);
+
+  a.event(PortEvent::src_data_fill);
+
+  CHECK(a.state() == PortState::full_empty);
+
+  a.event(PortEvent::sink_drained);
+
+  CHECK(a.state() == PortState::ready_empty);
+
+  a.event(PortEvent::source_swap);
+
+  CHECK(a.state() == PortState::empty_full);
+
+  a.event(PortEvent::src_data_fill);
+
+  CHECK(a.state() == PortState::full_full);
+
+  a.event(PortEvent::sink_data_drain);
+
+  CHECK(a.state() == PortState::full_empty);
+
+  a.event(PortEvent::source_filled);
+
+  CHECK(a.state() == PortState::full_ready);
+
+  a.event(PortEvent::sink_swap);
+
+  CHECK(a.state() == PortState::empty_full);
+
+  a.event(PortEvent::src_data_fill);
+
+  CHECK(a.state() == PortState::full_full);
+
+  a.event(PortEvent::sink_data_drain);
+
+  CHECK(a.state() == PortState::full_empty);
+
+  a.event(PortEvent::source_filled);
+
+  CHECK(a.state() == PortState::full_ready);
+
+  a.event(PortEvent::sink_drained);
+
+  CHECK(a.state() == PortState::ready_ready);
+
+  a.event(PortEvent::sink_swap);
+
+  CHECK(a.state() == PortState::empty_full);
+
+  a.event(PortEvent::sink_data_drain);
+
+  CHECK(a.state() == PortState::empty_empty);
+
+  a.event(PortEvent::src_data_fill);
+
+  CHECK(a.state() == PortState::full_empty);
+
+  a.event(PortEvent::sink_drained);
+
+  CHECK(a.state() == PortState::ready_empty);
+
+  a.event(PortEvent::source_filled);
+
+  CHECK(a.state() == PortState::ready_ready);
+
+  a.event(PortEvent::sink_swap);
+
+  CHECK(a.state() == PortState::empty_full);
+
+  a.event(PortEvent::sink_data_drain);
+
+  CHECK(a.state() == PortState::empty_empty);
 }
