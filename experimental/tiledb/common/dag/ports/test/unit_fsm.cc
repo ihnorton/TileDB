@@ -330,7 +330,6 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
         source_cv.notify_one();
       } else {
         if (debug)
-
           std::cout << "sink try swap " << str(a.state()) << std::endl;
 
         CHECK(is_snk_full(a.state()) == "");
