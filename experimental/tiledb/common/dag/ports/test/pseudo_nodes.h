@@ -80,9 +80,12 @@ class producer_node : public Source<Block> {
    * Generate an output.
    */
   void run() {
-    Base::item_ = f_();  // DataAvailEvent -> SourceFullState
-    // SinkEmptyEvent -> SourceReadyState
-    // SinkSwapEvent -> SourceEmptyState
+    while (true) {
+      auto item = f_();
+      submit(item);
+      wait();
+      try_swap();
+    }
   }
 };
 

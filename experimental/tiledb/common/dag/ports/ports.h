@@ -56,8 +56,11 @@
 #ifndef TILEDB_DAG_PORTS_H
 #define TILEDB_DAG_PORTS_H
 
+#include <condition_variable>
 #include <mutex>
 #include <optional>
+
+#include "fsm.h"
 
 namespace tiledb::common {
 
@@ -71,7 +74,7 @@ class Sink;
 /**
  * A data flow source, used by both edges and nodes.
  *
- * Source objects have two states: empty and ready.
+ * Source objects have three states: empty, full, and ready.
  */
 template <class Block>
 class Source {
@@ -92,66 +95,22 @@ class Source {
 
  public:
   /**
-   * Notification function to be called by a correspondent Sink to signal that
-   * it is ready to receive data. If `try_get()` is called immediately
-   * afterward, it should ordinarily succeed.
-   *
-   * At the point of construction it should be as if
-   * ready_to_receive(false) was called in the constructor body.
-   */
-  void ready_to_receive(bool);
-
-  /**
-   * Set `item_` in the Source.  This call will fail if there is already
-   * an `item_` being held.
-   *
-   * @return true if the `item_` was successfully set, false otherwise
-   * the `item_` is empty.  Also returns false if the Source is not bound
-   * to a correspondent.
    *
    */
-  bool try_set(Block& item) {
-    if (correspondent_ == nullptr) {
-      return false;
-    }
-    std::scoped_lock lock(correspondent_->mutex_);
-    if (!(correspondent_->item).has_value()) {
-      return false;
-    } else {
-      item_ = item;
-    }
-    return true;
+  void submit(Block& item) {
+    std::optional<Block> tmp{};
+    std::swap(item_, tmp);
+    (corresponent_->fsm).event(src_data_fill);
+    (corresponent_->fsm).event(source_filled);
+    src_cv.notify_one();
   }
 
-  bool try_set(Block&& item) {
-    if (correspondent_ == nullptr) {
-      return false;
-    }
-    std::scoped_lock lock(correspondent_->mutex_);
-    if (item_.has_value()) {
-      return false;
-    } else {
-      item_ = item;
-    }
-    return true;
-  }
-
-  /**
-   * Send the item_ to a correspondent sink. Called by the recipient sink.
-   *
-   * Call is non-blocking and will return false if there is no item available to
-   * return. Otherwise, `block` will be swapped with `item_`.
-   *
-   * @return `true` if `item_` was swapped with `correpondent_->item_`
-   * @post If copied to the sink, `item_` will be empty.
-   */
-  bool try_get() {
-    std::scoped_lock(correspondent_->mutex_);
-    if (item_.has_value() && !(correspondent_->item_).has_value()) {
+  void try_swap() {
+    if (ready) {
       std::swap(item_, correspondent_->item_);
-      return true;
+      (corresponent_->fsm).event(source_swap);
+      signal();
     }
-    return false;
   }
 
   /**
@@ -184,7 +143,7 @@ class Source {
 /**
  * A data flow sink, used by both edges and nodes.
  *
- * Sink objects have two states: full and ready.
+ * Sink objects have two states: empy, full, and ready.
  */
 template <class Block>
 class Sink {
