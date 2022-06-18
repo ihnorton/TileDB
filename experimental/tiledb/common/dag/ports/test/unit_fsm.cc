@@ -31,6 +31,7 @@
  */
 
 #include "unit_fsm.h"
+#include <atomic>
 #include <condition_variable>
 #include <future>
 #include <iostream>
@@ -212,6 +213,8 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
 
   size_t rounds = 33;
 
+  int source_item{0};
+  int sink_item{0};
   /**
    * Function to emulate a source node
    *
@@ -229,16 +232,20 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
   auto source_node = [&]() {
     size_t n = rounds;
 
+    // Start the source
     {
       std::unique_lock lock(mutex_);
       a.event(PortEvent::source_start, debug ? "source" : "");
       CHECK(is_src_empty(a.state()) == "");
     }
 
+    // Event loop for source
     while (n--) {
       std::unique_lock lock(mutex_);
 
       a.event(PortEvent::source_data_fill, debug ? "source" : "");
+      CHECK(source_item == 0);
+      source_item = 1;
       CHECK(is_src_full(a.state()) == "");
       sink_cv.notify_one();
       source_cv.wait(lock);
@@ -250,6 +257,9 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
           std::cout << "source swapping " << str(a.state()) << std::endl;
 
         a.event(PortEvent::source_swap, debug ? "source" : "");
+        CHECK(source_item == 1);
+        CHECK(sink_item == 0);
+        std::swap(source_item, sink_item);
         sink_cv.notify_one();
 
         CHECK(is_src_empty(a.state()) == "");
@@ -284,6 +294,7 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
   auto sink_node = [&]() {
     size_t n = rounds;
 
+    // Some setup to get into proper initial state for sink
     {
       std::unique_lock lock(mutex_);
       a.event(PortEvent::sink_start, debug ? "sink" : "");
@@ -293,6 +304,7 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
       source_cv.notify_one();
     }
 
+    // Event loop for sink
     while (n--) {
       std::unique_lock lock(mutex_);
 
@@ -305,7 +317,10 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
       if (/*a.state() == PortState::ready_ready || */
           a.state() == PortState::full_ready ||
           a.state() == PortState::full_empty) {
+        CHECK(source_item == 1);
+        CHECK(sink_item == 0);
         a.event(PortEvent::sink_swap, debug ? "sink" : "");
+        std::swap(source_item, sink_item);
 
         CHECK(is_src_empty(a.state()) == "");
         CHECK(is_snk_full(a.state()) == "");
@@ -323,6 +338,8 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
         std::cout << "sink retrieving" << std::endl;
       a.event(PortEvent::sink_data_drain, debug ? "sink" : "");
       CHECK(is_snk_empty(a.state()) == "");
+      CHECK(sink_item == 1);
+      sink_item = 0;
       source_cv.notify_one();
     }
   };
@@ -361,4 +378,6 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
 
   CHECK(is_src_empty(a.state()) == "");
   CHECK(is_snk_empty(a.state()) == "");
+  CHECK(source_item == 0);
+  CHECK(sink_item == 0);
 }
