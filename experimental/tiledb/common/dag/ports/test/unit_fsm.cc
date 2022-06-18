@@ -32,10 +32,12 @@
 
 #include "unit_fsm.h"
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <future>
 #include <iostream>
 #include <mutex>
+#include <thread>
 #include "experimental/tiledb/common/dag/ports/fsm.h"
 
 using namespace tiledb::common;
@@ -199,6 +201,14 @@ std::string is_snk_ready(PortState st) {
   return str(st);
 }
 
+size_t random_ms(size_t max = 7) {
+  thread_local static uint64_t generator_seed =
+      std::hash<std::thread::id>()(std::this_thread::get_id());
+  thread_local static std::mt19937_64 generator(generator_seed);
+  std::uniform_int_distribution<size_t> distribution(0, max);
+  return distribution(generator);
+}
+
 TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
   constexpr bool debug = false;
 
@@ -236,6 +246,15 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
     // Event loop for source
     while (n--) {
       std::unique_lock lock(mutex_);
+
+      {
+        if (debug)
+          std::cout << "source filling " << str(a.state()) << std::endl;
+
+        lock.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(random_ms(19)));
+        lock.lock();
+      }
 
       CHECK(source_item == 0);
       a.event(PortEvent::source_fill, debug ? "source" : "");
@@ -321,8 +340,15 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
         CHECK(sink_item == 1);
       }
 
-      if (debug)
-        std::cout << "sink retrieving" << std::endl;
+      {
+        if (debug)
+          std::cout << "sink retrieving " << str(a.state()) << std::endl;
+
+        lock.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(random_ms(19)));
+        lock.lock();
+      }
+
       a.event(PortEvent::sink_drain, debug ? "sink" : "");
       CHECK(is_snk_empty(a.state()) == "");
       CHECK(sink_item == 1);
