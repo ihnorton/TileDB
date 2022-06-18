@@ -243,8 +243,9 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
     while (n--) {
       std::unique_lock lock(mutex_);
 
-      a.event(PortEvent::source_data_fill, debug ? "source" : "");
       CHECK(source_item == 0);
+      a.event(PortEvent::source_data_fill, debug ? "source" : "");
+
       source_item = 1;
       CHECK(is_src_full(a.state()) == "");
       sink_cv.notify_one();
@@ -272,6 +273,7 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
                     << std::endl;
 
         CHECK(is_src_empty(a.state()) == "");
+        CHECK(source_item == 0);
       }
     }
   };
@@ -332,6 +334,7 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
           std::cout << "sink try swap " << str(a.state()) << std::endl;
 
         CHECK(is_snk_full(a.state()) == "");
+        CHECK(sink_item == 1);
       }
 
       if (debug)
