@@ -215,8 +215,9 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
 
   int source_item{0};
   int sink_item{0};
+
   /**
-   * Function to emulate a source node
+   * Function to emulate an asynchronous source node
    *
    * The basic steps/states are:
    *   start -> state: empty_any
@@ -270,7 +271,7 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
   };
 
   /**
-   * Function to emulate a sink node
+   * Function to emulate an asynchronous sink node
    *
    * The basic steps/states are:
    *   start -> state: any_full
