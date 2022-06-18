@@ -43,105 +43,103 @@ using namespace tiledb::common;
 TEST_CASE("Port FSM: Construct", "[fsm]") {
   [[maybe_unused]] auto a = PortStateMachine{};
 
-  CHECK(a.state() == PortState::start_start);
+  CHECK(a.state() == PortState::empty_full);
 }
 
 TEST_CASE("Port FSM: Start up", "[fsm]") {
   [[maybe_unused]] auto a = PortStateMachine{};
 
-  CHECK(a.state() == PortState::start_start);
+  CHECK(a.state() == PortState::empty_full);
 
   SECTION("start source") {
-    a.event(PortEvent::source_start);
-    CHECK(a.state() == PortState::empty_start);
+    a.event(PortEvent::source_fill);
+    CHECK(a.state() == PortState::full_full);
   }
 
   SECTION("start sink") {
-    a.event(PortEvent::sink_start);
-    CHECK(a.state() == PortState::start_full);
+    a.event(PortEvent::sink_drain);
+    CHECK(a.state() == PortState::empty_empty);
   }
 }
 
 TEST_CASE("Port FSM: Basic manual sequence", "[fsm]") {
   [[maybe_unused]] auto a = PortStateMachine{};
 
-  CHECK(a.state() == PortState::start_start);
-  a.event(PortEvent::source_start);
-  a.event(PortEvent::sink_start);
+  CHECK(a.state() == PortState::empty_full);
 
-  a.event(PortEvent::source_data_fill);
+  a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_full");
-  a.event(PortEvent::sink_data_drain);
-  CHECK(str(a.state()) == "ready_empty");
+  a.event(PortEvent::sink_drain);
+  CHECK(str(a.state()) == "full_empty");
   a.event(PortEvent::sink_swap);
   CHECK(str(a.state()) == "empty_full");
 
-  a.event(PortEvent::sink_data_drain);
+  a.event(PortEvent::sink_drain);
   CHECK(str(a.state()) == "empty_empty");
 
   CHECK(str(a.state()) == "empty_empty");
-  a.event(PortEvent::source_data_fill);
-  CHECK(str(a.state()) == "full_ready");
+  a.event(PortEvent::source_fill);
+  CHECK(str(a.state()) == "full_empty");
   a.event(PortEvent::source_swap);
   CHECK(a.state() == PortState::empty_full);
 
-  a.event(PortEvent::sink_data_drain);
+  a.event(PortEvent::sink_drain);
   CHECK(a.state() == PortState::empty_empty);
 
-  a.event(PortEvent::source_data_fill);
-  CHECK(str(a.state()) == "full_ready");
+  a.event(PortEvent::source_fill);
+  CHECK(str(a.state()) == "full_empty");
   a.event(PortEvent::source_swap);
   CHECK(str(a.state()) == "empty_full");
-  a.event(PortEvent::source_data_fill);
+  a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_full");
-  a.event(PortEvent::sink_data_drain);
-  CHECK(str(a.state()) == "ready_empty");
-  a.event(PortEvent::source_swap);
-  CHECK(str(a.state()) == "empty_full");
-
-  a.event(PortEvent::sink_data_drain);
-  CHECK(a.state() == PortState::empty_empty);
-
-  a.event(PortEvent::source_data_fill);
-  CHECK(str(a.state()) == "full_ready");
-  a.event(PortEvent::source_swap);
-  CHECK(str(a.state()) == "empty_full");
-  a.event(PortEvent::source_data_fill);
-  CHECK(str(a.state()) == "full_full");
-  a.event(PortEvent::sink_data_drain);
-  CHECK(str(a.state()) == "ready_empty");
-  a.event(PortEvent::sink_swap);
-  CHECK(str(a.state()) == "empty_full");
-
-  a.event(PortEvent::sink_data_drain);
-  CHECK(a.state() == PortState::empty_empty);
-
-  a.event(PortEvent::source_data_fill);
-  CHECK(str(a.state()) == "full_ready");
-  a.event(PortEvent::sink_swap);
-  CHECK(str(a.state()) == "empty_full");
-  a.event(PortEvent::source_data_fill);
-  CHECK(str(a.state()) == "full_full");
-  a.event(PortEvent::sink_data_drain);
-  CHECK(str(a.state()) == "ready_empty");
+  a.event(PortEvent::sink_drain);
+  CHECK(str(a.state()) == "full_empty");
   a.event(PortEvent::source_swap);
   CHECK(str(a.state()) == "empty_full");
 
-  a.event(PortEvent::sink_data_drain);
+  a.event(PortEvent::sink_drain);
   CHECK(a.state() == PortState::empty_empty);
 
-  a.event(PortEvent::source_data_fill);
-  CHECK(str(a.state()) == "full_ready");
-  a.event(PortEvent::sink_swap);
+  a.event(PortEvent::source_fill);
+  CHECK(str(a.state()) == "full_empty");
+  a.event(PortEvent::source_swap);
   CHECK(str(a.state()) == "empty_full");
-  a.event(PortEvent::source_data_fill);
+  a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_full");
-  a.event(PortEvent::sink_data_drain);
-  CHECK(str(a.state()) == "ready_empty");
+  a.event(PortEvent::sink_drain);
+  CHECK(str(a.state()) == "full_empty");
   a.event(PortEvent::sink_swap);
   CHECK(str(a.state()) == "empty_full");
 
-  a.event(PortEvent::sink_data_drain);
+  a.event(PortEvent::sink_drain);
+  CHECK(a.state() == PortState::empty_empty);
+
+  a.event(PortEvent::source_fill);
+  CHECK(str(a.state()) == "full_empty");
+  a.event(PortEvent::sink_swap);
+  CHECK(str(a.state()) == "empty_full");
+  a.event(PortEvent::source_fill);
+  CHECK(str(a.state()) == "full_full");
+  a.event(PortEvent::sink_drain);
+  CHECK(str(a.state()) == "full_empty");
+  a.event(PortEvent::source_swap);
+  CHECK(str(a.state()) == "empty_full");
+
+  a.event(PortEvent::sink_drain);
+  CHECK(a.state() == PortState::empty_empty);
+
+  a.event(PortEvent::source_fill);
+  CHECK(str(a.state()) == "full_empty");
+  a.event(PortEvent::sink_swap);
+  CHECK(str(a.state()) == "empty_full");
+  a.event(PortEvent::source_fill);
+  CHECK(str(a.state()) == "full_full");
+  a.event(PortEvent::sink_drain);
+  CHECK(str(a.state()) == "full_empty");
+  a.event(PortEvent::sink_swap);
+  CHECK(str(a.state()) == "empty_full");
+
+  a.event(PortEvent::sink_drain);
   CHECK(a.state() == PortState::empty_empty);
 }
 
@@ -206,12 +204,14 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
 
   [[maybe_unused]] auto a = PortStateMachine{};
 
-  CHECK(str(a.state()) == "start_start");
+  CHECK(str(a.state()) == "empty_full");
 
   std::mutex mutex_;
   std::condition_variable source_cv, sink_cv;
 
   size_t rounds = 33;
+  if (debug)
+    rounds = 3;
 
   int source_item{0};
   int sink_item{0};
@@ -232,28 +232,19 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
   auto source_node = [&]() {
     size_t n = rounds;
 
-    // Start the source
-    {
-      std::unique_lock lock(mutex_);
-      a.event(PortEvent::source_start, debug ? "source" : "");
-      CHECK(is_src_empty(a.state()) == "");
-    }
-
     // Event loop for source
     while (n--) {
       std::unique_lock lock(mutex_);
 
       CHECK(source_item == 0);
-      a.event(PortEvent::source_data_fill, debug ? "source" : "");
+      a.event(PortEvent::source_fill, debug ? "source" : "");
 
       source_item = 1;
       CHECK(is_src_full(a.state()) == "");
       sink_cv.notify_one();
       source_cv.wait(lock);
 
-      if (/*a.state() == PortState::ready_ready ||*/
-          a.state() == PortState::ready_empty ||
-          a.state() == PortState::full_empty) {
+      if (a.state() == PortState::full_empty) {
         if (debug)
           std::cout << "source swapping " << str(a.state()) << std::endl;
 
@@ -296,12 +287,9 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
   auto sink_node = [&]() {
     size_t n = rounds;
 
-    // Some setup to get into proper initial state for sink
     {
       std::unique_lock lock(mutex_);
-      a.event(PortEvent::sink_start, debug ? "sink" : "");
-      CHECK(is_snk_full(a.state()) == "");
-      a.event(PortEvent::sink_data_drain, debug ? "sink" : "");
+      a.event(PortEvent::sink_drain, debug ? "sink" : "");
       CHECK(is_snk_empty(a.state()) == "");
       source_cv.notify_one();
     }
@@ -309,16 +297,12 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
     // Event loop for sink
     while (n--) {
       std::unique_lock lock(mutex_);
-
       sink_cv.wait(lock);
 
       if (debug)
-
         std::cout << "sink coming out of wait  " << str(a.state()) << std::endl;
 
-      if (/*a.state() == PortState::ready_ready || */
-          a.state() == PortState::full_ready ||
-          a.state() == PortState::full_empty) {
+      if (a.state() == PortState::full_empty) {
         CHECK(source_item == 1);
         CHECK(sink_item == 0);
         a.event(PortEvent::sink_swap, debug ? "sink" : "");
@@ -338,7 +322,7 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
 
       if (debug)
         std::cout << "sink retrieving" << std::endl;
-      a.event(PortEvent::sink_data_drain, debug ? "sink" : "");
+      a.event(PortEvent::sink_drain, debug ? "sink" : "");
       CHECK(is_snk_empty(a.state()) == "");
       CHECK(sink_item == 1);
       sink_item = 0;
