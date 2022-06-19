@@ -73,7 +73,7 @@ TEST_CASE("Port FSM: Basic manual sequence", "[fsm]") {
   CHECK(str(a.state()) == "full_full");
   a.event(PortEvent::sink_drain);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::sink_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
 
   a.event(PortEvent::sink_drain);
@@ -82,7 +82,7 @@ TEST_CASE("Port FSM: Basic manual sequence", "[fsm]") {
   CHECK(str(a.state()) == "empty_empty");
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::source_swap);
+  a.event(PortEvent::swap);
   CHECK(a.state() == PortState::empty_full);
 
   a.event(PortEvent::sink_drain);
@@ -90,13 +90,13 @@ TEST_CASE("Port FSM: Basic manual sequence", "[fsm]") {
 
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::source_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_full");
   a.event(PortEvent::sink_drain);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::source_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
 
   a.event(PortEvent::sink_drain);
@@ -104,13 +104,13 @@ TEST_CASE("Port FSM: Basic manual sequence", "[fsm]") {
 
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::source_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_full");
   a.event(PortEvent::sink_drain);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::sink_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
 
   a.event(PortEvent::sink_drain);
@@ -118,13 +118,13 @@ TEST_CASE("Port FSM: Basic manual sequence", "[fsm]") {
 
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::sink_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_full");
   a.event(PortEvent::sink_drain);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::source_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
 
   a.event(PortEvent::sink_drain);
@@ -132,13 +132,13 @@ TEST_CASE("Port FSM: Basic manual sequence", "[fsm]") {
 
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::sink_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
   a.event(PortEvent::source_fill);
   CHECK(str(a.state()) == "full_full");
   a.event(PortEvent::sink_drain);
   CHECK(str(a.state()) == "full_empty");
-  a.event(PortEvent::sink_swap);
+  a.event(PortEvent::swap);
   CHECK(str(a.state()) == "empty_full");
 
   a.event(PortEvent::sink_drain);
@@ -268,7 +268,7 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
         if (debug)
           std::cout << "source swapping " << str(a.state()) << std::endl;
 
-        a.event(PortEvent::source_swap, debug ? "source" : "");
+        a.event(PortEvent::swap, debug ? "source" : "");
         CHECK(source_item == 1);
         CHECK(sink_item == 0);
         std::swap(source_item, sink_item);
@@ -325,7 +325,7 @@ TEST_CASE("Port FSM: Asynchronous source and sink", "[fsm]") {
       if (a.state() == PortState::full_empty) {
         CHECK(source_item == 1);
         CHECK(sink_item == 0);
-        a.event(PortEvent::sink_swap, debug ? "sink" : "");
+        a.event(PortEvent::swap, debug ? "sink" : "");
         std::swap(source_item, sink_item);
 
         CHECK(is_src_empty(a.state()) == "");

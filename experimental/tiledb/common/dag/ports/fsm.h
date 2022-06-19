@@ -43,8 +43,7 @@ namespace tiledb::common {
 
 enum class PortEvent : unsigned short {
   source_fill = 0,
-  source_swap,
-  sink_swap,
+  swap,
   sink_drain,
   shutdown
 };
@@ -61,8 +60,7 @@ constexpr unsigned int n_events = to_index(PortEvent::shutdown) + 1;
 
 static std::vector<std::string> event_strings{
     "source_fill",
-    "source_swap",
-    "sink_swap",
+    "swap",
     "sink_drain",
     "shutdown",
 };
@@ -76,19 +74,19 @@ static auto str(PortEvent ev) {
 // clang-format off
 /**
  *
- *    +-----------------+----------------------------------------------------------------------------------------+
- *    |      States     |                           Events                                                       |
- *    +--------+--------+------------------+-------------+-------------+------------+-----------------+----------+
- *    | Source |  Sink  | source_fill | source_swap | sink_start  | sink_swap  | sink_drain | shutdown |
- *    |--------+--------+------------------+-------------+-------------+------------+-----------------+----------+
- *    | empty  | empty  | full/empty       |             |             |            |                 |          |
- *    |--------+--------+------------------+-------------+-------------+------------+-----------------+----------+
- *    | empty  | full   | full/full        |             |             |            | empty/empty     |          |
- *    |--------+--------+------------------+-------------+-------------+------------+-----------------+----------+
- *    | full   | empty  |                  | empty/full  |             | empty/full |                 |          |
- *    |--------+--------+------------------+-------------+-------------+------------+-----------------+----------+
- *    | full   | full   |                  |             |             |            | full/empty      |          |
- *    +--------+--------+------------------+-------------+-------------+------------+-----------------+----------+
+ *    +-----------------+-------------------------------------------------------------+
+ *    |      States     |                           Events                            |
+ *    +--------+--------+------------------+-------------+-----------------+----------+
+ *    | Source |  Sink  | source_fill      | swap        | sink_drain      | shutdown |
+ *    |--------+--------+------------------+-------------+-----------------+----------+
+ *    | empty  | empty  | full/empty       |             |                 |          |
+ *    |--------+--------+------------------+-------------+-----------------+----------+
+ *    | empty  | full   | full/full        |             | empty/empty     |          |
+ *    |--------+--------+------------------+-------------+-----------------+----------+
+ *    | full   | empty  |                  | empty/full  |                 |          |
+ *    |--------+--------+------------------+-------------+-----------------+----------+
+ *    | full   | full   |                  |             | full/empty      |          |
+ *    +--------+--------+------------------+-------------+-----------------+----------+
  *
  */
 // clang-format on
@@ -129,8 +127,7 @@ enum class PortAction : unsigned short {
   none = 0,
   fill_source,
   drain_sink,
-  source_swap,
-  sink_swap,
+  swap,
   shutdown
 };
 
@@ -148,28 +145,28 @@ enum class PortAction : unsigned short {
 namespace {
 // clang-format off
   constexpr PortState transition_table[n_states][n_events] {
-  /* source_sink */    /* source_fill */      /* source_swap */      /* sink_swap */        /* sink_drain */        /* shutdown */
-  /* empty_empty */  { PortState::full_empty, PortState::error,      PortState::error,      PortState::error,       PortState::error },
-  /* empty_full  */  { PortState::full_full,  PortState::error,      PortState::error,      PortState::empty_empty, PortState::error },
-  /* full_empty  */  { PortState::error,      PortState::empty_full, PortState::empty_full, PortState::error,       PortState::error },
-  /* full_full   */  { PortState::error,      PortState::error,      PortState::error,      PortState::full_empty,  PortState::error },
+  /* source_sink */    /* source_fill */      /* swap */             /* sink_drain */        /* shutdown */
+  /* empty_empty */  { PortState::full_empty, PortState::error,      PortState::error,       PortState::error },
+  /* empty_full  */  { PortState::full_full,  PortState::error,      PortState::empty_empty, PortState::error },
+  /* full_empty  */  { PortState::error,      PortState::empty_full, PortState::error,       PortState::error },
+  /* full_full   */  { PortState::error,      PortState::error,      PortState::full_empty,  PortState::error },
 		                             			     
-  /* error       */  { PortState::error,      PortState::error,      PortState::error,      PortState::error,       PortState::error },
-  /* done        */  { PortState::error,      PortState::error,      PortState::error,      PortState::error,       PortState::error },
+  /* error       */  { PortState::error,      PortState::error,      PortState::error,       PortState::error },
+  /* done        */  { PortState::error,      PortState::error,      PortState::error,       PortState::error },
   };
 
   /**
    * Transition actions table.
    */
   constexpr PortAction action_table[n_states][n_events] {
-  /* source_sink */    /*source_fill */        /* source_swap */     /* sink_swap */        /* sink_drain */        /* shutdown */
-  /* empty_empty */  { PortAction::none,       PortAction::none,     PortAction::none,      PortAction::none,       PortAction::none },
-  /* empty_full  */  { PortAction::none,       PortAction::none,     PortAction::none,      PortAction::none,       PortAction::none },
-  /* full_empty  */  { PortAction::none,       PortAction::none,     PortAction::none,      PortAction::none,       PortAction::none },
-  /* full_full   */  { PortAction::none,       PortAction::none,     PortAction::none,      PortAction::none,       PortAction::none },
+  /* source_sink */    /*source_fill */        /* swap */            /* sink_drain */        /* shutdown */
+  /* empty_empty */  { PortAction::none,       PortAction::none,     PortAction::none,       PortAction::none },
+  /* empty_full  */  { PortAction::none,       PortAction::none,     PortAction::none,       PortAction::none },
+  /* full_empty  */  { PortAction::none,       PortAction::none,     PortAction::none,       PortAction::none },
+  /* full_full   */  { PortAction::none,       PortAction::none,     PortAction::none,       PortAction::none },
 
-  /* error       */  { PortAction::none,       PortAction::none,       PortAction::none,     PortAction::none,      PortAction::none },
-  /* done        */  { PortAction::none,       PortAction::none,       PortAction::none,     PortAction::none,      PortAction::none },
+  /* error       */  { PortAction::none,       PortAction::none,     PortAction::none,       PortAction::none },
+  /* done        */  { PortAction::none,       PortAction::none,     PortAction::none,       PortAction::none },
   };
 
   // clang-format on
@@ -208,10 +205,7 @@ class PortStateMachine {
       case PortAction::drain_sink:
         break;
 
-      case PortAction::source_swap:
-        break;
-
-      case PortAction::sink_swap:
+      case PortAction::swap:
         break;
 
       case PortAction::none:
@@ -229,16 +223,12 @@ class PortStateMachine {
   /*
    * Try to apply source / sink event
    */
-  bool try_source_swap() {
+  bool try_swap() {
     auto old_state = state_;
-    event(PortEvent::source_swap);
+    event(PortEvent::swap);
     if (old_state == state_) {
       return false;
     }
-    return true;
-  }
-
-  bool try_sink_swap() {
     return true;
   }
 };
