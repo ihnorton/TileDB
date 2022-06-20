@@ -63,7 +63,6 @@ class generator {
 template <class Block = size_t>
 class producer_node : public Source<Block> {
   using Base = Source<Block>;
-
   std::atomic<size_t> i_{0};
   size_t N_{0};
   std::function<Block()> f_;
