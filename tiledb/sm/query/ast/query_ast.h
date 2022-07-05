@@ -33,6 +33,7 @@
 #ifndef TILEDB_QUERY_AST_H
 #define TILEDB_QUERY_AST_H
 
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <sstream>

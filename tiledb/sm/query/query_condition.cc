@@ -1542,13 +1542,6 @@ struct QueryCondition::BinaryCmp<T, QueryConditionOp::NE> {
   }
 };
 
-template <typename T>
-struct QCMax {
-  const T& operator()(const T& a, const T& b) const {
-    return std::max(a, b);
-  }
-};
-
 template <
     typename T,
     QueryConditionOp Op,
@@ -1811,18 +1804,20 @@ void QueryCondition::apply_tree_sparse(
       case QueryConditionCombinationOp::AND: {
         if constexpr (std::is_same_v<
                           CombinationOp,
-                          std::multiplies<BitmapType>>) {
+                          std::logical_and<BitmapType>>) {
           for (const auto& child : node->get_children()) {
             apply_tree_sparse<BitmapType>(
                 child,
                 array_schema,
                 result_tile,
-                std::multiplies<BitmapType>(),
+                std::logical_and<BitmapType>(),
                 result_bitmap);
           }
 
           // Handle the cl'(q, a) case
-        } else if constexpr (std::is_same_v<CombinationOp, QCMax<BitmapType>>) {
+        } else if constexpr (std::is_same_v<
+                                 CombinationOp,
+                                 std::logical_or<BitmapType>>) {
           std::vector<BitmapType> combination_op_bitmap(result_bitmap_size, 1);
 
           for (const auto& child : node->get_children()) {
@@ -1830,7 +1825,7 @@ void QueryCondition::apply_tree_sparse(
                 child,
                 array_schema,
                 result_tile,
-                std::multiplies<BitmapType>(),
+                std::logical_and<BitmapType>(),
                 combination_op_bitmap);
           }
           for (size_t c = 0; c < result_bitmap_size; ++c) {
@@ -1852,7 +1847,7 @@ void QueryCondition::apply_tree_sparse(
               child,
               array_schema,
               result_tile,
-              QCMax<BitmapType>(),
+              std::logical_or<BitmapType>(),
               combination_op_bitmap);
         }
 
@@ -1882,7 +1877,7 @@ Status QueryCondition::apply_sparse(
       tree_,
       array_schema,
       result_tile,
-      std::multiplies<BitmapType>(),
+      std::logical_and<BitmapType>(),
       result_bitmap);
   if (cell_count != nullptr) {
     *cell_count =
