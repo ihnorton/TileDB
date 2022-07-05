@@ -173,15 +173,6 @@ class ReaderBase : public StrategyBase {
    * */
   QueryCondition partial_overlap_condition_;
 
-  /** If the user requested timestamps attribute in the query */
-  bool user_requested_timestamps_;
-
-  /**
-   * If the special timestamps attribute should be loaded to memory for
-   * this query
-   */
-  bool use_timestamps_;
-
   /* ********************************* */
   /*         PROTECTED METHODS         */
   /* ********************************* */
@@ -220,18 +211,10 @@ class ReaderBase : public StrategyBase {
    * without timestamps.
    */
   inline bool timestamps_not_present(
-      const std::string& name, const unsigned f) const {
-    return name == constants::timestamps && !include_timestamps(f);
+      const std::string& name,
+      const std::shared_ptr<tiledb::sm::FragmentMetadata>& frag_md) const {
+    return name == constants::timestamps && !frag_md->has_timestamps();
   }
-
-  /**
-   * Checks if timestamps should be loaded for a fragment.
-   *
-   * @param f Fragment index.
-   * @return True if timestamps should be included, false if they are not.
-   * needed.
-   */
-  bool include_timestamps(const unsigned f) const;
 
   /**
    * Returns the fragment timestamp for a result tile.

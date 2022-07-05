@@ -604,7 +604,7 @@ class Reader : public ReaderBase, public IQueryStrategy {
    * @return Status
    */
   Status get_all_result_coords(
-      ResultTile* tile, std::vector<ResultCoords>& result_coords);
+      ResultTile* tile, std::vector<ResultCoords>& result_coords) const;
 
   /**
    * Returns `true` if a coordinate buffer for a separate dimension
@@ -695,15 +695,6 @@ class Reader : public ReaderBase, public IQueryStrategy {
 
   /** Perform necessary checks before exiting a read loop */
   Status complete_read_loop();
-
-  /**
-   * Get the timestamp value for a result coords.
-   *
-   * @param rc Result coords.
-   *
-   * @return timestamp.
-   */
-  uint64_t get_timestamp(const ResultCoords& rc) const;
 };
 
 }  // namespace sm
