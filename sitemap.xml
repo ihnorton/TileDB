@@ -1,87 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://github.com/ihnorton/TileDB/index.html</loc>
-    <lastmod>2022-06-29T16:04:19.942Z</lastmod>
+    <loc>https://github.com/ihnorton/TileDB/CODE_OF_CONDUCT.html</loc>
+    <lastmod>2022-08-02T15:44:53.025Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ihnorton/TileDB/CONTRIBUTING.html</loc>
-    <lastmod>2022-06-29T16:04:20.842Z</lastmod>
+    <lastmod>2022-08-02T15:44:53.441Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ihnorton/TileDB/HISTORY.html</loc>
-    <lastmod>2022-06-29T16:04:23.586Z</lastmod>
+    <loc>https://github.com/ihnorton/TileDB/tiledb/api/DIRECTORY.html</loc>
+    <lastmod>2022-08-02T15:44:53.769Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ihnorton/TileDB/external/blosc/README-VERSIONS.html</loc>
-    <lastmod>2022-06-29T16:04:24.006Z</lastmod>
+    <loc>https://github.com/ihnorton/TileDB/tiledb/api/c_api_support/DIRECTORY.html</loc>
+    <lastmod>2022-08-02T15:44:54.101Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/group_file_hierarchy.html</loc>
-    <lastmod>2022-06-29T16:04:24.398Z</lastmod>
+    <loc>https://github.com/ihnorton/TileDB/tiledb/api/C_API_STRUCTURE.html</loc>
+    <lastmod>2022-08-02T15:44:54.433Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/metadata.html</loc>
-    <lastmod>2022-06-29T16:04:24.766Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/consolidated_fragment_metadata_file.html</loc>
-    <lastmod>2022-06-29T16:04:25.182Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/FORMAT_SPEC.html</loc>
-    <lastmod>2022-06-29T16:04:25.562Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/generic_tile.html</loc>
-    <lastmod>2022-06-29T16:04:25.950Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/ignore_file.html</loc>
-    <lastmod>2022-06-29T16:04:26.310Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/consolidated_commits_file.html</loc>
-    <lastmod>2022-06-29T16:04:26.694Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/tile.html</loc>
-    <lastmod>2022-06-29T16:04:27.386Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/fragment.html</loc>
-    <lastmod>2022-06-29T16:04:28.078Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/array_schema.html</loc>
-    <lastmod>2022-06-29T16:04:28.522Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/group.html</loc>
-    <lastmod>2022-06-29T16:04:28.882Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/vacuum_file.html</loc>
-    <lastmod>2022-06-29T16:04:29.242Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/filter_pipeline.html</loc>
-    <lastmod>2022-06-29T16:04:29.658Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/format_spec/array_file_hierarchy.html</loc>
-    <lastmod>2022-06-29T16:04:30.034Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/CODE_OF_CONDUCT.html</loc>
-    <lastmod>2022-06-29T16:04:30.414Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/ihnorton/TileDB/tiledb/common/exception/DIRECTORY.html</loc>
-    <lastmod>2022-06-29T16:04:30.802Z</lastmod>
+    <loc>https://github.com/ihnorton/TileDB/tiledb/api/c_api/DIRECTORY.html</loc>
+    <lastmod>2022-08-02T15:44:54.709Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/ihnorton/TileDB/tiledb/storage_format/DIRECTORY.html</loc>
-    <lastmod>2022-06-29T16:04:31.154Z</lastmod>
+    <lastmod>2022-08-02T15:44:54.993Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/tiledb/common/exception/DIRECTORY.html</loc>
+    <lastmod>2022-08-02T15:44:55.313Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/experimental/tiledb/common/dag/ports/fsm.html</loc>
+    <lastmod>2022-08-02T15:44:55.753Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/external/blosc/README-VERSIONS.html</loc>
+    <lastmod>2022-08-02T15:44:56.021Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/HISTORY.html</loc>
+    <lastmod>2022-08-02T15:44:58.105Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/index.html</loc>
+    <lastmod>2022-08-02T15:44:58.401Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/group.html</loc>
+    <lastmod>2022-08-02T15:44:58.689Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/fragment.html</loc>
+    <lastmod>2022-08-02T15:44:59.237Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/metadata.html</loc>
+    <lastmod>2022-08-02T15:44:59.521Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/vacuum_file.html</loc>
+    <lastmod>2022-08-02T15:44:59.797Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/consolidated_fragment_metadata_file.html</loc>
+    <lastmod>2022-08-02T15:45:00.113Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/FORMAT_SPEC.html</loc>
+    <lastmod>2022-08-02T15:45:00.425Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/ignore_file.html</loc>
+    <lastmod>2022-08-02T15:45:00.709Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/tile.html</loc>
+    <lastmod>2022-08-02T15:45:01.353Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/generic_tile.html</loc>
+    <lastmod>2022-08-02T15:45:01.641Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/group_file_hierarchy.html</loc>
+    <lastmod>2022-08-02T15:45:01.961Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/consolidated_commits_file.html</loc>
+    <lastmod>2022-08-02T15:45:02.273Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/array_schema.html</loc>
+    <lastmod>2022-08-02T15:45:02.609Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/filter_pipeline.html</loc>
+    <lastmod>2022-08-02T15:45:02.941Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/delete_commit_file.html</loc>
+    <lastmod>2022-08-02T15:45:03.261Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/ihnorton/TileDB/format_spec/array_file_hierarchy.html</loc>
+    <lastmod>2022-08-02T15:45:03.549Z</lastmod>
   </url>
 </urlset>
