@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>directory</title>
+<title>CMake</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -96,7 +96,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">(Untitled)</h1>
+      <h1 class="quarto-secondary-nav-title">CMake</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -223,20 +223,62 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#c-api-support" id="toc-c-api-support" class="nav-link active" data-scroll-target="#c-api-support">C API Support</a></li>
+  <li><a href="#build-options" id="toc-build-options" class="nav-link active" data-scroll-target="#build-options">Build Options</a></li>
+  <li><a href="#tiledb-object-libraries" id="toc-tiledb-object-libraries" class="nav-link" data-scroll-target="#tiledb-object-libraries">TileDB Object Libraries</a></li>
+  <li><a href="#tiledb-static-and-shared-libraries" id="toc-tiledb-static-and-shared-libraries" class="nav-link" data-scroll-target="#tiledb-static-and-shared-libraries">TileDB Static and Shared Libraries</a></li>
+  <li><a href="#adding-a-dependency" id="toc-adding-a-dependency" class="nav-link" data-scroll-target="#adding-a-dependency">Adding a dependency</a></li>
+  <li><a href="#using-the-common-modules" id="toc-using-the-common-modules" class="nav-link" data-scroll-target="#using-the-common-modules">Using the common modules</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">CMake</h1>
+</div>
 
 
-<section id="c-api-support" class="level2">
-<h2 class="anchored" data-anchor-id="c-api-support">C API Support</h2>
-<p>This directory contains support code shared generally between implementations of C API functions.</p>
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>TileDB uses CMake for its configuration, build system, and package management.</p>
+<section id="build-options" class="level2">
+<h2 class="anchored" data-anchor-id="build-options">Build Options</h2>
+<p>The <code>TILEDB_*</code> options are used primarily for enabling/disabling extra components (e.g.&nbsp;S3 support, test suite) and setting build or compilation settings (e.g.&nbsp;error on warn, superbuild). The options are defined in a single code block in the TileDB root <code>CMakeLists.txt</code> file.</p>
+<p>If it is decided a new option is needed, the following must be updated in addition to the root <code>CMakeLists.txt</code> file:</p>
+<ol type="1">
+<li>the bootstrap scripts (<code>bootstrap</code>, <code>bootstrap.ps1</code>)</li>
+<li>continuous integration coverage to ensure the option is exercised in a CI build (edit github actions workflows under <code>.github/workflows</code>)</li>
+<li>the build documentation contained in our <a href="https://docs.tiledb.com">online docs</a></li>
+</ol>
+</section>
+<section id="tiledb-object-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="tiledb-object-libraries">TileDB Object Libraries</h2>
+<p>The main TileDB library is in the process of being broken into discrete <a href="https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#object-libraries">object libraries</a>.</p>
+<p><em>TODO About the object libraries and best practices</em></p>
+</section>
+<section id="tiledb-static-and-shared-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="tiledb-static-and-shared-libraries">TileDB Static and Shared Libraries</h2>
+<p><em>TODO About combining the object libraries into the main libraries created by CMake</em></p>
+</section>
+<section id="adding-a-dependency" class="level2">
+<h2 class="anchored" data-anchor-id="adding-a-dependency">Adding a dependency</h2>
+<p>There are several steps to adding a new dependency to TileDB. See <a href="https://github.com/TileDB-Inc/TileDB/wiki/Adding-a-new-dependency-to-TileDB">TileDB wiki on GitHub</a> for more information.</p>
+</section>
+<section id="using-the-common-modules" class="level2">
+<h2 class="anchored" data-anchor-id="using-the-common-modules">Using the common modules</h2>
 <ul>
-<li><code>class Handle</code> is the means through which user code refers to objects inside the library. These are managed wrappers around pointers to internal objects.</li>
+<li>_TODO Describe (generally speaking) what is included in the cmake/common*.cmake modules_</li>
+<li><em>TODO Guidelines for adding to the modules (including best practices for CMake macros and functions).</em></li>
 </ul>
 
 

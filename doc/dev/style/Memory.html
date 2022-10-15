@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>directory</title>
+<title>Memory Guidelines</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -96,7 +96,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">(Untitled)</h1>
+      <h1 class="quarto-secondary-nav-title">Memory Guidelines</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -223,21 +223,37 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#c-api-support" id="toc-c-api-support" class="nav-link active" data-scroll-target="#c-api-support">C API Support</a></li>
+  <li><a href="#pointers-and-allocations" id="toc-pointers-and-allocations" class="nav-link active" data-scroll-target="#pointers-and-allocations">Pointers and Allocations</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Memory Guidelines</h1>
+</div>
 
 
-<section id="c-api-support" class="level2">
-<h2 class="anchored" data-anchor-id="c-api-support">C API Support</h2>
-<p>This directory contains support code shared generally between implementations of C API functions.</p>
-<ul>
-<li><code>class Handle</code> is the means through which user code refers to objects inside the library. These are managed wrappers around pointers to internal objects.</li>
-</ul>
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="pointers-and-allocations" class="level2">
+<h2 class="anchored" data-anchor-id="pointers-and-allocations">Pointers and Allocations</h2>
+<p>The use of <code>new</code> or <code>malloc</code> is forbidden unless justifcation and a team agreement on an exception is granted. Inplace a smart pointer should be used.</p>
+<p>That is a <code>unique_ptr</code>, <code>shared_ptr</code> or <code>weak_ptr</code> should be used in all cases. With <code>weak_ptr</code> being rarely used.</p>
+<p>In the core TileDB library we have our own <code>tdb_unique_ptr</code> and <code>tdb_shared_ptr</code> that must be used inplace of the <code>stl</code> versions.</p>
+<p><code>make_unique_ptr</code> or <code>make_shared_ptr</code> is the preferred, exception safe, method of creating the smart pointers.</p>
+<p>Extreme care must be given to all allocations. Even when using STL containers like <code>std::vector</code> thoughtful consideration must be given for the dynamic allocations that will occur.</p>
+<p>If we are only allocating one megabyte or less <em>strongly</em> consider fixed allocations instead. Fixed allocation help to avoid fragmentation of the heap.</p>
 
 
 </section>

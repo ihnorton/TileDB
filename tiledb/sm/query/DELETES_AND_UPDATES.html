@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>directory</title>
+<title>deletes_and_updates</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -223,7 +223,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#c-api-support" id="toc-c-api-support" class="nav-link active" data-scroll-target="#c-api-support">C API Support</a></li>
+  <li><a href="#deletes" id="toc-deletes" class="nav-link active" data-scroll-target="#deletes">Deletes</a></li>
   </ul>
 </nav>
     </div>
@@ -232,12 +232,9 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="c-api-support" class="level2">
-<h2 class="anchored" data-anchor-id="c-api-support">C API Support</h2>
-<p>This directory contains support code shared generally between implementations of C API functions.</p>
-<ul>
-<li><code>class Handle</code> is the means through which user code refers to objects inside the library. These are managed wrappers around pointers to internal objects.</li>
-</ul>
+<section id="deletes" class="level1">
+<h1>Deletes</h1>
+<p>Deletes are implemented as a query type, <code>TILEDB_QUERY_TYPE_DELETE</code>, which requires a QueryCondition to be set on the Query. Upon query submission, TileDB creates a <a href="https://github.com/TileDB-Inc/TileDB/blob/dev/format_spec/delete_commit_file.md">delete commit file</a> containing a serialized version of the query condition. All attribute values matching the query condition expression are considered to be deleted as of the timestamp of the commit file. During reads, any delete commit files within the query range are loaded and deserialized, then the <em>negation</em> of the stored query condition is applied to the final result.</p>
 
 
 </section>
