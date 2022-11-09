@@ -57,8 +57,8 @@ run_docker_minio() {
 export_aws_keys() {
   export AWS_ACCESS_KEY_ID=minio
   export AWS_SECRET_ACCESS_KEY=miniosecretkey
-  export MINIO_ACCESS_KEY=minio
-  export MINIO_SECRET_KEY=miniosecretkey
+  export MINIO_ROOT_USER=minio
+  export MINIO_ROOT_PASSWORD=miniosecretkey
 }
 
 run() {
