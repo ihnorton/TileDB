@@ -29,13 +29,13 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+if [[ "$BASH_SOURCE" = $0 ]]; then
+  # exit when *not* sourced (https://superuser.com/a/1288646)
+  echo "run-minio.sh was not sourced. Please set keys manually before running tests."
+fi
+
 die() {
   echo "$@" 1>&2 ; popd 2>/dev/null;
-
-  if [[ "$BASH_SOURCE" = $0 ]]; then
-    # exit when *not* sourced (https://superuser.com/a/1288646)
-    exit 1;
-  fi
 }
 
 run_cask_minio() {
