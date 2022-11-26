@@ -20,7 +20,7 @@ Semicolon separated list to binary dependencies.
 Optionally specify the CMake generator string, e.g. "Visual Studio 15
 2017". Check 'cmake --help' for a list of supported generators.
 
-.PARAMETER CMakeGenerator
+.PARAMETER CMakeExtraArgs
 Optionally specify extra arguments to pass to the CMake command line.
 
 .PARAMETER EnableDebug

@@ -181,7 +181,7 @@ jobs:
           }
 
           # Ignore strawberry perl in GHA images due to incompatible libraries
-          $bootstrapOptions = $bootstrapOptions + " -CMakeExtraArgs=-DCMAKE_IGNORE_PREFIX_PATH=C:/Strawberry"
+          $bootstrapOptions = $bootstrapOptions + " -CMakeExtraArgs='-DCMAKE_IGNORE_PREFIX_PATH=C:/Strawberry'"
 
           $bootstrapExpression = "& $env:BUILD_SOURCESDIRECTORY\bootstrap.ps1 " + $bootstrapOptions
           Write-Host "bootstrapExpression: $bootstrapExpression"
