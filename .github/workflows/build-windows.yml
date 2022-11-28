@@ -180,6 +180,8 @@ jobs:
             $bootstrapOptions = $bootstrapOptions + " -EnableWebP"
           }
 
+          # Use toolchain hack to ignore strawberry perl path in GHA images
+          $env:CMAKE_TOOLCHAIN_FILE = $env:BUILD_SOURCESDIRECTORY\.github\aux\gha-windows-toolchain.cmake
 
           $bootstrapExpression = "& $env:BUILD_SOURCESDIRECTORY\bootstrap.ps1 " + $bootstrapOptions
           Write-Host "bootstrapExpression: $bootstrapExpression"
@@ -189,9 +191,6 @@ jobs:
             Write-Host "Bootstrap failed."
             exit $LastExitCode
           }
-
-          # Ignore strawberry perl in GHA images due to incompatible libraries which will be used by find_package
-          cmake --build $env:BUILD_BUILDDIRECTORY --config $CMakeBuildType -DCMAKE_IGNORE_PREFIX_PATH=C:/Strawberry
 
           cmake --build $env:BUILD_BUILDDIRECTORY --config $CMakeBuildType -j $env:NUMBER_OF_PROCESSORS 2>&1
 
