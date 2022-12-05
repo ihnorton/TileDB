@@ -1,5 +1,5 @@
 #
-# experimental/tiledb/common/dag/graph/CMakeLists.txt
+# experimental/tiledb/common/dag/nodes/test/CMakeLists.txt
 #
 #
 # The MIT License
@@ -25,13 +25,8 @@
 # THE SOFTWARE.
 #
 
-include(common NO_POLICY_SCOPE)
 
-################################################################
-# Include subdirectory with unit tests                         #
-################################################################
-if (TILEDB_TESTS)
-    add_subdirectory(test)
-endif()
-
-dag_add_header_only_object_library(taskgraph)
+#
+# Define unit tests
+#
+dag_add_header_only_unit_test(taskgraph)

@@ -1,11 +1,11 @@
 /**
- * @file   dag.cc
+ * @file   experimental/tiledb/common/dag/graph/taskgraph.h
  *
  * @section LICENSE
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2018-2021 TileDB, Inc.
+ * @copyright Copyright (c) 2022 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,12 @@
  *
  * @section DESCRIPTION
  *
- * This file defines the Dag class.
+ * This file declares the Dag class as well as its associated classes.
  */
 
-#include <cassert>
+#ifndef TILEDB_DAG_GRAPH_TASKGRAPH_H
+#define TILEDB_DAG_GRAPH_TASKGRAPH_H
 
-#include "experimental/tiledb/common/dag/dag.h"
-// #include "tiledb/common/logger.h"
+namespace tiledb::common {}  // namespace tiledb::common
+
+#endif  //  TILEDB_DAG_GRAPH_TASKGRAPH_H
