@@ -101,5 +101,4 @@ add_subdirectory(nodes)
 add_subdirectory(ports)
 add_subdirectory(state_machine)
 add_subdirectory(utility)
-
-# add_subdirectory(graph)
+add_subdirectory(graph)
