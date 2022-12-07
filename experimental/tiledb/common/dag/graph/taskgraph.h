@@ -103,6 +103,7 @@ class TaskGraph {
    */
   template <class Function>
   auto initial_node(Function&& f) {
+    nodes_.emplace_back(producer_node(std::move(f)));
   }
 
   /**

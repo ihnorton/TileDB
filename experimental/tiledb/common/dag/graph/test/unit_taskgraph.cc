@@ -30,9 +30,14 @@
 
 #include "unit_taskgraph.h"
 #include "experimental/tiledb/common/dag/graph/taskgraph.h"
+#include "experimental/tiledb/common/dag/execution/duffs.h"
 
 using namespace tiledb::common;
 
 TEST_CASE("TaskGraph: Trivial test", "[taskgraph]") {
   CHECK(true);
+}
+
+TEST_CASE("TaskGraph: Trivial construction", "[taskgraph]") {
+  auto t = TaskGraph<DuffsScheduler> ();
 }

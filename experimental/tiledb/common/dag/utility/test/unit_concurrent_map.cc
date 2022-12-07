@@ -32,3 +32,7 @@
 
 #include "experimental/tiledb/common/dag/utility/test/unit_concurrent_map.h"
 #include "experimental/tiledb/common/dag/utility/concurrent_map.h"
+
+TEST_CASE("ConcurrentMap: Trivial test", "[concurrent_map]") {
+  CHECK(true);
+}

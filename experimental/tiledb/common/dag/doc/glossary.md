@@ -6,7 +6,7 @@
 #### Task Graph
 
 A *task graph* is a data structure consisting of *nodes* and *edges*.  Each node applies some 
-specified computation by invoking its *enclosed function*.
+specified computation by invoking its *contained function*.
 Edges represent dependencies between nodes.
 A *dataflow* graph (or a *flow* graph) passes data between nodes, with the 
 output data of one node supplying data to the input of another node.  A *dependency*
@@ -24,16 +24,15 @@ A basic task graph is assumed to be a directed acyclic graph (DAG).
 
 #### Port
 
-A port is a binding point between an edge and a node.  
-A port can be either an input or an output, with respect to a given node.  
+A port is a binding point between an edge and a node.
+A port can be either an input or an output, with respect to a given node.
 That is, a node receives data from its input port(s) and transmits data to its output port(s).
 
 
 
 #### Node
 
-A node is a locus for computation in the task graph.
-A node may have multiple input ports and multiple output ports.
+A node is a locus for computation in the task graph.  A node may have multiple input ports and multiple output ports.
 A node has a contained function.
 The expected functionality of a node is to apply its contained function to 
 data available on the input port(s) and to return its values to the output port(s).
@@ -41,7 +40,7 @@ data available on the input port(s) and to return its values to the output port(
 
 #### Function Node
 
-A function node is neither a root nor leaf in the task graph.  A function node has a contained function.  
+A function node is neither a root nor leaf in the task graph.  A function node has a contained function. 
 The expected functionality of a function node is to apply its contained function to data available on 
 its input port and to return its values to its output port.  The prototype for the contained function is:
 

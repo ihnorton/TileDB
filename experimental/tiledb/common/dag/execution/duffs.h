@@ -164,7 +164,6 @@ class DuffsPortPolicy : public PortFiniteStateMachine<
    * Policy action called on the port `on_notify_source` action.
    */
   inline scheduler_event_type on_notify_source(lock_type&, std::atomic<int>&) {
-    // throw(duffs_notify_source);
     return scheduler_event_type::notify_source;
   }
 
@@ -172,7 +171,6 @@ class DuffsPortPolicy : public PortFiniteStateMachine<
    * Policy action called on the port `on_notify_sink` action.
    */
   inline scheduler_event_type on_notify_sink(lock_type&, std::atomic<int>&) {
-    // throw(duffs_notify_sink);
     return scheduler_event_type::notify_sink;
   }
 
@@ -182,7 +180,6 @@ class DuffsPortPolicy : public PortFiniteStateMachine<
   inline scheduler_event_type on_source_wait(lock_type&, std::atomic<int>&) {
     // @todo Should wait predicate be checked here?  (It is currently checked in
     // the scheduler body.)
-    // throw(duffs_source_wait);
     return scheduler_event_type::source_wait;
   }
 
@@ -192,7 +189,7 @@ class DuffsPortPolicy : public PortFiniteStateMachine<
   inline scheduler_event_type on_sink_wait(lock_type&, std::atomic<int>&) {
     // @todo Should wait predicate be checked here?  (It is currently checked in
     // the scheduler body.)
-    // throw(duffs_sink_wait);  // Predicate: source is full?
+    // Predicate: source is full?
     return scheduler_event_type::sink_wait;
   }
 
@@ -210,7 +207,6 @@ class DuffsPortPolicy : public PortFiniteStateMachine<
   inline scheduler_event_type on_term_sink(lock_type&, std::atomic<int>&) {
     // @todo There might be a better way of integrating `term_sink` with
     // `term_source`.  For now, `term_sink` just returns.
-    // throw(duffs_sink_exit);
     // return scheduler_event_type::sink_exit; ?? noop ?? yield ??
     return scheduler_event_type::noop;
   }
@@ -224,13 +220,13 @@ class DuffsPortPolicy : public PortFiniteStateMachine<
 };
 
 /**
- * Alias to define the three-stage data mover for the throw-catch scheduler.
+ * Alias to define the three-stage data mover for the duffs device scheduler.
  */
 template <class T>
 using DuffsMover3 = ItemMover<DuffsPortPolicy, three_stage, T>;
 
 /**
- * Alias to define the two-stage data mover for the throw-catch scheduler.
+ * Alias to define the two-stage data mover for the duffs device scheduler.
  */
 template <class T>
 using DuffsMover2 = ItemMover<DuffsPortPolicy, two_stage, T>;
@@ -846,10 +842,19 @@ class DuffsSchedulerImpl : public Base<Task, DuffsSchedulerImpl<Task, Base>> {
           }
 
           switch (evt) {
+
+
+            case SchedulerAction::source_wait: {
+              /* Check predicate to prevent lost wakeup. */
+              if(node->is_source_state_full() && !node->is_source_done()) {
+                this->task_wait(task_to_run);
+              } else {
+                node->decrement_program_counter();
+              }
+            } break;
+
             case SchedulerAction::sink_wait: {
-              if (
-                  // !is_sink_state_full
-                  node->is_sink_state_empty() && !node->is_sink_done() &&
+              if (node->is_sink_state_empty() && !node->is_sink_done() &&
                   !node->is_sink_terminated()) {
                 this->task_wait(task_to_run);
               } else {
@@ -857,29 +862,17 @@ class DuffsSchedulerImpl : public Base<Task, DuffsSchedulerImpl<Task, Base>> {
               }
             } break;
 
-            case SchedulerAction::source_wait: {
-              // @todo Maybe put decrement here?
-              if(
-              // ! is_source_state_empty
-                node->is_source_state_full() && !node->is_source_done() /*&&
-                                                !node->is_source_terminated()*/) {
-                this->task_wait(task_to_run);
-              } else {
-                node->decrement_program_counter();
-              }
-            } break;
-
-            case SchedulerAction::notify_sink: {
+            case SchedulerAction::notify_source: {
               auto task_to_notify =
-                  node_to_task[task_to_run->sink_correspondent()];
+                  node_to_task[task_to_run->source_correspondent()];
               this->task_notify(task_to_notify);
               goto retry;
               break;
             }
 
-            case SchedulerAction::notify_source: {
+            case SchedulerAction::notify_sink: {
               auto task_to_notify =
-                  node_to_task[task_to_run->source_correspondent()];
+                  node_to_task[task_to_run->sink_correspondent()];
               this->task_notify(task_to_notify);
               goto retry;
               break;

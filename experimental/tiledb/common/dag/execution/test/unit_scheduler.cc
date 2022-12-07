@@ -334,11 +334,10 @@ TEMPLATE_TEST_CASE(
         function_node<FrugalMover3, size_t>,
         producer_node<FrugalMover3, size_t>,
         FrugalScheduler<node>>)) {
-  bool debug{true};
+  bool debug{false};
 
-  // auto num_threads = GENERATE(1, 2, 3, 4, 5, 8, 17);
-  auto num_threads = GENERATE(1, 2, 3, 4, 5);
-  // auto num_threads = 5;
+
+  auto num_threads = GENERATE(1, 2, 3, 4, 5, 8, 17);
 
   if ((!std::is_same_v<
            typename std::tuple_element<0, TestType>::type,

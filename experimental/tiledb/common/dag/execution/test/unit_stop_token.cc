@@ -31,4 +31,8 @@
 
 #include "unit_stop_token.h"
 
+TEST_CASE("StopToken: Trivial test", "[stop_token]") {
+  CHECK(true);
+}
+
 
