@@ -327,8 +327,10 @@ class PortFiniteStateMachine {
    * @param event The event to be processed
    * @param msg A debugging string to preface printout information for
    * the state transition
+   *
+   * @todo Get rid of msg and event_counter -- they were only for debugging.
    */
-  scheduler_event_type event(PortEvent event, const std::string& msg = "") {
+  scheduler_event_type event(PortEvent event, const std::string&) {
     std::unique_lock lock(mutex_);
 
     if (state_ == PortState::error) {
@@ -367,10 +369,14 @@ class PortFiniteStateMachine {
         return static_cast<Policy*>(this)->on_ac_return(lock, event_counter);
 
       case PortAction::source_move:
+        // @todo Why does this not notify?
         static_cast<Policy*>(this)->on_source_move(lock, event_counter);
+        break;
 
       case PortAction::sink_move:
+        // @todo Why does this not notify?
         static_cast<Policy*>(this)->on_sink_move(lock, event_counter);
+        break;
 
       case PortAction::source_wait:
         if (wait_returns_) {
@@ -405,12 +411,10 @@ class PortFiniteStateMachine {
       case PortAction::source_throw:
         throw std::logic_error("PortFiniteStateMachine::event: "
                                "exit_action == PortAction::source_throw");
-        break;
 
       case PortAction::sink_throw:
         throw std::logic_error("PortFiniteStateMachine::event: "
                                "exit_action == PortAction::sink_throw");
-        break;
 
       default:
         throw std::logic_error(
@@ -426,7 +430,7 @@ class PortFiniteStateMachine {
     /*
      * Update the entry_action in case we have come back from a wait.
      *
-     * (Will the behavior of this change with different scheduling?)
+     * @todo Will the behavior of this change with different scheduling?
      */
     entry_action =
         entry_table<port_state>[to_index(next_state_)][to_index(event)];
@@ -449,6 +453,8 @@ class PortFiniteStateMachine {
         /*
          * If we do a move on entry, we need to fix up the state, since we
          * have already passed the state transition step.
+         *
+         * @todo This seems like unreachable -- why is it here?
          */
         if constexpr (std::is_same_v<port_state, two_stage>) {
           switch (state_) {
@@ -501,6 +507,7 @@ class PortFiniteStateMachine {
         /*
          * If we do a move on entry, we need to fix up the state, since we
          * have already passed the state transition step.
+         * @todo This seems like unreachable -- why is it here?
          */
         if constexpr (std::is_same_v<port_state, two_stage>) {
           switch (state_) {

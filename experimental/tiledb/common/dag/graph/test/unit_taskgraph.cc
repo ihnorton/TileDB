@@ -31,6 +31,7 @@
 #include "unit_taskgraph.h"
 #include "experimental/tiledb/common/dag/graph/taskgraph.h"
 #include "experimental/tiledb/common/dag/execution/duffs.h"
+#include "experimental/tiledb/common/dag/nodes/segmented_nodes.h"
 
 using namespace tiledb::common;
 
@@ -38,6 +39,14 @@ TEST_CASE("TaskGraph: Trivial test", "[taskgraph]") {
   CHECK(true);
 }
 
-TEST_CASE("TaskGraph: Trivial construction", "[taskgraph]") {
-  auto t = TaskGraph<DuffsScheduler> ();
+TEST_CASE("TaskGraph: Default construction", "[taskgraph]") {
+  auto graph = TaskGraph<DuffsScheduler<node>> ();
+}
+
+TEST_CASE("TaskGraph: Default construction", "[taskgraph]") {
+  auto graph = TaskGraph<DuffsScheduler<node>> ();
+
+  initial_node(graph, [](std::stop_source& stop) {
+    return 0;
+  });
 }
