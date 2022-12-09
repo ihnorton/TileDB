@@ -43,8 +43,48 @@
 #include "experimental/tiledb/common/dag/execution/task_traits.h"
 #include "experimental/tiledb/common/dag/nodes/node_traits.h"
 #include "experimental/tiledb/common/dag/nodes/segmented_nodes.h"
+#include "experimental/tiledb/common/dag/utility/print_types.h"
 
 namespace tiledb::common {
+
+// using P2 = producer_node<DuffsMover2, size_t>;
+
+// template <template <class> class M, class T>
+// Task(producer_node<M, T>)->Task<node>;
+
+// template <template <class> class Mover, class T>
+// struct producer_node
+
+// template <template <class> class Mover, class T>
+// producer_node<Mover>(std::function<T(std::stop_source)>)
+//     ->producer_node<Mover, T>;
+
+#if 0
+  namespace tiledb::common {
+  Task(node&)->Task<node>;
+
+  Task(const node&)->Task<node>;
+
+  template <template <class> class M, class T>
+  Task(producer_node<M, T>)->Task<node>;
+
+  template <template <class> class M, class T>
+  Task(consumer_node<M, T>)->Task<node>;
+
+  template <
+      template <class>
+      class M1,
+      class T1,
+      template <class>
+      class M2,
+      class T2>
+  Task(function_node<M1, T1, M2, T2>)->Task<node>;
+
+  template <template <class> class M1, class T1>
+  Task(function_node<M1, T1>)->Task<node>;
+#endif
+
+
 
 template <class Scheduler>
 class TaskGraph {
@@ -56,6 +96,7 @@ class TaskGraph {
   using scheduler_type = Scheduler;
   using edge_type = GraphEdge;
   using edge_handle_type = std::shared_ptr<edge_type>;
+
 
  public:
   /**
@@ -101,9 +142,13 @@ class TaskGraph {
    * `std::stop_source::request_stop()` to signal that the function will not
    * produce any more items.
    */
+
   template <class Function>
   auto initial_node(Function&& f) {
-    nodes_.emplace_back(producer_node(std::move(f)));
+    using T = std::invoke_result_t<Function, std::stop_source&>;
+    auto tmp = producer_node<DuffsMover3, T>(std::move(f));
+    nodes_.emplace_back(tmp);
+    return tmp;
   }
 
   /**
@@ -115,8 +160,16 @@ class TaskGraph {
    * The function must take an item as input
    * and return an item as output.
    */
+  template<class R, class T>
+  auto transform_node(std::function<R(T)>&& f) {
+    auto tmp = function_node<DuffsMover3, T, DuffsMover3, R>(std::move(f));
+    nodes_.emplace_back(tmp);
+    return tmp;
+  }
+
   template <class Function>
-  auto function_node(Function&& f) {
+  auto transform_node(Function&& f) {
+    return transform_node(std::function{std::forward<Function>(f)});
   }
 
   /**
@@ -141,21 +194,39 @@ class TaskGraph {
    * The function must take an item as input
    * and return void.
    */
-  template <class Function>
-  auto terminal_node(Function&& f) {
 
+  template<class T>
+  auto terminal_node(std::function<void(T)>&& f) {
+    auto tmp = consumer_node<DuffsMover3, T>(std::move(f));
+    nodes_.emplace_back(tmp);
+    return tmp;
+  }
+
+  template<class Func>
+  auto terminal_node(Func&& f) {
+    return terminal_node(std::function{std::forward<Func>(f)});
   }
 
   /**
    * Connect node `from` to node `to` with an edge.
-   * An `Edge` connecting the `Source` of `from` to the `Sink` of `to` will be created and added to the graph.
-   * A predecessor successor relationship will be created between the `from` and `to` nodes as well as
-   * between the tasks created from the `from` and `to` nodes.
+   * An `Edge` connecting the `Source` of `from` to the `Sink` of `to` will be
+   * created and added to the graph. A predecessor successor relationship will
+   * be created between the `from` and `to` nodes as well as between the tasks
+   * created from the `from` and `to` nodes.
    *
    * @param from A node supplying data to `to`.
    * @param to A node receiving data from `from`.
    */
-  void connect(node_handle_type& from, node_handle_type& to) {
+
+  // producer_node<ThrowCatchMover2, unsigned long>
+  // function_node<ThrowCatchMover2, unsigned long>
+  // producer_node_impl<ThrowCatchMover2, unsigned long>
+  // function_node_impl<ThrowCatchMover2, unsigned long>
+  //
+  template <class From, class To>
+  void make_edge(From& from, To& to) {
+    connect(from, to);
+    edges_.emplace_back(std::make_shared<GraphEdge>(Edge(*from, *to)));
   }
 
   /**
@@ -163,7 +234,7 @@ class TaskGraph {
    *
    * @param node The node to add to the graph.
    */
-    void add_node(const node_handle_type& node) {
+  void add_node(const node_handle_type& node) {
   }
 
   /**
@@ -181,7 +252,8 @@ class TaskGraph {
   }
 
   /**
-   * Wait for the graph to complete its execution.  This function will block until the graph has completed execution.
+   * Wait for the graph to complete its execution.  This function will block
+   * until the graph has completed execution.
    */
   void sync_wait_all() {
   }
@@ -194,8 +266,14 @@ class TaskGraph {
   std::vector<edge_handle_type> edges_;
 };
 
-}  // namespace tiledb::common
 
+/*
+ * @todo Note -- the typing of the functions require *values* because
+ * of some details about optional items.  But we need to be able to use
+ * functions taking things by reference.
+ *
+ * @todo Probably need to use std::decay et al to get the correct types for CTAD
+ */
 
 /**
  * @ brief Add an initial node to a graph.
@@ -213,8 +291,8 @@ auto initial_node(Graph& graph, Function&& f) {
  * @param f
  */
 template <class Graph, class Function>
-auto function_node(Graph& graph, Function&& f) {
-  return graph.function_node(std::forward<Function>(f));
+auto transform_node(Graph& graph, Function&& f) {
+  return graph.transform_node(std::forward<Function>(f));
 }
 
 /**
@@ -237,5 +315,12 @@ auto terminal_node(Graph& graph, Function&& f) {
   return graph.terminal_node(std::forward<Function>(f));
 }
 
+template <class Graph, class From, class To>
+void make_edge(Graph& graph, From& from, To& to) {
+  graph.make_edge(from, to);
+}
+
+
+}  // namespace tiledb::common
 
 #endif  //  TILEDB_DAG_GRAPH_TASKGRAPH_H
