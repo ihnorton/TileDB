@@ -391,8 +391,6 @@ class DuffsSchedulerPolicy
    * @param task The task to be transitioned.
    */
   void on_make_runnable(const task_handle_type& task) {
-    static std::mutex mutex_;
-    // std::lock_guard<std::mutex> lock(mutex_);
     this->global_runnable_queue_.push(task);
   }
 
@@ -440,8 +438,6 @@ class DuffsSchedulerPolicy
    * @param task The task to be transitioned.
    */
   void on_make_waiting(const task_handle_type& task) {
-    static std::mutex mutex_;
-    // std::lock_guard<std::mutex> lock(mutex_);
     // @todo: try decrementing here?
     auto node = (*(task->node()));
     node->decrement_program_counter();
@@ -457,8 +453,6 @@ class DuffsSchedulerPolicy
    * @param task The task to be transitioned.
    */
   void on_stop_waiting(const task_handle_type& task) {
-    static std::mutex mutex_;
-    // std::lock_guard<std::mutex> lock(mutex_);
     auto n = this->waiting_set_.extract(task);
     // @todo: Should this never be empty?
     // if (n.empty()) {
@@ -475,8 +469,6 @@ class DuffsSchedulerPolicy
    * @param task The task to be transitioned.
    */
   void on_terminate(const task_handle_type& task) {
-    static std::mutex mutex_;
-    // std::lock_guard<std::mutex> lock(mutex_);
     this->finished_queue_.push(task);
   }
 

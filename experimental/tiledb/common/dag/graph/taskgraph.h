@@ -47,45 +47,6 @@
 
 namespace tiledb::common {
 
-// using P2 = producer_node<DuffsMover2, size_t>;
-
-// template <template <class> class M, class T>
-// Task(producer_node<M, T>)->Task<node>;
-
-// template <template <class> class Mover, class T>
-// struct producer_node
-
-// template <template <class> class Mover, class T>
-// producer_node<Mover>(std::function<T(std::stop_source)>)
-//     ->producer_node<Mover, T>;
-
-#if 0
-  namespace tiledb::common {
-  Task(node&)->Task<node>;
-
-  Task(const node&)->Task<node>;
-
-  template <template <class> class M, class T>
-  Task(producer_node<M, T>)->Task<node>;
-
-  template <template <class> class M, class T>
-  Task(consumer_node<M, T>)->Task<node>;
-
-  template <
-      template <class>
-      class M1,
-      class T1,
-      template <class>
-      class M2,
-      class T2>
-  Task(function_node<M1, T1, M2, T2>)->Task<node>;
-
-  template <template <class> class M1, class T1>
-  Task(function_node<M1, T1>)->Task<node>;
-#endif
-
-
-
 template <class Scheduler>
 class TaskGraph {
   using node_base_type = node_base;
@@ -97,12 +58,9 @@ class TaskGraph {
   using edge_type = GraphEdge;
   using edge_handle_type = std::shared_ptr<edge_type>;
 
-
  public:
   /**
-   * Constructor.
-   *
-   * @param scheduler The scheduler to use for scheduling tasks.
+   * Default constructor.
    */
   TaskGraph() = default;
 
@@ -248,17 +206,23 @@ class TaskGraph {
   /**
    * Begin execution of the graph.
    */
-  void run() {
+  void schedule(Scheduler& scheduler) {
+    sched = &scheduler;
+    for (auto& node : nodes_) {
+      sched->submit(std::move(node));
+    }
   }
 
   /**
    * Wait for the graph to complete its execution.  This function will block
    * until the graph has completed execution.
    */
-  void sync_wait_all() {
+  void sync_wait() {
+    sched->sync_wait_all();
   }
 
  private:
+  Scheduler *sched;
   std::vector<node_handle_type> nodes_;
   std::vector<task_handle_type> tasks_;
   std::vector<task_handle_type> roots_;
@@ -320,6 +284,15 @@ void make_edge(Graph& graph, From& from, To& to) {
   graph.make_edge(from, to);
 }
 
+template <class Graph, class Schedule>
+void schedule(Graph& graph, Schedule& sched) {
+  graph.schedule(sched);
+}
+
+template <class Graph>
+void sync_wait(Graph& graph) {
+  graph.sync_wait();
+}
 
 }  // namespace tiledb::common
 

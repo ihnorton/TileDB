@@ -162,7 +162,7 @@ template <class Block = size_t>
 void dummy_bind_sink_t(Block, float, const int) {
 }
 
-TEST_CASE("TaskGraph: Default construction + terminal node", "[taskgraph]") {
+TEST_CASE("TaskGraph: Initial and terminal node construction with various function types", "[taskgraph]") {
   auto graph = TaskGraph<DuffsScheduler<node>>();
 
   SECTION("function") {
@@ -224,7 +224,8 @@ TEST_CASE("TaskGraph: Default construction + terminal node", "[taskgraph]") {
 }
 
 
-TEST_CASE("TaskGraph: Default construction + function node", "[taskgraph]") {
+
+TEST_CASE("TaskGraph: Initial, terminal, and transform node construction with various function types", "[taskgraph]") {
   auto graph = TaskGraph<DuffsScheduler<node>>();
 
   SECTION("function") {
@@ -269,7 +270,7 @@ TEST_CASE("TaskGraph: Default construction + function node", "[taskgraph]") {
 }
 
 
-TEST_CASE("TaskGraph: Default construction + edges", "[taskgraph]") {
+TEST_CASE("TaskGraph: Task graph construction + edges", "[taskgraph]") {
   auto graph = TaskGraph<DuffsScheduler<node>>();
 
   SECTION("function") {
@@ -327,4 +328,24 @@ TEST_CASE("TaskGraph: Default construction + edges", "[taskgraph]") {
     make_edge(graph, u, v);
     make_edge(graph, v, w);
   }
+}
+
+
+
+TEST_CASE("TaskGraph: Schedule", "[taskgraph]") {
+  auto graph = TaskGraph<DuffsScheduler<node>>();
+
+  auto num_threads = GENERATE(1, 2, 3, 4, 5, 8, 17);
+  auto sched = DuffsScheduler<node>(num_threads);
+
+  auto u = initial_node(graph, [](std::stop_source stop) { stop.request_stop(); return 0UL; });
+  auto v = transform_node(graph, [](size_t) { return 0UL; });
+  auto w = terminal_node(graph, [](size_t) {});
+
+  make_edge(graph, u, v);
+  make_edge(graph, v, w);
+
+  schedule(graph, sched);
+  sync_wait(graph);
+
 }
