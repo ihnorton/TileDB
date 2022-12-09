@@ -331,7 +331,6 @@ TEST_CASE("TaskGraph: Task graph construction + edges", "[taskgraph]") {
 }
 
 
-
 TEST_CASE("TaskGraph: Schedule", "[taskgraph]") {
   auto graph = TaskGraph<DuffsScheduler<node>>();
 
@@ -347,5 +346,60 @@ TEST_CASE("TaskGraph: Schedule", "[taskgraph]") {
 
   schedule(graph, sched);
   sync_wait(graph);
+}
 
+TEST_CASE("TaskGraph: Run Passing Integers", "[taskgraph]") {
+  auto graph = TaskGraph<DuffsScheduler<node>>();
+
+  auto num_threads = GENERATE(1, 2, 3, 4, 5, 8, 17);
+  auto sched = DuffsScheduler<node>(num_threads);
+
+  size_t problem_size = 1337;
+  size_t rounds = problem_size;
+
+  std::vector<size_t> input(rounds);
+  std::vector<size_t> output(rounds);
+
+  std::iota(input.begin(), input.end(), 19);
+  std::fill(output.begin(), output.end(), 0);
+  auto i = input.begin();
+  auto j = output.begin();
+
+  if (rounds != 0) {
+    CHECK(std::equal(input.begin(), input.end(), output.begin()) == false);
+  }
+
+  auto p = graph.initial_node([problem_size, &sched, &i, &input](std::stop_source& stop_source) {
+    if (std::distance(input.begin(), i) >= static_cast<long>(problem_size)) {
+      stop_source.request_stop();
+      return *(input.begin()) + 1;
+    }
+    return (*i++) + 1;
+  });
+
+  auto f = transform_node(graph, [&sched](std::size_t k) {
+    return k - 1;
+  });
+
+  auto c = terminal_node(graph, [&j, &output](std::size_t k) {
+    *j++ = k;
+  });
+
+  SECTION("Producer, Function, and Consumer, submit") {
+    make_edge(graph, p, f);
+    make_edge(graph, f, c);
+    schedule(graph, sched);
+    sync_wait(graph);
+  }
+
+  CHECK(rounds != 0);
+  CHECK(rounds == problem_size);
+
+  CHECK(input.begin() != i);
+  CHECK(input.size() == rounds);
+  CHECK(output.size() == rounds);
+
+  CHECK(std::equal(input.begin(), i, output.begin()));
+
+  CHECK(std::distance(input.begin(), i) == static_cast<long>(rounds));
 }

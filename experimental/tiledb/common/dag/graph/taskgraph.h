@@ -99,8 +99,9 @@ class TaskGraph {
    * processed by the next node in the graph. The function calls
    * `std::stop_source::request_stop()` to signal that the function will not
    * produce any more items.
+   *
+   * @todo: With CTAD we don't need separate kinds of node functions.
    */
-
   template <class Function>
   auto initial_node(Function&& f) {
     using T = std::invoke_result_t<Function, std::stop_source&>;
