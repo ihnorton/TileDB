@@ -200,41 +200,16 @@ class consumer_node_impl : public node_base, public Sink<Mover, T> {
       case 0: {
         ++this->program_counter_;
 
-        auto pre_state = mover->state();
-
-        auto tmp_state = mover->port_pull();
-
-        auto post_state = mover->state();
-
-        if constexpr (std::is_same_v<
-                          decltype(post_state),
-                          two_stage>) {  // @todo abstraction violation?
-          if (pre_state == two_stage::st_00 && post_state == two_stage::xt_00) {
-            throw std::runtime_error("consumer got stuck in xt_00 state");
-          }
-
-        } else {
-          if (pre_state == three_stage::st_000 &&
-              post_state == three_stage::xt_000) {
-            throw std::runtime_error("consumer got stuck in xt_000 state");
-          }
-        }
+        auto pull_state = mover->port_pull();
 
         if (mover->is_done()) {
-          if constexpr (std::is_same_v<decltype(post_state), two_stage>) {
-            if (post_state == two_stage::xt_01) {
-              throw std::runtime_error("consumer got stuck in xt_01 state");
-            }
-          } else {
-            if (post_state == three_stage::xt_001) {
-              throw std::runtime_error("consumer got stuck in xt_001 state");
-            }
-          }
-
           return mover->port_exhausted();
           break;
         } else {
-          return tmp_state;
+          if (pull_state == scheduler_event_type::sink_wait) {
+            this->decrement_program_counter();
+          }
+          return pull_state;
         }
       }
 
@@ -276,13 +251,16 @@ class consumer_node_impl : public node_base, public Sink<Mover, T> {
       case 5: {
         ++this->program_counter_;
 
-        auto tmp_state = mover->port_pull();
+        auto pull_state = mover->port_pull();
 
         if (mover->is_done()) {
           return mover->port_exhausted();
           break;
         } else {
-          return tmp_state;
+          if (pull_state == scheduler_event_type::sink_wait) {
+            this->decrement_program_counter();
+          }
+          return pull_state;
         }
       }
 

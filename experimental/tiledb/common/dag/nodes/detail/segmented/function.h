@@ -207,6 +207,9 @@ class function_node_impl : public node_base,
   BlockOut out_thing{};
 
  public:
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnreachableCode"
   /**
    * Resume the node.  This will call the function that produces items.
    * Main entry point of the node.
@@ -229,13 +232,16 @@ class function_node_impl : public node_base,
       case 0: {
         ++this->program_counter_;
 
-        auto tmp_state = sink_mover->port_pull();
+        auto pull_state = sink_mover->port_pull();
 
         if (sink_mover->is_done()) {
           return source_mover->port_exhausted();
           break;
         } else {
-          return tmp_state;
+          if (pull_state == scheduler_event_type::sink_wait) {
+            this->decrement_program_counter();
+          }
+          return pull_state;
         }
 
 // Is this needed?  It seems like it was just for debugging.
@@ -306,7 +312,11 @@ auto post_state = sink_mover->state();
 
       case 8: {
         ++this->program_counter_;
-        return source_mover->port_push();
+        auto push_state = source_mover->port_push();
+        if (push_state == scheduler_event_type::source_wait) {
+          this->decrement_program_counter();
+        }
+        return push_state;
       }
         [[fallthrough]];
 
@@ -324,6 +334,7 @@ auto post_state = sink_mover->state();
     }
     return scheduler_event_type::error;
   }
+#pragma clang diagnostic pop
 
   /** Run the node until it is done. */
   void run() override {

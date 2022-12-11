@@ -52,12 +52,6 @@
  *
  * When a task has completed execution, it is moved to the finished queue.
  *
- * The duffs scheduler introduces some challenges for the port state
- * machine in particular. Since calls to notify and wait don't return, we can't
- * invoke the two together in response to the same event.  Thus, we need to
- * decrement the program counter for a waiting task rather than letting the
- * event handler do the retry.
- *
  * Some very basic thread-safe data structures were required for this scheduler
  * and implemented in utils subdirectory.  These are not intended to be general
  * purpose, but rather to provide just enough functionality to support the
@@ -266,6 +260,12 @@ class DuffsSchedulerPolicy
   using task_handle_type = task_handle_t<Task>;
 
  private:
+
+  /**
+   * @brief A thread pool for use by the state machine.
+   * @todo This should be a resouce parameter to the policy, not a member.
+   * @todo Use work stealing thread pool.
+   */
   class thread_pool {
     scheduler_type* scheduler_;
     // std::atomic<size_t> concurrency_level_{0};
@@ -322,14 +322,6 @@ class DuffsSchedulerPolicy
           }
           break;
         }
-#if 0
-        try {
-          threads_.emplace_back(std::move(tmp));
-        } catch (...) {
-          shutdown();
-          throw;
-        }
-#endif
       }
     }
 
@@ -410,7 +402,6 @@ class DuffsSchedulerPolicy
    *
    * @param task The task to be transitioned.
    */
-
   void on_make_running(const task_handle_type& task) {
     this->running_set_.insert(task);
   }
@@ -423,43 +414,25 @@ class DuffsSchedulerPolicy
    */
   void on_stop_running(const task_handle_type& task) {
     auto n = this->running_set_.extract(task);
-
     assert(!n.empty());
   }
 
   /**
    * @brief Action for transitioning a task to the `waiting` state.
-   * Note that a task in the waiting state must have its program counter
-   * decremented so that when it resumes it will resume before the action that
-   * caused it to wait. (This similar in behavior to a cv wait.) Currently the
-   * decrementing is done in the scheduler body. But we might want to move it
-   * here.
    *
    * @param task The task to be transitioned.
    */
   void on_make_waiting(const task_handle_type& task) {
-    // @todo: try decrementing here?
-    auto node = (*(task->node()));
-    node->decrement_program_counter();
     this->waiting_set_.insert(task);
   }
 
   /**
-   * @brief Action for transitioning a task out of the `waiting` state.  Removes
-   * task from the waiting set. As described in `on_make_waiting`, the program
-   * counter must be decremented. This is another possible location for doing
-   * the decrement.
+   * @brief Action for transitioning a task out of the `waiting` state.
    *
    * @param task The task to be transitioned.
    */
   void on_stop_waiting(const task_handle_type& task) {
     auto n = this->waiting_set_.extract(task);
-    // @todo: Should this never be empty?
-    // if (n.empty()) {
-    //   throw std::runtime_error("on_stop_waiting: task not in waiting set");
-    // }
-
-    // @todo: try decrementing program counter here?
   }
 
   /**
@@ -545,6 +518,7 @@ class DuffsSchedulerPolicy
     this->finish_queues();
     sync_wait_all_no_launch();
   }
+
   /**
    * @brief Cleans up the scheduler policy.  This is called when the scheduler
    * is done. All queues are shut down.  All queues and sets should be empty at
@@ -585,27 +559,14 @@ class DuffsSchedulerPolicy
    * @brief Transitions all tasks from submission queue to runnable queue.
    */
   void make_submitted_runnable() {
-#if 0
-    while (true) {
-      auto s = submission_queue_.try_pop();
-      if (!s)
-        break;
-if (this->debug_enabled())
-  (*s)->dump_task_state("Admitting");
-this->task_admit(*s);
-#else
     while (!submission_queue_.empty()) {
       auto s = submission_queue_.front();
       submission_queue_.pop();
       if (this->debug_enabled())
         s->dump_task_state("Admitting");
       this->task_admit(s);
-
-#endif
   }
 }
-
-
 
 /**
  * @brief Debug helper function.
@@ -635,29 +596,22 @@ void debug_msg(const std::string& msg) {
 }
 
 private:
-/**
- * @brief Data structures to hold tasks in various states of execution.
- */
-
-#if 0
-  ConcurrentSet<Task> waiting_set_;
-  ConcurrentSet<Task> running_set_;
-  BoundedBufferQ<Task, std::queue<Task>, false> submission_queue_;
-  BoundedBufferQ<Task, std::queue<Task>, false> finished_queue_;
-#else
+ /**
+  * @brief Data structures to hold tasks in various states of execution.
+  * Since accesses to these are made under the scheduler lock, we don't need
+  * to use thread-safe data structures.
+  */
   std::set<Task> waiting_set_;
   std::set<Task> running_set_;
   std::queue<Task> submission_queue_;
   std::queue<Task> finished_queue_;
-#endif
 
-/** @brief Queue of runnable tasks.
- * Each worker has its own queue, and it will attempt to pop from its own queue
- * when trying to get a task. If there is no task, the worker will attempt to
- * steal from other queues, only locking at that point. If there is no task to
- * steal, the worker will attempt to
+/**
+ * @brief Queue of runnable tasks.
+ *
+ * @todo make private
+ * @todo Use thread-stealing scheduling
  */
-// @todo make private
 protected:
 BoundedBufferQ<Task, std::queue<Task>, false> global_runnable_queue_;
 
@@ -754,6 +708,7 @@ class DuffsSchedulerImpl : public Base<Task, DuffsSchedulerImpl<Task, Base>> {
 
     this->task_create(t);
   }
+
   /**
    * @brief The worker thread routine, which is the body of the scheduler and
    * the main loop of the thread pool (each thread runs this function).
@@ -834,23 +789,26 @@ class DuffsSchedulerImpl : public Base<Task, DuffsSchedulerImpl<Task, Base>> {
           }
 
           switch (evt) {
-
-
             case SchedulerAction::source_wait: {
-              /* Check predicate to prevent lost wakeup. */
+              /*
+               * These steps must be atomic to avoid lost wakeup
+               * @todo perhaps unify with sink_wait via predicate argument?
+               * @todo use actual state instead of is_*?
+               */
               if(node->is_source_state_full() && !node->is_source_done()) {
                 this->task_wait(task_to_run);
-              } else {
-                node->decrement_program_counter();
               }
             } break;
 
             case SchedulerAction::sink_wait: {
+              /*
+               * These steps must be atomic to avoid lost wakeup
+               * @todo perhaps unify with source_wait via predicate argument?
+               * @todo use actual state instead of is_*?
+               */
               if (node->is_sink_state_empty() && !node->is_sink_done() &&
                   !node->is_sink_terminated()) {
                 this->task_wait(task_to_run);
-              } else {
-                node->decrement_program_counter();
               }
             } break;
 

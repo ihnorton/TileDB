@@ -257,7 +257,11 @@ struct producer_node_impl : public node_base, public Source<Mover, T> {
 
       case 4: {
         this->program_counter_ = 5;
-        return mover->port_push();
+        auto push_state = mover->port_push();
+        if (push_state == scheduler_event_type::source_wait) {
+          this->decrement_program_counter();
+        }
+        return push_state;
       }
         [[fallthrough]];
 
