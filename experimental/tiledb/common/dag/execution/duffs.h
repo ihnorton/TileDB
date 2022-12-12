@@ -872,6 +872,7 @@ class DuffsSchedulerImpl : public Base<Task, DuffsSchedulerImpl<Task, Base>> {
                   0) {  // @todo Abstraction violation!
                 goto retry;
               }
+              goto retry;
               break;
             }
 
