@@ -77,10 +77,11 @@ class consumer_node_impl : public node_base, public Sink<Mover, T> {
   /** Main constructor. Takes a consumer function as argument. */
   template <class Function>
   explicit consumer_node_impl(
-      Function&& f /*,
+      Function&& f,
       std::enable_if_t<
-          std::is_invocable_r_v<void, Function, const T&>,
-          void**> = nullptr*/)
+          (std::is_invocable_r_v<void, Function, const T&>
+               || std::is_invocable_r_v<void, Function, T&>),
+          void**> = nullptr)
       : node_base_type()
       , f_{std::forward<Function>(f)}
       , consumed_items_{0} {
