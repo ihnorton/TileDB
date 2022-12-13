@@ -121,7 +121,8 @@ class TaskGraph {
    */
   template<class R, class T>
   auto transform_node(std::function<R(T)>&& f) {
-    auto tmp = function_node<DuffsMover3, T, DuffsMover3, R>(std::move(f));
+    using U = std::remove_cv_t<std::remove_reference_t<T>>;
+    auto tmp = function_node<DuffsMover3, U, DuffsMover3, R>(std::move(f));
     nodes_.emplace_back(tmp);
     return tmp;
   }
@@ -153,10 +154,10 @@ class TaskGraph {
    * The function must take an item as input
    * and return void.
    */
-
   template<class T>
   auto terminal_node(std::function<void(T)>&& f) {
-    auto tmp = consumer_node<DuffsMover3, T>(std::move(f));
+    using U = std::remove_cv_t<std::remove_reference_t<T>>;
+    auto tmp = consumer_node<DuffsMover3, U>(f);
     nodes_.emplace_back(tmp);
     return tmp;
   }

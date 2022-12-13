@@ -167,6 +167,8 @@ TEST_CASE("TaskGraph: Initial and terminal node construction with various functi
 
   SECTION("function") {
     auto u = initial_node(graph, dummy_source);
+    auto x = graph.terminal_node(dummy_sink);
+
     auto w = terminal_node(graph, dummy_sink);
   }
 
@@ -174,15 +176,22 @@ TEST_CASE("TaskGraph: Initial and terminal node construction with various functi
     auto dummy_source_lambda = [](std::stop_source&) { return 0UL; };
     auto dummy_sink_lambda = [](size_t) {};
     auto u = initial_node(graph, dummy_source_lambda);
+    auto x = graph.terminal_node(dummy_sink_lambda);
     auto w = terminal_node(graph, dummy_sink_lambda);
   }
 
   SECTION("inline lambda") {
     auto u = initial_node(graph, [](std::stop_source&) { return 0UL; });
-    auto w = terminal_node(graph, [](size_t) {});
+    auto w = terminal_node(graph, [](const size_t&) {});
 
     auto x = initial_node(graph, [](std::stop_source) { return 0UL; });
     auto z = terminal_node(graph, [](const size_t) {});
+
+    auto a = initial_node(graph, [](std::stop_source&) { return 0UL; });
+    auto b = graph.terminal_node([](size_t&) {});
+
+    auto c = initial_node(graph, [](std::stop_source) { return 0UL; });
+   // auto d = terminal_node(graph, [](size_t) {});
   }
 
   SECTION("function object") {
@@ -240,6 +249,7 @@ TEST_CASE("TaskGraph: Initial, terminal, and transform node construction with va
     auto dummy_sink_lambda = [](size_t) {};
     auto u = initial_node(graph, dummy_source_lambda);
     auto v = transform_node(graph, [](size_t) { return 0UL; });
+    auto x = graph.terminal_node(dummy_sink_lambda);
     auto w = terminal_node(graph, dummy_sink_lambda);
   }
 
