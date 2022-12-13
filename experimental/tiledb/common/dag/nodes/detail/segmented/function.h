@@ -87,7 +87,7 @@ class function_node_impl : public node_base,
   }
 
  public:
-  /** Primary constructor. */
+  /** Main constructor.  Takes a transform function as argument. */
   template <class Function>
   explicit function_node_impl(
       Function&& f,
