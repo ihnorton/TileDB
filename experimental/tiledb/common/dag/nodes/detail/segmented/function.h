@@ -78,7 +78,7 @@ class function_node_impl : public node_base,
   using SinkBase = Sink<SinkMover, BlockIn>;
   using SourceBase = Source<SourceMover, BlockOut>;
 
-  std::function<BlockOut(const BlockIn&)> f_;
+  std::function<BlockOut(/*const*/ BlockIn&)> f_;
 
   std::atomic<size_t> processed_items_{0};
 
@@ -90,10 +90,10 @@ class function_node_impl : public node_base,
   /** Primary constructor. */
   template <class Function>
   explicit function_node_impl(
-      Function&& f,
+      Function&& f /*,
       std::enable_if_t<
           std::is_invocable_r_v<BlockOut, Function, const BlockIn&>,
-          void**> = nullptr)
+          void**> = nullptr*/)
       : node_base_type()
       , f_{std::forward<Function>(f)}
       , processed_items_{0} {

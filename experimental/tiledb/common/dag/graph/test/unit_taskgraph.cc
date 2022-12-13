@@ -261,6 +261,15 @@ TEST_CASE("TaskGraph: Initial, terminal, and transform node construction with va
     auto x = initial_node(graph, [](std::stop_source) { return 0UL; });
     auto y = transform_node(graph, [](size_t) { return 0UL; });
     auto z = terminal_node(graph, [](const size_t) {});
+
+    auto a = initial_node(graph, [](std::stop_source&) { return 0UL; });
+    auto b = transform_node(graph, [](size_t&) { return 0UL; });
+    auto c = terminal_node(graph, [](size_t&) {});
+
+    auto d = initial_node(graph, [](std::stop_source) { return 0UL; });
+    auto e = transform_node(graph, [](size_t&) { return 0UL; });
+    auto f = terminal_node(graph, [](const size_t&) {});
+
   }
 
   SECTION("function object") {
