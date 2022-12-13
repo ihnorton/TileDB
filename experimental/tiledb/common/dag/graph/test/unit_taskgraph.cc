@@ -46,7 +46,7 @@ TEST_CASE("TaskGraph: Default construction", "[taskgraph]") {
 TEST_CASE("TaskGraph: Default construction + initial node", "[taskgraph]") {
   auto graph = TaskGraph<DuffsScheduler<node>>();
 
-  initial_node(graph, [](std::stop_source stop) { return 0UL; });
+  initial_node(graph, []([[maybe_unused]] std::stop_source stop) { return 0UL; });
 }
 
 void bar(const size_t) {
@@ -245,12 +245,12 @@ TEST_CASE("TaskGraph: Initial, terminal, and transform node construction with va
 
   SECTION("lambda") {
     auto dummy_source_lambda = [](std::stop_source&) { return 0UL; };
-    auto dummy_function_lambda = [](size_t) { return 0UL; };
-    auto dummy_sink_lambda = [](size_t) {};
-    auto u = initial_node(graph, dummy_source_lambda);
-    auto v = transform_node(graph, [](size_t) { return 0UL; });
-    auto x = graph.terminal_node(dummy_sink_lambda);
-    auto w = terminal_node(graph, dummy_sink_lambda);
+    [[maybe_unused]] auto dummy_function_lambda = [](size_t) { return 0UL; };
+    [[maybe_unused]] auto dummy_sink_lambda = [](size_t) {};
+    [[maybe_unused]] auto u = initial_node(graph, dummy_source_lambda);
+    [[maybe_unused]] auto v = transform_node(graph, [](size_t) { return 0UL; });
+    [[maybe_unused]] auto x = graph.terminal_node(dummy_sink_lambda);
+    [[maybe_unused]] auto w = terminal_node(graph, dummy_sink_lambda);
   }
 
   SECTION("inline lambda") {
@@ -303,8 +303,8 @@ TEST_CASE("TaskGraph: Task graph construction + edges", "[taskgraph]") {
 
   SECTION("lambda") {
     auto dummy_source_lambda = [](std::stop_source&) { return 0UL; };
-    auto dummy_function_lambda = [](size_t) { return 0UL; };
-    auto dummy_sink_lambda = [](size_t) {};
+    [[maybe_unused]] auto dummy_function_lambda = [](size_t) { return 0UL; };
+    [[maybe_unused]] auto dummy_sink_lambda = [](size_t) {};
     auto u = initial_node(graph, dummy_source_lambda);
     auto v = transform_node(graph, [](size_t) { return 0UL; });
     auto w = terminal_node(graph, dummy_sink_lambda);
@@ -388,7 +388,7 @@ TEST_CASE("TaskGraph: Run Passing Integers", "[taskgraph]") {
     CHECK(std::equal(input.begin(), input.end(), output.begin()) == false);
   }
 
-  auto p = graph.initial_node([problem_size, &sched, &i, &input](std::stop_source& stop_source) {
+  auto p = graph.initial_node([problem_size, &i, &input](std::stop_source& stop_source) {
     if (std::distance(input.begin(), i) >= static_cast<long>(problem_size)) {
       stop_source.request_stop();
       return *(input.begin()) + 1;
@@ -396,11 +396,11 @@ TEST_CASE("TaskGraph: Run Passing Integers", "[taskgraph]") {
     return (*i++) + 1;
   });
 
-  auto f = transform_node(graph, [&sched](std::size_t k) {
+  auto f = transform_node(graph, [](std::size_t k) {
     return k - 1;
   });
 
-  auto c = terminal_node(graph, [&j, &output](std::size_t k) {
+  auto c = terminal_node(graph, [&j](std::size_t k) {
     *j++ = k;
   });
 

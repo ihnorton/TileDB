@@ -142,7 +142,7 @@ class TaskGraph {
    * and return an item as output.
    */
   template <class Function>
-  auto mimo_node(Function&& f) {
+  auto mimo_node([[maybe_unused]] Function&& f) {
   }
 
   /**
@@ -194,7 +194,7 @@ class TaskGraph {
    *
    * @param node The node to add to the graph.
    */
-  void add_node(const node_handle_type& node) {
+  void add_node([[maybe_unused]] const node_handle_type& node) {
   }
 
   /**
@@ -202,7 +202,7 @@ class TaskGraph {
    *
    * @param node The node to add to the graph.
    */
-  void add_node(node_type&& node) {
+  void add_node([[maybe_unused]] node_type&& node) {
   }
 
   /**
@@ -226,11 +226,16 @@ class TaskGraph {
  private:
   Scheduler *sched;
   std::vector<node_handle_type> nodes_;
-  std::vector<task_handle_type> tasks_;
-  std::vector<task_handle_type> roots_;
-  std::vector<task_handle_type> leaves_;
   std::vector<edge_handle_type> edges_;
+
+  /** All tasks in the DAG */
+  std::vector<task_handle_type> tasks_;
+
+  std::vector<task_handle_type> root_tasks_;
+  std::vector<task_handle_type> leaf_tasks_;
+  std::vector<task_handle_type> stem_tasks_;
 };
+
 
 
 /*
