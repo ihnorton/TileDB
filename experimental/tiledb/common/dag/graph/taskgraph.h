@@ -64,7 +64,9 @@ class TaskGraph {
   /**
    * Default constructor.
    */
-  explicit TaskGraph(size_t num_threads = std::thread::hardware_concurrency()) : scheduler_(num_threads) {}
+  explicit TaskGraph(size_t num_threads = std::thread::hardware_concurrency())
+      : scheduler_(num_threads) {
+  }
 
   /**
    * Default move constructor.
@@ -123,7 +125,7 @@ class TaskGraph {
    * The function must take an item as input
    * and return an item as output.
    */
-  template<class R, class T>
+  template <class R, class T>
   auto transform_node(std::function<R(T)>&& f) {
     using U = std::remove_cv_t<std::remove_reference_t<T>>;
     auto tmp = function_node<DuffsMover3, U, DuffsMover3, R>(f);
@@ -158,7 +160,7 @@ class TaskGraph {
    * The function must take an item as input
    * and return void.
    */
-  template<class T>
+  template <class T>
   auto terminal_node(std::function<void(T)>&& f) {
     using U = std::remove_cv_t<std::remove_reference_t<T>>;
     auto tmp = consumer_node<DuffsMover3, U>(f);
@@ -175,7 +177,7 @@ class TaskGraph {
    *
    * @return A handle to the created node.
    */
-  template<class Func>
+  template <class Func>
   auto terminal_node(Func&& f) {
     return terminal_node(std::function{std::forward<Func>(f)});
   }
@@ -236,7 +238,6 @@ class TaskGraph {
   }
 
  private:
-
   std::vector<node_handle_type> nodes_;
   std::vector<edge_handle_type> edges_;
 
@@ -247,7 +248,6 @@ class TaskGraph {
   std::vector<task_handle_type> leaf_tasks_;
   std::vector<task_handle_type> stem_tasks_;
 };
-
 
 /**
  * @ brief Add an initial node to a graph.

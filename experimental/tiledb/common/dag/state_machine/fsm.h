@@ -409,12 +409,14 @@ class PortFiniteStateMachine {
         return static_cast<Policy*>(this)->on_term_sink(lock, event_counter);
 
       case PortAction::source_throw:
-        throw std::logic_error("PortFiniteStateMachine::event: "
-                               "exit_action == PortAction::source_throw");
+        throw std::logic_error(
+            "PortFiniteStateMachine::event: "
+            "exit_action == PortAction::source_throw");
 
       case PortAction::sink_throw:
-        throw std::logic_error("PortFiniteStateMachine::event: "
-                               "exit_action == PortAction::sink_throw");
+        throw std::logic_error(
+            "PortFiniteStateMachine::event: "
+            "exit_action == PortAction::sink_throw");
 
       default:
         throw std::logic_error(

@@ -79,8 +79,8 @@ class consumer_node_impl : public node_base, public Sink<Mover, T> {
   explicit consumer_node_impl(
       Function&& f,
       std::enable_if_t<
-          (std::is_invocable_r_v<void, Function, const T&>
-               || std::is_invocable_r_v<void, Function, T&>),
+          (std::is_invocable_r_v<void, Function, const T&> ||
+           std::is_invocable_r_v<void, Function, T&>),
           void**> = nullptr)
       : node_base_type()
       , f_{std::forward<Function>(f)}

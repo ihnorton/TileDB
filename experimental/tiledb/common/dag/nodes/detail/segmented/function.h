@@ -92,8 +92,8 @@ class function_node_impl : public node_base,
   explicit function_node_impl(
       Function&& f,
       std::enable_if_t<
-          (std::is_invocable_r_v<BlockOut, Function, const BlockIn&>
-              || std::is_invocable_r_v<BlockOut, Function, BlockIn&>),
+          (std::is_invocable_r_v<BlockOut, Function, const BlockIn&> ||
+           std::is_invocable_r_v<BlockOut, Function, BlockIn&>),
           void**> = nullptr)
       : node_base_type()
       , f_{std::forward<Function>(f)}
@@ -208,7 +208,6 @@ class function_node_impl : public node_base,
   BlockOut out_thing{};
 
  public:
-
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnreachableCode"
   /**

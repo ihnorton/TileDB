@@ -260,7 +260,6 @@ class DuffsSchedulerPolicy
   using task_handle_type = task_handle_t<Task>;
 
  private:
-
   /**
    * @brief A thread pool for use by the state machine.
    * @todo This should be a resouce parameter to the policy, not a member.
@@ -565,65 +564,65 @@ class DuffsSchedulerPolicy
       if (this->debug_enabled())
         s->dump_task_state("Admitting");
       this->task_admit(s);
+    }
   }
-}
 
-/**
- * @brief Debug helper function.
- */
-void dump_queue_state(const std::string& msg = "") {
-  if (this->debug_enabled()) {
-    std::string preface = (!msg.empty() ? msg + "\n" : "");
+  /**
+   * @brief Debug helper function.
+   */
+  void dump_queue_state(const std::string& msg = "") {
+    if (this->debug_enabled()) {
+      std::string preface = (!msg.empty() ? msg + "\n" : "");
 
-    std::cout << preface + "    global_runnable_queue_.size() = " +
-                     std::to_string(global_runnable_queue_.size()) + "\n" +
-                     "    running_set_.size() = " +
-                     std::to_string(running_set_.size()) + "\n" +
-                     "    waiting_set_.size() = " +
-                     std::to_string(waiting_set_.size()) + "\n" +
-                     "    finished_queue_.size() = " +
-                     std::to_string(finished_queue_.size()) + "\n" + "\n";
+      std::cout << preface + "    global_runnable_queue_.size() = " +
+                       std::to_string(global_runnable_queue_.size()) + "\n" +
+                       "    running_set_.size() = " +
+                       std::to_string(running_set_.size()) + "\n" +
+                       "    waiting_set_.size() = " +
+                       std::to_string(waiting_set_.size()) + "\n" +
+                       "    finished_queue_.size() = " +
+                       std::to_string(finished_queue_.size()) + "\n" + "\n";
+    }
   }
-}
 
-/**
- * @brief Debug helper function.
- */
-void debug_msg(const std::string& msg) {
-  if (this->debug_enabled()) {
-    std::cout << msg + "\n";
+  /**
+   * @brief Debug helper function.
+   */
+  void debug_msg(const std::string& msg) {
+    if (this->debug_enabled()) {
+      std::cout << msg + "\n";
+    }
   }
-}
 
-private:
- /**
-  * @brief Data structures to hold tasks in various states of execution.
-  * Since accesses to these are made under the scheduler lock, we don't need
-  * to use thread-safe data structures.
-  */
+ private:
+  /**
+   * @brief Data structures to hold tasks in various states of execution.
+   * Since accesses to these are made under the scheduler lock, we don't need
+   * to use thread-safe data structures.
+   */
   std::set<Task> waiting_set_;
   std::set<Task> running_set_;
   std::queue<Task> submission_queue_;
   std::queue<Task> finished_queue_;
 
-/**
- * @brief Queue of runnable tasks.
- *
- * @todo make private
- * @todo Use thread-stealing scheduling
- */
-protected:
-BoundedBufferQ<Task, std::queue<Task>, false> global_runnable_queue_;
+  /**
+   * @brief Queue of runnable tasks.
+   *
+   * @todo make private
+   * @todo Use thread-stealing scheduling
+   */
+ protected:
+  BoundedBufferQ<Task, std::queue<Task>, false> global_runnable_queue_;
 
-/**
- * @brief Local queues for each worker thread.
- */
-private:
-std::atomic<size_t> counter_{0};
-size_t num_workers_{0};
-std::vector<BoundedBufferQ<Task, std::queue<Task>, false>> worker_queues_;
+  /**
+   * @brief Local queues for each worker thread.
+   */
+ private:
+  std::atomic<size_t> counter_{0};
+  size_t num_workers_{0};
+  std::vector<BoundedBufferQ<Task, std::queue<Task>, false>> worker_queues_;
 
-thread_pool tp_;
+  thread_pool tp_;
 };  // namespace tiledb::common
 
 /**
@@ -646,8 +645,8 @@ class DuffsSchedulerImpl : public Base<Task, DuffsSchedulerImpl<Task, Base>> {
   using node_handle_type = node_handle_t<Task>;
   using node_type = node_t<Task>;
 
-  //using node_handle_type = typename task_type::node_handle_type;
-  //using node_type = typename task_type::node_type;
+  // using node_handle_type = typename task_type::node_handle_type;
+  // using node_type = typename task_type::node_type;
 
   using Policy::Policy;
 
@@ -797,7 +796,7 @@ class DuffsSchedulerImpl : public Base<Task, DuffsSchedulerImpl<Task, Base>> {
                * @todo perhaps unify with sink_wait via predicate argument?
                * @todo use actual state instead of is_*?
                */
-              if(node->is_source_state_full() && !node->is_source_done()) {
+              if (node->is_source_state_full() && !node->is_source_done()) {
                 this->task_wait(task_to_run);
               }
             } break;
