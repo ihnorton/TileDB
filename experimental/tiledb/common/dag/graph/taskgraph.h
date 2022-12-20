@@ -58,11 +58,13 @@ class TaskGraph {
   using edge_type = GraphEdge;
   using edge_handle_type = std::shared_ptr<edge_type>;
 
+  Scheduler scheduler_;
+
  public:
   /**
    * Default constructor.
    */
-  TaskGraph() = default;
+  explicit TaskGraph(size_t num_threads = std::thread::hardware_concurrency()) : scheduler_(num_threads) {}
 
   /**
    * Default move constructor.
@@ -101,11 +103,13 @@ class TaskGraph {
    * produce any more items.
    *
    * @todo: With CTAD we don't need separate kinds of node functions.
+   *
+   * @todo: Add mechanism to support bind expressions.
    */
   template <class Function>
   auto initial_node(Function&& f) {
     using T = std::invoke_result_t<Function, std::stop_source&>;
-    auto tmp = producer_node<DuffsMover3, T>(std::move(f));
+    auto tmp = producer_node<DuffsMover3, T>(std::forward<Function>(f));
     nodes_.emplace_back(tmp);
     return tmp;
   }
@@ -162,6 +166,15 @@ class TaskGraph {
     return tmp;
   }
 
+  /**
+   * Trampoline function to match a function to an std::function so that we
+   * can use CTAD to deduce the input argument type.
+   *
+   * @tparam Func The type of function to be held by the node.
+   * @param f The function to store in the node.
+   *
+   * @return A handle to the created node.
+   */
   template<class Func>
   auto terminal_node(Func&& f) {
     return terminal_node(std::function{std::forward<Func>(f)});
@@ -174,15 +187,11 @@ class TaskGraph {
    * be created between the `from` and `to` nodes as well as between the tasks
    * created from the `from` and `to` nodes.
    *
+   * @tparam From The type of the node to connect from.
+   * @tparam To The type of the node to connect to.
    * @param from A node supplying data to `to`.
    * @param to A node receiving data from `from`.
    */
-
-  // producer_node<ThrowCatchMover2, unsigned long>
-  // function_node<ThrowCatchMover2, unsigned long>
-  // producer_node_impl<ThrowCatchMover2, unsigned long>
-  // function_node_impl<ThrowCatchMover2, unsigned long>
-  //
   template <class From, class To>
   void make_edge(From& from, To& to) {
     connect(from, to);
@@ -207,11 +216,14 @@ class TaskGraph {
 
   /**
    * Begin execution of the graph.
+   *
+   * @todo Make an abstract base class for schedulers with virtual schedule
+   * and sync_wait_all methods, and put a pointer to scheduler as a member of
+   * the graph.
    */
-  void schedule(Scheduler& scheduler) {
-    sched = &scheduler;
+  void schedule() {
     for (auto& node : nodes_) {
-      sched->submit(std::move(node));
+      scheduler_.submit(std::move(node));
     }
   }
 
@@ -220,11 +232,11 @@ class TaskGraph {
    * until the graph has completed execution.
    */
   void sync_wait() {
-    sched->sync_wait_all();
+    scheduler_.sync_wait_all();
   }
 
  private:
-  Scheduler *sched;
+
   std::vector<node_handle_type> nodes_;
   std::vector<edge_handle_type> edges_;
 
@@ -236,15 +248,6 @@ class TaskGraph {
   std::vector<task_handle_type> stem_tasks_;
 };
 
-
-
-/*
- * @todo Note -- the typing of the functions require *values* because
- * of some details about optional items.  But we need to be able to use
- * functions taking things by reference.
- *
- * @todo Probably need to use std::decay et al to get the correct types for CTAD
- */
 
 /**
  * @ brief Add an initial node to a graph.
@@ -291,9 +294,9 @@ void make_edge(Graph& graph, From& from, To& to) {
   graph.make_edge(from, to);
 }
 
-template <class Graph, class Schedule>
-void schedule(Graph& graph, Schedule& sched) {
-  graph.schedule(sched);
+template <class Graph>
+void schedule(Graph& graph) {
+  graph.schedule();
 }
 
 template <class Graph>
