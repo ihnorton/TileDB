@@ -643,9 +643,11 @@ class DuffsSchedulerImpl : public Base<Task, DuffsSchedulerImpl<Task, Base>> {
   using task_type = task_t<Task>;
   using task_handle_type = task_handle_t<Task>;
 
-  using node_handle_type = typename task_type::node_handle_type;
-  using node_type =
-      typename node_handle_type::element_type;  // @todo abstraction violation?
+  using node_handle_type = node_handle_t<Task>;
+  using node_type = node_t<Task>;
+
+  //using node_handle_type = typename task_type::node_handle_type;
+  //using node_type = typename task_type::node_type;
 
   using Policy::Policy;
 

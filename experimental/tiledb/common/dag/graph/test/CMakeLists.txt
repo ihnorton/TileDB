@@ -30,3 +30,4 @@
 # Define unit tests
 #
 dag_add_header_only_unit_test(taskgraph)
+dag_add_header_only_unit_test(graph_sieve)

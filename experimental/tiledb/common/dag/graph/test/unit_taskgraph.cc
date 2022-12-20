@@ -363,7 +363,7 @@ TEST_CASE("TaskGraph: Schedule", "[taskgraph]") {
   make_edge(graph, u, v);
   make_edge(graph, v, w);
 
-  schedule(graph, sched);
+  schedule(graph);
   sync_wait(graph);
 }
 
@@ -407,7 +407,7 @@ TEST_CASE("TaskGraph: Run Passing Integers", "[taskgraph]") {
   SECTION("Producer, Function, and Consumer, submit") {
     make_edge(graph, p, f);
     make_edge(graph, f, c);
-    schedule(graph, sched);
+    schedule(graph);
     sync_wait(graph);
   }
 
