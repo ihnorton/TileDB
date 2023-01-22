@@ -454,9 +454,6 @@ endif()
 ############################################################
 
 if (SANITIZER)
-  if (NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-    message(FATAL_ERROR "Sanitizers only enabled for Debug build")
-  endif()
   string(TOLOWER ${SANITIZER} SANITIZER)
   if (NOT SANITIZER MATCHES "^(address|memory|leak|thread|undefined)$")
     message(FATAL_ERROR "Unknown clang sanitizer: ${SANITIZER})")
