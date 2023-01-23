@@ -20,45 +20,45 @@ variables:
     value: quay.io/pypa/manylinux2014_x86_64:2022-11-06-7be974c
 
 stages:
-  - stage: CI
-    condition: and(not(startsWith(variables['Build.SourceBranch'], 'refs/tags')), not(startsWith(variables['Build.SourceBranchName'], 'build-')))
-    variables:
-      BACKWARDS_COMPATIBILITY_ARRAYS: OFF
-    jobs:
-    - job:
-      timeoutInMinutes: 90
-      strategy:
-        matrix:
-          macOS_azure:
-            imageName: 'macos-11'
-            TILEDB_AZURE: ON
-            TILEDB_SERIALIZATION: ON
-            CXX: clang++
-            ARTIFACT_OS: macOS_azure
-          linux_asan:
-            imageName: 'ubuntu-20.04'
-            TILEDB_CI_ASAN: ON
-            TILEDB_SERIALIZATION: ON
-            CXX: g++
-            CC: gcc
-      pool:
-        vmImage: $(imageName)
-      steps:
-      - template: scripts/azure-linux_mac.yml
-
-    - job: linux_manylinux
-      pool: { vmImage: $(imageName) }
-      container: ${{ variables.MANYLINUX_IMAGE }}
-      variables:
-        imageName: 'ubuntu-20.04'
-        TILEDB_SERIALIZATION: ON
-        CXX: g++
-        CC: gcc
-        CXXFLAGS: "-lrt"
-        CFLAGS: "-lrt"
-        USE_MANYLINUX: ON
-      steps:
-      - template: scripts/azure-linux_mac.yml
+#  - stage: CI
+#    condition: and(not(startsWith(variables['Build.SourceBranch'], 'refs/tags')), not(startsWith(variables['Build.SourceBranchName'], 'build-')))
+#    variables:
+#      BACKWARDS_COMPATIBILITY_ARRAYS: OFF
+#    jobs:
+#    - job:
+#      timeoutInMinutes: 90
+#      strategy:
+#        matrix:
+#          macOS_azure:
+#            imageName: 'macos-11'
+#            TILEDB_AZURE: ON
+#            TILEDB_SERIALIZATION: ON
+#            CXX: clang++
+#            ARTIFACT_OS: macOS_azure
+#          linux_asan:
+#            imageName: 'ubuntu-20.04'
+#            TILEDB_CI_ASAN: ON
+#            TILEDB_SERIALIZATION: ON
+#            CXX: g++
+#            CC: gcc
+#      pool:
+#        vmImage: $(imageName)
+#      steps:
+#      - template: scripts/azure-linux_mac.yml
+#
+#    - job: linux_manylinux
+#      pool: { vmImage: $(imageName) }
+#      container: ${{ variables.MANYLINUX_IMAGE }}
+#      variables:
+#        imageName: 'ubuntu-20.04'
+#        TILEDB_SERIALIZATION: ON
+#        CXX: g++
+#        CC: gcc
+#        CXXFLAGS: "-lrt"
+#        CFLAGS: "-lrt"
+#        USE_MANYLINUX: ON
+#      steps:
+#      - template: scripts/azure-linux_mac.yml
 
   - stage: Build_Release
     condition: or(or(or(startsWith(variables['Build.SourceBranch'], 'refs/tags'), eq(variables['Build.SourceBranchName'], 'dev')), startsWith(variables['Build.SourceBranchName'], 'release-')), startsWith(variables['Build.SourceBranchName'], 'build-'))
@@ -77,12 +77,12 @@ stages:
        timeoutInMinutes: 90
        strategy:
          matrix:
-           macOS:
-             imageName: 'macos-11'
-             CXX: clang++
-             ARTIFACT_OS: 'macos'
-             ARTIFACT_ARCH: 'x86_64'
-             CMAKE_OSX_ARCHITECTURES: "x86_64"
+           #macOS:
+           #  imageName: 'macos-11'
+           #  CXX: clang++
+           #  ARTIFACT_OS: 'macos'
+           #  ARTIFACT_ARCH: 'x86_64'
+           #  CMAKE_OSX_ARCHITECTURES: "x86_64"
            macOS_arm64:
              imageName: 'macos-11'
              CXX: clang++
@@ -97,43 +97,43 @@ stages:
          vmImage: $(imageName)
        steps:
        - template: scripts/azure-linux_mac-release.yml
-     - job: linux_manylinux
-       pool: { vmImage: 'ubuntu-20.04' }
-       container: ${{ variables.MANYLINUX_IMAGE }}
-       strategy:
-         matrix:
-           standard:
-             CXX: g++
-             CFLAGS: "-lrt"
-             CXXFLAGS: "-lrt"
-             ARTIFACT_OS: 'linux'
-             ARTIFACT_ARCH: "x86_64"
-             TILEDB_AVX2: ON
-             SUDO: ''
-           noavx2:
-             CXX: g++
-             CFLAGS: "-lrt"
-             CXXFLAGS: "-lrt"
-             ARTIFACT_OS: 'linux'
-             ARTIFACT_ARCH: "x86_64-noavx2"
-             TILEDB_AVX2: OFF
-             SUDO: ''
-       steps:
-       - template: scripts/azure-linux_mac-release.yml
-     - job: Windows
-       strategy:
-         matrix:
-           VS2019:
-             imageName: 'windows-2019'
-             # Only S3 variable is currently supported in boostrap powershell
-             TILEDB_GCS: OFF
-             TILEDB_HDFS: OFF
-             ARTIFACT_OS: 'windows'
-             ARTIFACT_ARCH: 'x86_64'
-       pool:
-         vmImage: $(imageName)
-       steps:
-       - template: scripts/azure-windows-release.yml
+      #- job: linux_manylinux
+      #  pool: { vmImage: 'ubuntu-20.04' }
+      #  container: ${{ variables.MANYLINUX_IMAGE }}
+      #  strategy:
+      #    matrix:
+      #      standard:
+      #        CXX: g++
+      #        CFLAGS: "-lrt"
+      #        CXXFLAGS: "-lrt"
+      #        ARTIFACT_OS: 'linux'
+      #        ARTIFACT_ARCH: "x86_64"
+      #        TILEDB_AVX2: ON
+      #        SUDO: ''
+      #      noavx2:
+      #        CXX: g++
+      #        CFLAGS: "-lrt"
+      #        CXXFLAGS: "-lrt"
+      #        ARTIFACT_OS: 'linux'
+      #        ARTIFACT_ARCH: "x86_64-noavx2"
+      #        TILEDB_AVX2: OFF
+      #        SUDO: ''
+      #  steps:
+      #  - template: scripts/azure-linux_mac-release.yml
+      #- job: Windows
+      #  strategy:
+      #    matrix:
+      #      VS2019:
+      #        imageName: 'windows-2019'
+      #        # Only S3 variable is currently supported in boostrap powershell
+      #        TILEDB_GCS: OFF
+      #        TILEDB_HDFS: OFF
+      #        ARTIFACT_OS: 'windows'
+      #        ARTIFACT_ARCH: 'x86_64'
+      #  pool:
+      #    vmImage: $(imageName)
+      #  steps:
+      #  - template: scripts/azure-windows-release.yml
 
   # NOTE: this section cannot be conditional because `Build.Repository.Name` is an agent-scoped variable.
   - stage: Github_Release
