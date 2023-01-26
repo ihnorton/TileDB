@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>On-disk Serialization and Deserialization</title>
+<title>glossary</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -86,23 +86,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
 
-<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../../">
-<link href="../../../images/favicon.ico" rel="icon">
-<script src="../../../site_libs/quarto-html/quarto.js"></script>
-<script src="../../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../../../">
+<link href="../../../../../images/favicon.ico" rel="icon">
+<script src="../../../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -124,7 +124,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 }</script>
 
 
-<link rel="stylesheet" href="../../../quarto-materials/tiledb.css">
+<link rel="stylesheet" href="../../../../../quarto-materials/tiledb.css">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -134,8 +134,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a href="../../../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../../../quarto-materials/tiledb-logo.png" alt="" class="navbar-logo">
+    <a href="../../../../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../../../../quarto-materials/tiledb-logo.png" alt="" class="navbar-logo">
     </a>
   </div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -162,7 +162,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">On-disk Serialization and Deserialization</h1>
+      <h1 class="quarto-secondary-nav-title"></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -177,12 +177,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../index.html" class="sidebar-item-text sidebar-link">Public code docs</a>
+  <a href="../../../../../index.html" class="sidebar-item-text sidebar-link">Public code docs</a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../../format_spec/FORMAT_SPEC.html" class="sidebar-item-text sidebar-link">Format Specification</a>
+            <a href="../../../../../format_spec/FORMAT_SPEC.html" class="sidebar-item-text sidebar-link">Format Specification</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -198,27 +198,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/array_file_hierarchy.html" class="sidebar-item-text sidebar-link">Array File Hierarchy</a>
+  <a href="../../../../../format_spec/array_file_hierarchy.html" class="sidebar-item-text sidebar-link">Array File Hierarchy</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/array_schema.html" class="sidebar-item-text sidebar-link">Array Schema</a>
+  <a href="../../../../../format_spec/array_schema.html" class="sidebar-item-text sidebar-link">Array Schema</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/fragment.html" class="sidebar-item-text sidebar-link">Fragment</a>
+  <a href="../../../../../format_spec/fragment.html" class="sidebar-item-text sidebar-link">Fragment</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/tile.html" class="sidebar-item-text sidebar-link">Tile</a>
+  <a href="../../../../../format_spec/tile.html" class="sidebar-item-text sidebar-link">Tile</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/generic_tile.html" class="sidebar-item-text sidebar-link">Generic Tile</a>
+  <a href="../../../../../format_spec/generic_tile.html" class="sidebar-item-text sidebar-link">Generic Tile</a>
   </div>
 </li>
       </ul>
@@ -233,7 +233,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/group_file_hierarchy.html" class="sidebar-item-text sidebar-link">Group File Hierarchy</a>
+  <a href="../../../../../format_spec/group_file_hierarchy.html" class="sidebar-item-text sidebar-link">Group File Hierarchy</a>
   </div>
 </li>
       </ul>
@@ -248,17 +248,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/consolidated_fragment_metadata_file.html" class="sidebar-item-text sidebar-link">Consolidated Fragment Metadata File</a>
+  <a href="../../../../../format_spec/consolidated_fragment_metadata_file.html" class="sidebar-item-text sidebar-link">Consolidated Fragment Metadata File</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/filter_pipeline.html" class="sidebar-item-text sidebar-link">Filter Pipeline</a>
+  <a href="../../../../../format_spec/filter_pipeline.html" class="sidebar-item-text sidebar-link">Filter Pipeline</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../format_spec/vacuum_file.html" class="sidebar-item-text sidebar-link">Vacuum File</a>
+  <a href="../../../../../format_spec/vacuum_file.html" class="sidebar-item-text sidebar-link">Vacuum File</a>
   </div>
 </li>
       </ul>
@@ -275,7 +275,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../doc/dev/style/index.html" class="sidebar-item-text sidebar-link">Style Guide</a>
+  <a href="../../../../../doc/dev/style/index.html" class="sidebar-item-text sidebar-link">Style Guide</a>
   </div>
 </li>
       </ul>
@@ -289,54 +289,108 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#serialization-and-deserialization-guidelines" id="toc-serialization-and-deserialization-guidelines" class="nav-link active" data-scroll-target="#serialization-and-deserialization-guidelines">Serialization and Deserialization Guidelines</a>
-  <ul class="collapse">
-  <li><a href="#validating-enums" id="toc-validating-enums" class="nav-link" data-scroll-target="#validating-enums">Validating Enums</a></li>
-  </ul></li>
+  <li><a href="#application-glossary" id="toc-application-glossary" class="nav-link active" data-scroll-target="#application-glossary">Application Glossary</a></li>
+  <li><a href="#implementation-glossary" id="toc-implementation-glossary" class="nav-link" data-scroll-target="#implementation-glossary">Implementation Glossary</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title d-none d-lg-block">On-disk Serialization and Deserialization</h1>
-</div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-</header>
-
-<section id="serialization-and-deserialization-guidelines" class="level2">
-<h2 class="anchored" data-anchor-id="serialization-and-deserialization-guidelines">Serialization and Deserialization Guidelines</h2>
-<p>The status of on-disk serialization is currently in flux. At time of writing, the current guidelines for writing serialize functions for TileDB classes is as follows:</p>
-<ul>
-<li>Only use <code>sizeof</code> on fixed-sized types (not variables or types with compiler-dependent size like <code>bool</code>).</li>
-<li>Return a TileDB shared pointer to the object in <code>deserialize</code> methods. Use exceptions, not <code>Status</code> objects, for errors.</li>
-<li>Validate all types either at time of deserialization or in the constructor used for generating the object.</li>
-<li>Add unit tests that check the validations throws the expected errors.</li>
-</ul>
-<section id="validating-enums" class="level3">
-<h3 class="anchored" data-anchor-id="validating-enums">Validating Enums</h3>
-<p>For validating enums, consider creating a function that converts from the underlying variable type to the enum with validation. The serialization/deserialization should be to an fixed-size integer of the under-lying type. Consider writing a function with validation to get the actual enum from the integer. For example,</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">inline</span> ArrayType array_type_from_int<span class="op">(</span><span class="dt">uint8_t</span> array_type_enum<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> type <span class="op">=</span> ArrayType<span class="op">(</span>array_type_enum<span class="op">);</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>type <span class="op">!=</span> ArrayType<span class="op">::</span>DENSE <span class="op">&amp;&amp;</span> type <span class="op">!=</span> ArrayType<span class="op">::</span>SPARSE<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">throw</span> <span class="bu">std::</span>runtime_error<span class="op">(</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Invalid ArrayType ("</span> <span class="op">+</span> <span class="bu">std::</span>to_string<span class="op">(</span>array_type_enum<span class="op">)</span> <span class="op">+</span> <span class="st">")"</span><span class="op">);</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> type<span class="op">;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>If the enum has many types, use a <code>switch</code> statement to validate the types.</p>
+<section id="application-glossary" class="level2">
+<h2 class="anchored" data-anchor-id="application-glossary">Application Glossary</h2>
+<section id="task-graph" class="level4">
+<h4 class="anchored" data-anchor-id="task-graph">Task Graph</h4>
+<p>A <em>task graph</em> is a data structure consisting of <em>nodes</em> and <em>edges</em>. Each node applies some specified computation by invoking its <em>contained function</em>. Edges represent dependencies between nodes. A <em>dataflow</em> graph (or a <em>flow</em> graph) passes data between nodes, with the output data of one node supplying data to the input of another node. A <em>dependency</em> graph specifies the dependencies (the ordering of computation) between nodes, but does not pass data between nodes.</p>
+<p>A basic task graph is assumed to be a directed acyclic graph (DAG).</p>
+</section>
+<section id="input" class="level4">
+<h4 class="anchored" data-anchor-id="input">Input</h4>
+</section>
+<section id="output" class="level4">
+<h4 class="anchored" data-anchor-id="output">Output</h4>
+</section>
+<section id="port" class="level4">
+<h4 class="anchored" data-anchor-id="port">Port</h4>
+<p>A port is a binding point between an edge and a node. A port can be either an input or an output, with respect to a given node. That is, a node receives data from its input port(s) and transmits data to its output port(s).</p>
+</section>
+<section id="node" class="level4">
+<h4 class="anchored" data-anchor-id="node">Node</h4>
+<p>A node is a locus for computation in the task graph. A node may have multiple input ports and multiple output ports. A node has a contained function. The expected functionality of a node is to apply its contained function to data available on the input port(s) and to return its values to the output port(s).</p>
+</section>
+<section id="function-node" class="level4">
+<h4 class="anchored" data-anchor-id="function-node">Function Node</h4>
+<p>A function node is neither a root nor leaf in the task graph. A function node has a contained function. The expected functionality of a function node is to apply its contained function to data available on its input port and to return its values to its output port. The prototype for the contained function is:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Ret fun <span class="op">(</span><span class="at">const</span> Type<span class="op">&amp;</span> a<span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Equivalently, the function must satisfy the following:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">requires</span> <span class="bu">std::</span>is_invocable_r_v<span class="op">&lt;</span>Ret<span class="op">,</span> Fun<span class="op">,</span> <span class="at">const</span> Type<span class="op">&amp;&gt;;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>(Note that the signature does not need to have <code>const &amp;</code>).</p>
+</section>
+<section id="producer-node" class="level4">
+<h4 class="anchored" data-anchor-id="producer-node">Producer Node</h4>
+<p>In a task graph, a producer node is a root node in the task graph. It has only output ports(s) and zero input ports. A producer node has a contained function.<br>
+The expected functionality of a producer node is to apply its contained function to an <code>std::stop_source</code> object and to return an output item. The prototype for the contained function is:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Ret fun <span class="op">(</span><span class="bu">std::</span>stop_source<span class="op"> </span>stop<span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Equivalently, the function must satisfy the following:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">requires</span> <span class="bu">std::</span>is_invocable_r_v<span class="op">&lt;</span>Ret<span class="op">,</span> Fun<span class="op">,</span> <span class="bu">std::</span>stop_source<span class="op">&gt;;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="consumer-node" class="level4">
+<h4 class="anchored" data-anchor-id="consumer-node">Consumer Node</h4>
+<p>In a task graph, a producer node is a leaf node in the task graph. It has only input port(s) and zero output ports. A consumer node has a contained function. The expected functionality of a consumer node is to apply its contained function to an input item, returning void. The prototype for the contained function is:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> fun <span class="op">(</span><span class="at">const</span> Type<span class="op">&amp;</span> a<span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Equivalently, the function must satisfy the following:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">requires</span> <span class="bu">std::</span>is_invocable_r_v<span class="op">&lt;</span><span class="dt">void</span><span class="op">,</span> Fun<span class="op">,</span> <span class="at">const</span> Type<span class="op">&amp;&gt;;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="multi-input-multi-output-mimo-node" class="level4">
+<h4 class="anchored" data-anchor-id="multi-input-multi-output-mimo-node">Multi-Input Multi-Output (MIMO) Node</h4>
+</section>
+<section id="edge" class="level4">
+<h4 class="anchored" data-anchor-id="edge">Edge</h4>
+<p>An edge connects two nodes. An edge has two endpoints, an output port of one node and an input port of another node. Edges are parametric on the number of managed data items (currently only either two or three).</p>
+</section>
+<section id="segment" class="level4">
+<h4 class="anchored" data-anchor-id="segment">Segment</h4>
+</section>
+<section id="segmented-computation" class="level4">
+<h4 class="anchored" data-anchor-id="segmented-computation">Segmented Computation</h4>
+</section>
+</section>
+<section id="implementation-glossary" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-glossary">Implementation Glossary</h2>
+<section id="data-item-type" class="level4">
+<h4 class="anchored" data-anchor-id="data-item-type">Data Item Type</h4>
+</section>
+<section id="source" class="level4">
+<h4 class="anchored" data-anchor-id="source">Source</h4>
+</section>
+<section id="sink" class="level4">
+<h4 class="anchored" data-anchor-id="sink">Sink</h4>
+</section>
+<section id="mover" class="level4">
+<h4 class="anchored" data-anchor-id="mover">Mover</h4>
+</section>
+<section id="handles" class="level4">
+<h4 class="anchored" data-anchor-id="handles">Handles</h4>
+</section>
+<section id="task" class="level4">
+<h4 class="anchored" data-anchor-id="task">Task</h4>
+</section>
+<section id="scheduler" class="level4">
+<h4 class="anchored" data-anchor-id="scheduler">Scheduler</h4>
+</section>
+<section id="coroutine" class="level4">
+<h4 class="anchored" data-anchor-id="coroutine">Coroutine</h4>
+</section>
+<section id="duffs-device" class="level4">
+<h4 class="anchored" data-anchor-id="duffs-device">Duff’s Device</h4>
+</section>
+<section id="specification-graph" class="level4">
+<h4 class="anchored" data-anchor-id="specification-graph">Specification Graph</h4>
+</section>
+<section id="execution-graph" class="level4">
+<h4 class="anchored" data-anchor-id="execution-graph">Execution Graph</h4>
 
 
 </section>
