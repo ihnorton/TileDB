@@ -2,6 +2,7 @@ name: "Full CI"
 on:
   push:
     branches:
+      - ihn/vcpkg
       - dev
       - release-*
       - refs/tags/*
