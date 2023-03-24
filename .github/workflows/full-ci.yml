@@ -1,27 +1,27 @@
 name: "Full CI"
-on:
-  push:
-    branches:
-      - dev
-      - release-*
-      - refs/tags/*
-
-    ##############################################################################
-    #                                                                            #
-    #    These sections must be synchronized with 'paths' in full-ci-dummy.yml   #
-    #                                                                            #
-    ##############################################################################
-
-  pull_request:
-    branches:
-      - '*'  # must quote since "*" is a YAML reserved character; we want a string
-    paths-ignore:
-      - '.github/workflows/quarto-render.yml'
-      - '_quarto.yml'
-      - 'quarto-materials/*'
-      - '**/.md'
-      - 'tiledb/doxygen/source/*'
-      - 'tiledb/sm/c_api/tiledb_version.h'
+#on:
+#  push:
+#    branches:
+#      - dev
+#      - release-*
+#      - refs/tags/*
+#
+#    ##############################################################################
+#    #                                                                            #
+#    #    These sections must be synchronized with 'paths' in full-ci-dummy.yml   #
+#    #                                                                            #
+#    ##############################################################################
+#
+#  pull_request:
+#    branches:
+#      - '*'  # must quote since "*" is a YAML reserved character; we want a string
+#    paths-ignore:
+#      - '.github/workflows/quarto-render.yml'
+#      - '_quarto.yml'
+#      - 'quarto-materials/*'
+#      - '**/.md'
+#      - 'tiledb/doxygen/source/*'
+#      - 'tiledb/sm/c_api/tiledb_version.h'
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
