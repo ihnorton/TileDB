@@ -36,6 +36,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Options")
 
+include(TileDBFunctions)
 include(CIConfig)
 include(BuildOptions)
 include(global-policies NO_POLICY_SCOPE)
@@ -154,7 +155,17 @@ if (TILEDB_SUPERBUILD)
   return()
 endif()
 
-project(TileDB)
+############################################################
+############################################################
+               # END SUPERBUILD DEFINITION #
+############################################################
+############################################################
+
+project(TileDB VERSION ${TILEDB_VERSION})
+
+# MUST BE INCLUDED AFTER project() or else host/target vars not set
+include(TileDBCPackConfig)
+
 message(STATUS "Starting TileDB regular build.")
 message(STATUS "  CMake version: ${CMAKE_VERSION}")
 # Paths to locate the installed external projects.
