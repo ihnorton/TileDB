@@ -1,0 +1,31 @@
+name: "Release Builds"
+on:
+  push:
+    branches:
+      - dev
+      - release-*
+      - refs/tags/*
+
+    ##############################################################################
+    #                                                                            #
+    #    These sections must be synchronized with 'paths' in full-ci-dummy.yml   #
+    #                                                                            #
+    ##############################################################################
+
+  pull_request:
+    branches:
+      - '*'  # must quote since "*" is a YAML reserved character; we want a string
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    runs-on: ubuntu-22.04
+    container:
+      #image: 'quay.io/pypa/manylinux2014_x86_64:2023-03-23-aead4d7'
+      image: 'ubuntu:22.04'
+    uses: ./.github/workflows/ci-linux_mac.yml
+    with:
+      bootstrap_args: '--enable=azure'
