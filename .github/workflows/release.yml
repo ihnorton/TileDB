@@ -25,3 +25,4 @@ jobs:
     uses: ./.github/workflows/ci-manylinux.yml
     with:
       bootstrap_args: '--enable=azure'
+      matrix_image: 'ghcr.io/ihnorton/tiledb-manylinux2014_x86_64:2023-03-23-aead4d7'
