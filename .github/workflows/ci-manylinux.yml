@@ -1,0 +1,71 @@
+name: CI (Linux and macOS)
+on:
+  workflow_call:
+    inputs:
+      ci_backend:
+        description: 'Name of the job backend/target'
+        default: ''
+        required: false
+        type: string
+      ci_option:
+        description: 'Name of the job option for display'
+        default: ''
+        required: false
+        type: string
+      bootstrap_args:
+        default: ''
+        required: true
+        type: string
+      matrix_image:
+        default: ''
+        required: true
+        type: string
+      matrix_compiler_cc:
+        default: 'gcc'
+        required: false
+        type: string
+      matrix_compiler_cxx:
+        default: 'g++'
+        required: false
+        type: string
+      timeout:
+        default: 90
+        description: 'Job timeout (minutes)'
+        required: false
+        type: number
+
+env:
+  BACKWARDS_COMPATIBILITY_ARRAYS: OFF
+  TILEDB_CI_BACKEND: ${{ inputs.ci_backend }}
+  TILEDB_CI_OS: runner.os
+  CXX: ${{ inputs.matrix_compiler_cxx }}
+  CC: ${{ inputs.matrix_compiler_cc }}
+  bootstrap_args: ${{ inputs.bootstrap_args }}
+
+jobs:
+  # TODO
+  #update_manylinux_image:
+  #  steps:
+  #    - uses: actions/checkout@v3
+  #    - name: Build and push Docker image
+  #      run: |
+  #        docker build -f scripts/ci/manylinux/Dockerfile .
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: 'ghcr.io/ihnorton/tiledb-manylinux2014_x86_64:2023-03-23-aead4d7'
+    steps:
+      - name: 'Configure libtiledb'
+        shell: bash
+        run: |
+          set -e pipefail
+
+          source $GITHUB_WORKSPACE/scripts/ci/bootstrap_libtiledb.sh
+
+      - name: 'Build libtiledb'
+        id: build
+        shell: bash
+        run: |
+          set -e pipefail
+
+          source $GITHUB_WORKSPACE/scripts/ci/build_libtiledb.sh

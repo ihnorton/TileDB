@@ -22,10 +22,6 @@ concurrency:
 
 jobs:
   linux:
-    runs-on: ubuntu-22.04
-    container:
-      #image: 'quay.io/pypa/manylinux2014_x86_64:2023-03-23-aead4d7'
-      image: 'ubuntu:22.04'
-    uses: ./.github/workflows/ci-linux_mac.yml
+    uses: ./.github/workflows/ci-manylinux.yml
     with:
       bootstrap_args: '--enable=azure'
