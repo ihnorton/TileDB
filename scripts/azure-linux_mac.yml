@@ -1,4 +1,8 @@
 steps:
+- task: NodeTool@0 # Needed for compatibility with manylinux image.
+  inputs:
+    versionSpec: "16.x"
+
 - bash: |
     echo "'uname -s' is:"
     echo "uname: " $(uname)
