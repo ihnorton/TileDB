@@ -2,16 +2,6 @@
 # TileDB Toolchain Setup
 ############################################################
 
-# Only enable vcpkg on GCS builds for now
-if (NOT TILEDB_VCPKG AND NOT TILEDB_GCS)
-    return()
-endif()
-
-# For testing we're using --enable-gcs
-if(TILEDB_GCS AND NOT TILEDB_VCPKG)
-    set(TILEDB_VCPKG ON)
-endif()
-
 # We've already run vcpkg by the time the super build is finished
 if (NOT TILEDB_SUPERBUILD)
     return()

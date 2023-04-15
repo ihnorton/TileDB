@@ -119,7 +119,7 @@ steps:
       bootstrap_args="${bootstrap_args} --enable-azure";
     fi;
     if [[ "$TILEDB_GCS" == "ON" ]]; then
-      bootstrap_args="${bootstrap_args} --enable-gcs";
+      bootstrap_args="${bootstrap_args} --enable-gcs --enable-vcpkg";
     fi;
     if [[ "$TILEDB_TOOLS" == "ON" ]]; then
       bootstrap_args="${bootstrap_args} --enable-tools";

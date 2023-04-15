@@ -46,6 +46,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
 
     INVERTED_FEATURES
     non-http HTTP_ONLY
+    openldap    CURL_DISABLE_LDAP
 )
 
 set(SECTRANSP_OPTIONS)
@@ -76,6 +77,7 @@ vcpkg_configure_cmake(
         -DENABLE_MANUAL=OFF
         -DCURL_STATICLIB=${CURL_STATICLIB}
         -DCMAKE_DISABLE_FIND_PACKAGE_Perl=ON
+        -DCURL_DISABLE_LDAP=ON
         -DENABLE_DEBUG=ON
         -DCURL_CA_FALLBACK=ON
 )

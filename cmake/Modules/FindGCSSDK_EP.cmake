@@ -29,6 +29,7 @@
 if (NOT TILEDB_GCS)
   return()
 endif()
+
 if (NOT TILEDB_VCPKG)
   message(FATAL_ERROR "TILEDB_GCS requires TILEDB_VCPKG. System-library provision must be handled"
                       "via vcpkg overlay")

@@ -68,7 +68,7 @@ steps:
       cmake_args="${cmake_args} -DTILEDB_AZURE=ON";
     fi;
     if [[ "$TILEDB_GCS" == "ON" ]]; then
-      cmake_args="${cmake_args} -DTILEDB_GCS=ON";
+      cmake_args="${cmake_args} -DTILEDB_GCS=ON -DTILEDB_VCPKG=ON";
     fi;
     if [[ "$TILEDB_TOOLS" == "ON" ]]; then
       cmake_args="${cmake_args} -DTILEDB_TOOLS=ON";

@@ -31,6 +31,10 @@
 #   - CURL_FOUND, whether Curl has been found
 #   - The Curl::Curl imported target
 
+if (TILEDB_VCPKG)
+  find_package(CURL REQUIRED)
+endif()
+
 # Include some common helper functions.
 include(TileDBCommon)
 
