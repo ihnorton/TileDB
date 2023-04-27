@@ -45,7 +45,7 @@ commence(object_library generic_tile_io)
       buffer
       constants
       context_resources
-      _tiledb_crypto
+      tiledb_crypto
       filter_pipeline
       tile
       vfs

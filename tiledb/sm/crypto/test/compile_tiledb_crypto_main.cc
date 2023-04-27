@@ -29,6 +29,6 @@
 #include "../crypto.h"
 
 int main() {
-  (void)sizeof(tiledb::sm::Crypto);
+  tiledb::sm::Crypto::md5(nullptr, nullptr);
   return 0;
 }
