@@ -502,7 +502,11 @@ if (NOT WIN32)
 endif()
 
 # S3 dependencies
-if (TILEDB_S3)
+if (TILEDB_S3 AND TILEDB_VCPKG)
+  message(STATUS "The TileDB library is compiled with S3 support.")
+  find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
+  target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE ${AWSSDK_LINK_LIBRARIES})
+elseif(TILEDB_S3)
   message(STATUS "The TileDB library is compiled with S3 support.")
   find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
   target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
@@ -524,6 +528,7 @@ if (TILEDB_AZURE)
     INTERFACE
       Azure::azure-storage-blobs
   )
+  install_target_libs(Azure::azure-storage-blobs)
 endif()
 
 # GCS dependencies
@@ -910,7 +915,7 @@ if (TILEDB_STATIC)
   append_dep_lib(AWSSDK::aws-c-common)
   append_dep_lib(AWSSDK::aws-cpp-sdk-sts)
   append_dep_lib(AWSSDK::aws-cpp-sdk-identity-management)
-  append_dep_lib(AzureSDK::AzureSDK)
+  append_dep_lib(Azure::azure-storage-blobs)
   append_dep_lib(GCSSDK::storage_client)
   append_dep_lib(GCSSDK::google_cloud_cpp_common)
   append_dep_lib(GCSSDK::crc32c)
