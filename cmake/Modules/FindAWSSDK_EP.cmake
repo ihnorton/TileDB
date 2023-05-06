@@ -39,6 +39,7 @@ if(TILEDB_VCPKG)
   #       it lists bare "pthread;curl" which leads to linkage of system versions. For static linkage, we
   #       handle those elsewhere at the moment.
   find_package(AWSSDK REQUIRED QUIET COMPONENTS ${AWS_SERVICES})
+  install_all_target_libs("${AWSSDK_LINK_LIBRARIES}")
   return()
 endif()
 

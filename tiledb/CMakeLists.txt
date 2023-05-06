@@ -496,6 +496,10 @@ target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE ${TileDB_blosc_LINK_OPT
 # Find OpenSSL first in case it's needed for S3 or Azure
 if (NOT WIN32)
   find_package(OpenSSL_EP REQUIRED)
+  if (TILEDB_VCPKG)
+    install_target_libs(OpenSSL::SSL)
+    install_target_libs(OpenSSL::Crypto)
+  endif()
 endif()
 
 # S3 dependencies
@@ -532,9 +536,10 @@ endif()
 
 # GCS dependencies
 if (TILEDB_GCS)
-  if (NOT TILEDB_GCS_CLASSIC)
+  if (TILEDB_VCPKG)
     find_package(google_cloud_cpp_storage CONFIG REQUIRED)
-    target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE CURL::libcurl google-cloud-cpp::storage google-cloud-cpp::experimental-storage-grpc)
+    target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE google-cloud-cpp::storage)
+    install_all_target_libs(google-cloud-cpp::storage)
   else()
     message(STATUS "The TileDB library is compiled with GCS support.")
     find_package(GCSSDK_EP REQUIRED COMPONENTS gcs)
@@ -613,6 +618,7 @@ target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
     Bzip2::Bzip2
     LZ4::LZ4
     spdlog::spdlog
+    fmt::fmt
     ZLIB::ZLIB
     Zstd::Zstd
     libmagic
@@ -686,7 +692,7 @@ endif()
 if(APPLE)
   if(TILEDB_S3)
     # this is a transitive dependency for statically linking S3 SDK
-    target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE "-framework CoreFoundation")
+    target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE "-framework CoreFoundation -framework SystemConfiguration -framework Security")
   endif()
 endif()
 
@@ -907,13 +913,24 @@ if (TILEDB_STATIC)
   append_dep_lib(OpenSSL::SSL)
   append_dep_lib(OpenSSL::Crypto)
   append_dep_lib(CURL::libcurl)
-  append_dep_lib(AWSSDK::aws-cpp-sdk-s3)
-  append_dep_lib(AWSSDK::aws-cpp-sdk-core)
-  append_dep_lib(AWSSDK::aws-c-event-stream)
-  append_dep_lib(AWSSDK::aws-checksums)
-  append_dep_lib(AWSSDK::aws-c-common)
-  append_dep_lib(AWSSDK::aws-cpp-sdk-sts)
-  append_dep_lib(AWSSDK::aws-cpp-sdk-identity-management)
+
+  if(TILEDB_S3 AND TILEDB_VCPKG)
+    foreach(tgt ${AWSSDK_LINK_LIBRARIES})
+      append_dep_lib(${tgt})
+    endforeach()
+  elseif(TILEDB_S3)
+    append_dep_lib(AWSSDK::aws-cpp-sdk-s3)
+    append_dep_lib(AWSSDK::aws-cpp-sdk-core)
+    append_dep_lib(AWSSDK::aws-c-event-stream)
+    append_dep_lib(AWSSDK::aws-checksums)
+    append_dep_lib(AWSSDK::aws-c-common)
+    append_dep_lib(AWSSDK::aws-cpp-sdk-sts)
+    append_dep_lib(AWSSDK::aws-cpp-sdk-identity-management)
+  endif()
+
+
+
+  append_dep_lib(fmt::fmt)
   append_dep_lib(Azure::azure-storage-blobs)
   append_dep_lib(google-cloud-cpp::storage)
   append_dep_lib(google-cloud-cpp::experimental-storage-grpc)
@@ -921,6 +938,7 @@ if (TILEDB_STATIC)
   append_dep_lib(libmagic)
   append_dep_lib(Crc32c::crc32c)
   append_dep_lib(WebP::webp)
+
   if(TILEDB_ABSEIL)
     foreach(tgt ${TILEDB_ABSL_LIBRARIES})
       append_dep_lib(${tgt})

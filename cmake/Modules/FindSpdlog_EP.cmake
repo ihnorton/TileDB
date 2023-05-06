@@ -33,6 +33,13 @@
 # Include some common helper functions.
 include(TileDBCommon)
 
+if (TILEDB_VCPKG)
+  find_package(fmt REQUIRED)
+  find_package(spdlog CONFIG REQUIRED)
+  install_target_libs(spdlog::spdlog)
+endif()
+
+
 # If the EP was built, it will install the storage_client-config.cmake file,
 # which we can use with find_package. CMake uses CMAKE_PREFIX_PATH to locate find
 # modules.
