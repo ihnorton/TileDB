@@ -31,6 +31,7 @@ endif()
 
 if (TILEDB_VCPKG)
   find_package(CURL REQUIRED ${TILEDB_DEPS_NO_DEFAULT_PATH})
+  install_target_libs(CURL::libcurl)
   return()
 endif()
 

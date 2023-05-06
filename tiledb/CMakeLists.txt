@@ -490,9 +490,6 @@ endif()
 # so we can use the targets created by the calls to find_package().
 add_library(TILEDB_CORE_OBJECTS_ILIB INTERFACE)
 
-# Object Store Configuration
-target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE object_store_definitions)
-
 # blosc link dependencies
 target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE ${TileDB_blosc_LINK_OPTIONS})
 
@@ -502,22 +499,24 @@ if (NOT WIN32)
 endif()
 
 # S3 dependencies
-if (TILEDB_S3 AND TILEDB_VCPKG)
+if (TILEDB_S3)
   message(STATUS "The TileDB library is compiled with S3 support.")
-  find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
-  target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE ${AWSSDK_LINK_LIBRARIES})
-elseif(TILEDB_S3)
-  message(STATUS "The TileDB library is compiled with S3 support.")
-  find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
-  target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
-    INTERFACE
-      AWSSDK::aws-cpp-sdk-s3
-      AWSSDK::aws-cpp-sdk-core
-      AWSSDK::aws-c-event-stream
-      AWSSDK::aws-checksums
-      AWSSDK::aws-c-common
-      AWSSDK::aws-cpp-sdk-identity-management
-      AWSSDK::aws-cpp-sdk-sts)
+
+  if (TILEDB_VCPKG)
+    find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
+    target_link_libraries(TILEDB_CORE_OBJECTS_ILIB INTERFACE ${AWSSDK_LINK_LIBRARIES})
+  else()
+    find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
+    target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
+      INTERFACE
+        AWSSDK::aws-cpp-sdk-s3
+        AWSSDK::aws-cpp-sdk-core
+        AWSSDK::aws-c-event-stream
+        AWSSDK::aws-checksums
+        AWSSDK::aws-c-common
+        AWSSDK::aws-cpp-sdk-identity-management
+        AWSSDK::aws-cpp-sdk-sts)
+  endif()
 endif()
 
 # Azure dependencies
@@ -916,9 +915,8 @@ if (TILEDB_STATIC)
   append_dep_lib(AWSSDK::aws-cpp-sdk-sts)
   append_dep_lib(AWSSDK::aws-cpp-sdk-identity-management)
   append_dep_lib(Azure::azure-storage-blobs)
-  append_dep_lib(GCSSDK::storage_client)
-  append_dep_lib(GCSSDK::google_cloud_cpp_common)
-  append_dep_lib(GCSSDK::crc32c)
+  append_dep_lib(google-cloud-cpp::storage)
+  append_dep_lib(google-cloud-cpp::experimental-storage-grpc)
   append_dep_lib(spdlog::spdlog)
   append_dep_lib(libmagic)
   append_dep_lib(Crc32c::crc32c)
@@ -1103,7 +1101,6 @@ if (TILEDB_STATIC)
   list(APPEND TILEDB_INSTALL_TARGETS
     tiledb_static
     TILEDB_CORE_OBJECTS_ILIB
-    object_store_definitions
   )
 endif()
 
