@@ -36,7 +36,7 @@ include(TileDBCommon)
 if (TILEDB_VCPKG)
   find_package(fmt REQUIRED)
   find_package(spdlog CONFIG REQUIRED)
-  install_target_libs(spdlog::spdlog)
+  install_all_target_libs("fmt::fmt;spdlog::spdlog")
 endif()
 
 

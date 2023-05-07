@@ -617,12 +617,24 @@ target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
   INTERFACE
     Bzip2::Bzip2
     LZ4::LZ4
-    spdlog::spdlog
-    fmt::fmt
     ZLIB::ZLIB
     Zstd::Zstd
     libmagic
 )
+if (TILEDB_VCPKG)
+  # vcpkg uses SPDLOG_FMT_EXTERNAL=1
+
+  target_link_libraries(TILEDB_CORE_OBJECTS
+    PRIVATE
+      spdlog::spdlog_header_only
+      fmt::fmt-header-only
+  )
+else()
+  target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
+    INTERFACE
+      spdlog::spdlog
+  )
+endif()
 
 if(TILEDB_CRC32)
   find_package(crc32c_EP REQUIRED)
@@ -928,13 +940,10 @@ if (TILEDB_STATIC)
     append_dep_lib(AWSSDK::aws-cpp-sdk-identity-management)
   endif()
 
-
-
   append_dep_lib(fmt::fmt)
   append_dep_lib(Azure::azure-storage-blobs)
   append_dep_lib(google-cloud-cpp::storage)
   append_dep_lib(google-cloud-cpp::experimental-storage-grpc)
-  append_dep_lib(spdlog::spdlog)
   append_dep_lib(libmagic)
   append_dep_lib(Crc32c::crc32c)
   append_dep_lib(WebP::webp)
