@@ -13,6 +13,8 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
+          - os: macos-latest # ASAN build
+            sanitizer: "undefined"
           - os: macos-latest
           - os: macos-latest # ASAN build
             sanitizer: "address"
