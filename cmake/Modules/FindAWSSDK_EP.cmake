@@ -31,9 +31,9 @@
 # Include some common helper functions.
 include(TileDBCommon)
 
-set(AWS_SERVICES identity-management sts s3)
-
 if(TILEDB_VCPKG)
+  set(AWS_SERVICES identity-management sts s3)
+
   # Provides:  ${AWSSDK_LINK_LIBRARIES} ${AWSSDK_PLATFORM_DEPS}
   # TODO: We may need to conditionally use ${AWSSDK_PLATFORM_DEPS} here for dynamically linked deps, but
   #       it lists bare "pthread;curl" which leads to linkage of system versions. For static linkage, we
@@ -94,10 +94,10 @@ if (TILEDB_SUPERBUILD)
   # That's because the AWSSDK config file hard-codes a search of /usr,
   # /usr/local, etc.
   if (NOT TILEDB_FORCE_ALL_DEPS)
-    find_package(AWSSDK CONFIG COMPONENTS ${AWS_SERVICES})
+    find_package(AWSSDK CONFIG)
   endif()
 else()
-  find_package(AWSSDK CONFIG COMPONENTS ${AWS_SERVICES})
+  find_package(AWSSDK CONFIG)
 endif()
 
 if (NOT AWSSDK_FOUND)
@@ -190,16 +190,38 @@ if (NOT AWSSDK_FOUND)
 endif ()
 
 if (AWSSDK_FOUND)
-  if (TILEDB_STATIC)
-    set(AWSSDK_EXTRA_LIBS)
-    # Since AWS SDK 1.11, AWSSDK_THIRD_PARTY_LIBS was replaced by AWSSDK_COMMON_RUNTIME_LIBS.
-    foreach(TARGET IN LISTS AWSSDK_THIRD_PARTY_LIBS AWSSDK_COMMON_RUNTIME_LIBS)
-      if (TARGET AWS::${TARGET})
-        list(APPEND AWSSDK_EXTRA_LIBS "AWS::${TARGET}")
-      endif()
-    endforeach()
-    install_all_target_libs("${AWSSDK_EXTRA_LIBS}")
-  endif()
+  set(AWS_SERVICES s3)
+  AWSSDK_DETERMINE_LIBS_TO_LINK(AWS_SERVICES AWS_LINKED_LIBS)
+  list(APPEND AWS_LINKED_LIBS aws-c-common
+                              aws-c-event-stream
+                              aws-checksums
+                              aws-cpp-sdk-sts
+                              aws-cpp-sdk-identity-management)
 
-  install_all_target_libs("${AWSSDK_LINK_LIBRARIES}")
+  foreach (LIB ${AWS_LINKED_LIBS})
+    if (NOT ${LIB} MATCHES "aws-*")
+      continue()
+    endif()
+
+    find_library("AWS_FOUND_${LIB}"
+      NAMES ${LIB}
+      PATHS ${AWSSDK_LIB_DIR}
+      ${TILEDB_DEPS_NO_DEFAULT_PATH}
+    )
+    message(STATUS "Found AWS lib: ${LIB} (${AWS_FOUND_${LIB}})")
+    if (NOT TARGET AWSSDK::${LIB})
+      add_library(AWSSDK::${LIB} UNKNOWN IMPORTED)
+      set_target_properties(AWSSDK::${LIB} PROPERTIES
+        IMPORTED_LOCATION "${AWS_FOUND_${LIB}}"
+        INTERFACE_INCLUDE_DIRECTORIES "${AWSSDK_INCLUDE_DIR}"
+      )
+    endif()
+
+    # If we built a static EP, install it if required.
+    if (TILEDB_AWSSDK_EP_BUILT AND TILEDB_INSTALL_STATIC_DEPS)
+      install_target_libs(AWSSDK::${LIB})
+    endif()
+
+  endforeach ()
+
 endif ()
