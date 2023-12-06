@@ -540,12 +540,26 @@ endif()
 if (TILEDB_S3)
   message(STATUS "The TileDB library is compiled with S3 support.")
 
-  find_package(AWSSDK_EP REQUIRED)
-  target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
-    INTERFACE
-      ${AWSSDK_LINK_LIBRARIES}
-      ${AWSSDK_EXTRA_LIBS}
-      )
+  if (TILEDB_VCPKG)
+    find_package(AWSSDK_EP REQUIRED)
+    target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
+      INTERFACE
+        ${AWSSDK_LINK_LIBRARIES}
+        ${AWSSDK_EXTRA_LIBS}
+        )
+
+  else()
+    find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
+    target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
+      INTERFACE
+        AWSSDK::aws-cpp-sdk-s3
+        AWSSDK::aws-cpp-sdk-core
+        AWSSDK::aws-c-event-stream
+        AWSSDK::aws-checksums
+        AWSSDK::aws-c-common
+        AWSSDK::aws-cpp-sdk-identity-management
+        AWSSDK::aws-cpp-sdk-sts)
+  endif()
 endif()
 
 # Azure dependencies
@@ -979,9 +993,19 @@ if (TILEDB_STATIC)
   append_dep_lib(OpenSSL::Crypto)
   append_dep_lib(CURL::libcurl)
 
-  foreach(tgt ${AWSSDK_LINK_LIBRARIES} ${AWSSDK_EXTRA_LIBS})
-    append_dep_lib(${tgt})
-  endforeach()
+  if(TILEDB_S3 AND TILEDB_VCPKG)
+    foreach(tgt ${AWSSDK_LINK_LIBRARIES} ${AWSSDK_EXTRA_LIBS})
+      append_dep_lib(${tgt})
+    endforeach()
+  elseif(TILEDB_S3)
+    append_dep_lib(AWSSDK::aws-cpp-sdk-s3)
+    append_dep_lib(AWSSDK::aws-cpp-sdk-core)
+    append_dep_lib(AWSSDK::aws-c-event-stream)
+    append_dep_lib(AWSSDK::aws-checksums)
+    append_dep_lib(AWSSDK::aws-c-common)
+    append_dep_lib(AWSSDK::aws-cpp-sdk-sts)
+    append_dep_lib(AWSSDK::aws-cpp-sdk-identity-management)
+  endif()
 
   append_dep_lib(fmt::fmt)
   append_dep_lib(spdlog::spdlog)
