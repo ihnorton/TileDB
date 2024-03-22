@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>group</title>
+<title>Enumerations</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,35 +117,42 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#group" id="toc-group" class="nav-link active" data-scroll-target="#group">Group</a>
-  <ul class="collapse">
-  <li><a href="#group-file" id="toc-group-file" class="nav-link" data-scroll-target="#group-file">Group File</a></li>
-  <li><a href="#group-member" id="toc-group-member" class="nav-link" data-scroll-target="#group-member">Group Member</a></li>
-  </ul></li>
+  <li><a href="#main-structure" id="toc-main-structure" class="nav-link active" data-scroll-target="#main-structure">Main Structure</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Enumerations</h1>
+</div>
 
 
 
-<section id="group" class="level1">
-<h1>Group</h1>
-<p>The current group format version (<code>2</code>) is a folder called <code>__group</code> located here:</p>
-<pre><code>my_group                       # Group folder
-    |  ...
-    |_ __group                 # Group folder
-        |_ &lt;timestamped_name&gt;  # Timestamped group file detailing members
-    |_ ...</code></pre>
-<p>The group folder can contain:</p>
-<ul>
-<li>Any number of group files with name <a href="../format_spec/timestamped_name.html"><code>&lt;timestamped_name&gt;</code></a>.</li>
-</ul>
-<section id="group-file" class="level2">
-<h2 class="anchored" data-anchor-id="group-file">Group File</h2>
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="main-structure" class="level2">
+<h2 class="anchored" data-anchor-id="main-structure">Main Structure</h2>
+<p>``<code>my_array                                    # array folder    |  ...    |_ schema                      # ArraySchema directory named</code>__schema<code>|_ enumerations          # Enumeration directory named</code>__enumerations<code>|_ enumeration     # enumeration data with names</code>__uuid_v`</p>
+<p>Enumeration data is stored in a subdirectory of the [array schema][./array_schema.md] directory. Enumerations are stored using [Generic Tiles][./generic_tile.md].</p>
 <table class="table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;"><strong>Field</strong></th>
@@ -155,96 +162,49 @@ ul.task-list li input[type="checkbox"] {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Version</td>
+<td style="text-align: left;">Version number</td>
 <td style="text-align: left;"><code>uint32_t</code></td>
-<td style="text-align: left;">Format version number of the group</td>
+<td style="text-align: left;">Enumerations version number</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Number of Group Member</td>
-<td style="text-align: left;"><code>uint32_t</code></td>
-<td style="text-align: left;">The number of group members.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Group Member 1</td>
-<td style="text-align: left;"><a href="##Group%20Member">Group Member</a></td>
-<td style="text-align: left;">First group member</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">…</td>
-<td style="text-align: left;">…</td>
-<td style="text-align: left;">…</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Group Member N</td>
-<td style="text-align: left;"><a href="##Group%20Member">Group Member</a></td>
-<td style="text-align: left;">Nth group member</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="group-member" class="level2">
-<h2 class="anchored" data-anchor-id="group-member">Group Member</h2>
-<p>The group member is the content inside a <a href="../format_spec/group.html">group</a>.</p>
-<p>The current group member format version is <code>2</code>.</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th style="text-align: left;"><strong>Field</strong></th>
-<th style="text-align: left;"><strong>Type</strong></th>
-<th style="text-align: left;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Version</td>
-<td style="text-align: left;"><code>uint32_t</code></td>
-<td style="text-align: left;">Format version number of the group member</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Object type</td>
+<td style="text-align: left;">Datatype</td>
 <td style="text-align: left;"><code>uint8_t</code></td>
-<td style="text-align: left;">Object type of the member</td>
+<td style="text-align: left;">The datatype of the enumeration values</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Relative</td>
-<td style="text-align: left;"><code>uint8_t</code></td>
-<td style="text-align: left;">Is the URI relative to the group</td>
+<td style="text-align: left;">Cell Val Num</td>
+<td style="text-align: left;"><code>uint32_t</code></td>
+<td style="text-align: left;">The cell val num of the enumeration values</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">URI length</td>
+<td style="text-align: left;">Ordered</td>
+<td style="text-align: left;"><code>bool</code></td>
+<td style="text-align: left;">Whether the enumeration values should be considered ordered</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Data Size</td>
 <td style="text-align: left;"><code>uint64_t</code></td>
-<td style="text-align: left;">Number of characters in URI</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">URI</td>
-<td style="text-align: left;"><code>uint8_t[]</code></td>
-<td style="text-align: left;">URI character array</td>
+<td style="text-align: left;">The number of bytes used to store the values</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Name set</td>
-<td style="text-align: left;"><code>uint8_t</code></td>
-<td style="text-align: left;">Is the name set</td>
+<td style="text-align: left;">Data</td>
+<td style="text-align: left;"><code>uint8_t</code> * Data Size</td>
+<td style="text-align: left;">The data for the enumeration values</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Name length</td>
+<td style="text-align: left;">Offsets Size</td>
 <td style="text-align: left;"><code>uint64_t</code></td>
-<td style="text-align: left;">Number of characters in name</td>
+<td style="text-align: left;">The number of bytes used to store offsets if cell_var_num is TILEDB_VAR_NUM</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Name</td>
-<td style="text-align: left;"><code>uint8_t[]</code></td>
-<td style="text-align: left;">Name character array</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Deleted</td>
-<td style="text-align: left;"><code>uint8_t</code></td>
-<td style="text-align: left;">Is the member deleted</td>
+<td style="text-align: left;">Offsets</td>
+<td style="text-align: left;"><code>uint8_t</code> * Offsets Size</td>
+<td style="text-align: left;">The offsets data for the enumeration if cell_var_num is TILEDB_VAR_NUM</td>
 </tr>
 </tbody>
 </table>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

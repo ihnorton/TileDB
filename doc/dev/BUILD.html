@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>directory</title>
+<title>Building TileDB from source</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -117,11 +151,20 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#api" id="toc-api" class="nav-link active" data-scroll-target="#api">API</a>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link active" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#downloading-the-source-code" id="toc-downloading-the-source-code" class="nav-link" data-scroll-target="#downloading-the-source-code">Downloading the source code</a></li>
+  <li><a href="#configuring-the-build-tree" id="toc-configuring-the-build-tree" class="nav-link" data-scroll-target="#configuring-the-build-tree">Configuring the build tree</a>
   <ul class="collapse">
-  <li><a href="#c-api" id="toc-c-api" class="nav-link" data-scroll-target="#c-api">C API</a></li>
-  <li><a href="#c-api-support" id="toc-c-api-support" class="nav-link" data-scroll-target="#c-api-support">C API Support</a></li>
-  <li><a href="#c-api-1" id="toc-c-api-1" class="nav-link" data-scroll-target="#c-api-1">C++ API</a></li>
+  <li><a href="#configuring-with-the-bootstrap-scripts" id="toc-configuring-with-the-bootstrap-scripts" class="nav-link" data-scroll-target="#configuring-with-the-bootstrap-scripts">Configuring with the bootstrap scripts</a></li>
+  <li><a href="#configuring-with-cmake" id="toc-configuring-with-cmake" class="nav-link" data-scroll-target="#configuring-with-cmake">Configuring with CMake</a></li>
+  <li><a href="#configuration-options" id="toc-configuration-options" class="nav-link" data-scroll-target="#configuration-options">Configuration options</a></li>
+  </ul></li>
+  <li><a href="#building-and-installing" id="toc-building-and-installing" class="nav-link" data-scroll-target="#building-and-installing">Building and installing</a></li>
+  <li><a href="#advanced" id="toc-advanced" class="nav-link" data-scroll-target="#advanced">Advanced</a>
+  <ul class="collapse">
+  <li><a href="#dependency-management-with-vcpkg" id="toc-dependency-management-with-vcpkg" class="nav-link" data-scroll-target="#dependency-management-with-vcpkg">Dependency management with vcpkg</a></li>
+  <li><a href="#building-with-sanitizers" id="toc-building-with-sanitizers" class="nav-link" data-scroll-target="#building-with-sanitizers">Building with sanitizers</a></li>
+  <li><a href="#building-with-optimizations-and-debug-symbols" id="toc-building-with-optimizations-and-debug-symbols" class="nav-link" data-scroll-target="#building-with-optimizations-and-debug-symbols">Building with optimizations and debug symbols</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -129,26 +172,288 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Building TileDB from source</h1>
+</div>
 
 
 
-<section id="api" class="level2">
-<h2 class="anchored" data-anchor-id="api">API</h2>
-<p>This directory is the (future) home of the C API and the C++ API. The API’s are the leaves of the dependency tree insofar as code organization is concerned. API code may reference anything in the code base, but nothing here should be referenced by anything but user code.</p>
-<p>Also included here are API support functions and API-specific tests. The scope of tests are those that exercise the API narrowly, that is, unit tests of the API code itself insofar as it’s possible to write them. They should be more than unit tests of the major classes they use but less than full integration tests of the library.</p>
-<p>Functions outside of the API itself should be defined in <code>namespace tiledb::api</code>.</p>
-<section id="c-api" class="level3">
-<h3 class="anchored" data-anchor-id="c-api">C API</h3>
-<p>The C API has started to move to this directory and is currently in transition.</p>
-<p>This directory is for declaration and definition of C API functions, but is not for any common infrastructure they share.</p>
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="prerequisites" class="level2">
+<h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
+<ul>
+<li>CMake 3.21 or greater</li>
+<li>C++ compiler with C++20 support
+<ul>
+<li>The minimum compiler versions TileDB is being tested in CI are:
+<ul>
+<li>MSVC from Visual Studio 2019 16.11</li>
+<li>GCC 10.3 on Linux and Windows via MinGW</li>
+<li>Apple Clang 14</li>
+</ul></li>
+</ul></li>
+<li>Git (required by vcpkg)</li>
+<li>curl (required by vcpkg on non-Windows)</li>
+</ul>
 </section>
-<section id="c-api-support" class="level3">
-<h3 class="anchored" data-anchor-id="c-api-support">C API Support</h3>
-<p>This directory contains support code shared generally between implementations of C API functions.</p>
+<section id="downloading-the-source-code" class="level2">
+<h2 class="anchored" data-anchor-id="downloading-the-source-code">Downloading the source code</h2>
+<p>Begin by downloading a release tarball or by cloning the TileDB GitHub repo and checking out a release tag. In the following script <code>&lt;version&gt;</code> is the version you wish to use (e.g., <code>2.18.0</code>)</p>
+<pre><code>git clone https://github.com/TileDB-Inc/TileDB.git
+cd TileDB
+git checkout &lt;version&gt;</code></pre>
 </section>
-<section id="c-api-1" class="level3">
-<h3 class="anchored" data-anchor-id="c-api-1">C++ API</h3>
-<p>The C++ API has not yet moved to this directory.</p>
+<section id="configuring-the-build-tree" class="level2">
+<h2 class="anchored" data-anchor-id="configuring-the-build-tree">Configuring the build tree</h2>
+<section id="configuring-with-the-bootstrap-scripts" class="level3">
+<h3 class="anchored" data-anchor-id="configuring-with-the-bootstrap-scripts">Configuring with the bootstrap scripts</h3>
+<p>TileDB provides bootstrap scripts to allow easier configuration of a build. The bootstrap script on macOS and Linux is located in <a href="../../bootstrap">bootstrap</a>, while on Windows it is located in <a href="../../bootstrap.ps1">bootstrap.ps1</a> and runs on <a href="https://learn.microsoft.com/en-us/powershell/">PowerShell</a>.</p>
+<p>You can use the bootstrap scripts like this:</p>
+<p><strong>macOS and Linux</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> build</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> build</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># You can see a list of all available options by running ../bootstrap --help</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">../bootstrap</span> <span class="op">&lt;</span>flags<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Windows</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mkdir build</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> build</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># You can see a list of all available options by running Get-Help ..\bootstrap.ps1 -Detailed</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">..</span>\bootstrap<span class="op">.</span><span class="fu">ps1</span> <span class="op">&lt;</span>flags<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="configuring-with-cmake" class="level3">
+<h3 class="anchored" data-anchor-id="configuring-with-cmake">Configuring with CMake</h3>
+<p>Alternatively, you can configure the build by directly running CMake. The following example works in all operating systems:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> build</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> build</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> .. <span class="at">-DCMAKE_BUILD_TYPE</span><span class="op">=</span>Release <span class="at">-GNinja</span> <span class="at">-DTILEDB_S3</span><span class="op">=</span>ON</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="configuration-options" class="level3">
+<h3 class="anchored" data-anchor-id="configuration-options">Configuration options</h3>
+<p>The following are the most common configuration options:</p>
+<table class="table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 22%">
+<col style="width: 26%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>macOS/Linux flag</th>
+<th>Windows flag</th>
+<th>CMake variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>--prefix=PREFIX</code></td>
+<td><code>-Prefix=PREFIX</code></td>
+<td><code>CMAKE_INSTALL_PREFIX=&lt;PREFIX&gt;</code></td>
+<td>Install files in tree rooted at <code>PREFIX</code> (defaults to <code>TileDB/dist</code>)</td>
+</tr>
+<tr class="even">
+<td><code>--vcpkg-base-triplet=TRIPLET</code></td>
+<td><code>-VcpkgBaseTriplet=TRIPLET</code></td>
+<td><code>TILEDB_VCPKG_BASE_TRIPLET=TRIPLET</code></td>
+<td>Vcpkg base triplet, needed for features like ASAN and RelWithDebInfo</td>
+</tr>
+<tr class="odd">
+<td><code>--linkage=shared/static</code></td>
+<td><code>-Linkage=shared/static</code></td>
+<td><code>BUILD_SHARED_LIBS=ON/OFF</code></td>
+<td>Linkage of the compiled TileDB library (defaults to <code>shared</code>)</td>
+</tr>
+<tr class="even">
+<td><code>--remove-deprecations</code></td>
+<td><code>-RemoveDeprecations</code></td>
+<td><code>TILEDB_REMOVE_DEPRECATIONS=ON</code></td>
+<td>Build TileDB without deprecated APIs</td>
+</tr>
+<tr class="odd">
+<td><code>--enable-debug</code></td>
+<td><code>-EnableDebug</code></td>
+<td><code>CMAKE_BUILD_TYPE=Debug</code></td>
+<td>Enables debug build</td>
+</tr>
+<tr class="even">
+<td><code>--enable-release-symbols</code></td>
+<td><code>-EnableReleaseSymbols</code></td>
+<td><code>CMAKE_BUILD_TYPE=RelWithDebInfo</code></td>
+<td>Enables release build with debug symbols</td>
+</tr>
+<tr class="odd">
+<td><code>--enable-coverage</code></td>
+<td><code>-EnableCoverage</code></td>
+<td><code>CMAKE_BUILD_TYPE=Coverage</code></td>
+<td>Enables build with code coverage support</td>
+</tr>
+<tr class="even">
+<td><code>--enable-verbose</code></td>
+<td><code>-EnableVerbose</code></td>
+<td><code>TILEDB_VERBOSE=ON</code></td>
+<td>Enables verbose status messages</td>
+</tr>
+<tr class="odd">
+<td><code>--enable-hdfs</code></td>
+<td><em>(HDFS is unsupported on Windows)</em></td>
+<td><code>TILEDB_HDFS=ON</code></td>
+<td>Enables building with HDFS storage backend support</td>
+</tr>
+<tr class="even">
+<td><code>--enable-s3</code></td>
+<td><code>-EnableS3</code></td>
+<td><code>TILEDB_S3=ON</code></td>
+<td>Enables building with S3 storage backend support</td>
+</tr>
+<tr class="odd">
+<td><code>--enable-azure</code></td>
+<td><code>-EnableAzure</code></td>
+<td><code>TILEDB_AZURE=ON</code></td>
+<td>Enables building with Azure Blob Storage backend support</td>
+</tr>
+<tr class="even">
+<td><code>--enable-gcs</code></td>
+<td><code>-EnableGcs</code></td>
+<td><code>TILEDB_GCS=ON</code></td>
+<td>Enables building with Google Cloud Storage backend support</td>
+</tr>
+<tr class="odd">
+<td><code>--enable-serialization</code></td>
+<td><code>-EnableSerialization</code></td>
+<td><code>TILEDB_SERIALIZATION=ON</code></td>
+<td>Enables building with Serialization and TileDB Cloud support</td>
+</tr>
+<tr class="even">
+<td><code>--disable-avx2</code></td>
+<td><em>(Unavailable)</em></td>
+<td><code>COMPILER_SUPPORTS_AVX2=FALSE</code></td>
+<td>Disables use of the AVX2 instruction set</td>
+</tr>
+<tr class="odd">
+<td><code>--disable-webp</code></td>
+<td><code>-DisableWebp</code></td>
+<td><code>TILEDB_WEBP=OFF</code></td>
+<td>Disables building with support for the WebP filter</td>
+</tr>
+<tr class="even">
+<td><code>--disable-werror</code></td>
+<td><code>-DisableWerror</code></td>
+<td><code>TILEDB_WERROR=OFF</code></td>
+<td>Disables building with the <code>-Werror</code> flag</td>
+</tr>
+<tr class="odd">
+<td><code>--disable-cpp-api</code></td>
+<td><code>-DisableCppApi</code></td>
+<td><code>TILEDB_CPP_API=OFF</code></td>
+<td>Disables building the TileDB C++ API</td>
+</tr>
+<tr class="even">
+<td><code>--disable-stats</code></td>
+<td><code>-DisableStats</code></td>
+<td><code>TILEDB_STATS=OFF</code></td>
+<td>Disables internal TileDB statistics</td>
+</tr>
+<tr class="odd">
+<td><code>--disable-tests</code></td>
+<td><code>-DisableTests</code></td>
+<td><code>TILEDB_TESTS=OFF</code></td>
+<td>Disables building the TileDB test suite</td>
+</tr>
+</tbody>
+</table>
+<p>The supported vcpkg base triplet values are:</p>
+<ul>
+<li><code>arm64-osx</code></li>
+<li><code>x64-linux</code></li>
+<li><code>x64-osx</code></li>
+<li><code>x64-windows</code></li>
+</ul>
+<blockquote class="blockquote">
+<p>[!TIP] You can see all TileDB-specific CMake variables in <a href="../../cmake/Options/BuildOptions.cmake">BuildOptions.cmake</a>.</p>
+</blockquote>
+</section>
+</section>
+<section id="building-and-installing" class="level2">
+<h2 class="anchored" data-anchor-id="building-and-installing">Building and installing</h2>
+<p>Once the build tree has been configured, you can build and install TileDB by running the following commands from the build tree:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> <span class="at">--build</span> . <span class="at">-j</span> <span class="op">&lt;</span>num-procs<span class="op">&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> <span class="at">--build</span> . <span class="at">--target</span> install-tiledb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you are building with a multi-config generator (e.g., Visual Studio), you will have to specify the configuration to build with the <code>--config</code> option. Also you can directly invoke the underlying build tool:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-j4</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> install-tiledb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The following are the most important targets:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Target</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>install-tiledb</code></td>
+<td>Installs the TileDB library and headers.</td>
+</tr>
+<tr class="even">
+<td><code>check</code></td>
+<td>Builds and runs all TileDB tests.</td>
+</tr>
+<tr class="odd">
+<td><code>examples</code></td>
+<td>Builds all TileDB examples.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="advanced" class="level2">
+<h2 class="anchored" data-anchor-id="advanced">Advanced</h2>
+<section id="dependency-management-with-vcpkg" class="level3">
+<h3 class="anchored" data-anchor-id="dependency-management-with-vcpkg">Dependency management with vcpkg</h3>
+<p>TileDB uses <a href="https://vcpkg.io">vcpkg</a> to download and build its dependencies. By default, the vcpkg repository will be cloned automatically when configuring the build tree. To avoid repeatedly cloning the repository, and take full advantage of vcpkg’s <a href="https://learn.microsoft.com/en-us/vcpkg/users/binarycaching">binary caching</a> feature, you are recommended to clone the vcpkg repository manually and set the <code>VCPKG_ROOT</code> environment variable on your machine to the path of the repository.</p>
+<blockquote class="blockquote">
+<p>[!NOTE] If you have set <code>VCPKG_ROOT</code> on your machine and encountered errors like <code>error: no version database entry for &lt;port&gt; at &lt;version&gt;</code> it means that your vcpkg repository is out of date. You can update it by running <code>git pull</code> in the repository directory.</p>
+</blockquote>
+<p>Vcpkg will not be automatically downloaded if:</p>
+<ul>
+<li>The <code>TILEDB_DISABLE_AUTO_VCPKG</code> environment variable has been defined.</li>
+<li>The build tree has been configured by directly calling CMake and the <code>CMAKE_TOOLCHAIN_FILE</code> variable has been set by the user.</li>
+</ul>
+<p>In these cases CMake will find the dependencies based on the rules of the <a href="https://cmake.org/cmake/help/latest/command/find_package.html"><code>find_package</code></a> command. The user is responsible for providing the dependencies.</p>
+</section>
+<section id="building-with-sanitizers" class="level3">
+<h3 class="anchored" data-anchor-id="building-with-sanitizers">Building with sanitizers</h3>
+<p>TileDB can be built with <a href="https://clang.llvm.org/docs/AddressSanitizer.html">clang sanitizers</a> enabled. To enable them, you have to bootstrap with the <code>--enable-sanitizer</code> flag, as well as the <a href="#configuration-options">vcpkg base triplet</a> corresponding to your platform:</p>
+<blockquote class="blockquote">
+<p>[!NOTE] Currently only the <code>address</code> sanitizer is supported.</p>
+</blockquote>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> TileDB <span class="kw">&amp;&amp;</span> <span class="fu">mkdir</span> build-asan <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> build-asan</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">../bootstrap</span> <span class="at">--enable-sanitizer</span><span class="op">=</span>address <span class="at">--vcpkg-base-triplet</span><span class="op">=</span>x64-linux</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="kw">&amp;&amp;</span> <span class="fu">make</span> check</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<blockquote class="blockquote">
+<p>[!IMPORTANT] To avoid errors, building with sanitizers must be done in a separate build directory.</p>
+</blockquote>
+</section>
+<section id="building-with-optimizations-and-debug-symbols" class="level3">
+<h3 class="anchored" data-anchor-id="building-with-optimizations-and-debug-symbols">Building with optimizations and debug symbols</h3>
+<p>TileDB supports configuring in <code>RelWithDebInfo</code> mode, which compiles code with optimizations while also emitting debug symbols. However on non-Windows platforms the dependencies built by vcpkg do not build by default with symbols. To enable that you have to do either of the following:</p>
+<ul>
+<li><a href="#configuration-options">Specify a vcpkg base triplet</a>.</li>
+<li>Configure by directly calling CMake and setting a vcpkg triplet with the <code>VCPKG_DEFAULT_TRIPLET</code> variable. In this case you are responsible to ensure the appropriate options are passed to the triplet file.</li>
+</ul>
+<p>Configuring in <code>RelWithDebInfo</code> mode and enabling ASAN at the same time is not supported.</p>
 
 
 </section>

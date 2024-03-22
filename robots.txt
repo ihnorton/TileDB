@@ -1,1 +1,1 @@
-Sitemap: https://github.com/ihnorton/TileDB/sitemap.xml
+Sitemap: https://ihnorton.github.io/TileDB/sitemap.xml
